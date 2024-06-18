@@ -8,7 +8,6 @@ import bgImg3 from "../assets/images/background-3.png";
 import beamImg from "../assets/images/beam.png";
 
 import explosionImg from "../assets/spritesheets/explosion.png";
-// import playerImg from "../assets/spritesheets/player.png";
 import playerImgMove from "../assets/spritesheets/playerRun1.png";
 import playerImgIdle from "../assets/spritesheets/playerIdle1.png";
 import playerImgAttack from "../assets/spritesheets/playerAttack1.png";
