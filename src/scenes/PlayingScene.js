@@ -42,6 +42,23 @@ export default class PlayingScene extends Phaser.Scene {
           otherPlayer.flipX = false;
         }
 
+        if (
+          playerInfo.x > otherPlayer.x ||
+          playerInfo.x < otherPlayer.x ||
+          playerInfo.y > otherPlayer.y ||
+          playerInfo.y < otherPlayer.y
+        ) {
+          if (!otherPlayer.m_moving) {
+            otherPlayer.play("player_anim");
+          }
+          otherPlayer.m_moving = true;
+        } else {
+          if (otherPlayer.m_moving) {
+            otherPlayer.play("player_idle");
+          }
+          otherPlayer.m_moving = false;
+        }
+
         // 이전 위치를 업데이트합니다.
         otherPlayer.previousX = otherPlayer.x;
         otherPlayer.previousY = otherPlayer.y;
@@ -51,13 +68,13 @@ export default class PlayingScene extends Phaser.Scene {
     });
 
     this.socket.on("attackPlayer", (clientId) => {
-        if (this.otherPlayers[clientId]) {
-          const otherPlayer = this.otherPlayers[clientId];
-      
-          // 특정 클라이언트의 플레이어에게 claw를 실행합니다.
-          this.createClawForPlayer(otherPlayer);
-        }
-      });      
+      if (this.otherPlayers[clientId]) {
+        const otherPlayer = this.otherPlayers[clientId];
+
+        // 특정 클라이언트의 플레이어에게 claw를 실행합니다.
+        this.createClawForPlayer(otherPlayer);
+      }
+    });
 
     this.socket.on("disconnected", (playerId) => {
       if (this.otherPlayers[playerId]) {
@@ -98,12 +115,12 @@ export default class PlayingScene extends Phaser.Scene {
 
     if (Phaser.Input.Keyboard.JustDown(this.m_attackKey)) {
       this.createClaw();
-    //   this.m_player.attack();
+      //   this.m_player.attack();
 
-    this.socket.emit("attackPosition",{
+      this.socket.emit("attackPosition", {
         x: this.m_player.x,
-        y: this.m_player.y
-    })
+        y: this.m_player.y,
+      });
     }
 
     this.m_background.setX(this.m_player.x - Config.width / 2);
@@ -120,20 +137,20 @@ export default class PlayingScene extends Phaser.Scene {
 
     const claw = new Claw(this, [clawX, clawY], this.m_player.flipX, 10, 1);
 
-    const vector = [this.m_player.flipX ? -1 : 1, 0]; 
+    const vector = [this.m_player.flipX ? -1 : 1, 0];
     claw.move(vector);
   }
 
   createClawForPlayer(player) {
-    const offset = -40; 
+    const offset = -40;
     const clawX = player.x + (player.flipX ? -offset : offset);
     const clawY = player.y;
-  
+
     const claw = new Claw(this, [clawX, clawY], player.flipX, 10, 1);
-  
-    const vector = [player.flipX ? -1 : 1, 0]; 
+
+    const vector = [player.flipX ? -1 : 1, 0];
     claw.move(vector);
-  }  
+  }
 
   createPlayer() {
     const x = Math.floor(Math.random() * 700) + 50;
@@ -167,13 +184,8 @@ export default class PlayingScene extends Phaser.Scene {
       this.m_player.m_moving = false;
     }
 
-    // vector를 사용해 움직임을 관리할 것입니다.
-    // vector = [x좌표 방향, y좌표 방향]입니다.
-    // 왼쪽 키가 눌려있을 때는 vector[0] += -1, 오른쪽 키가 눌려있을 때는 vector[0] += 1을 해줍니다.
-    // 위/아래 또한 같은 방법으로 벡터를 수정해줍니다.
     let vector = [0, 0];
     if (this.m_cursorKeys.left.isDown) {
-      // player.x -= PLAYER_SPEED // 공개영상에서 진행했던 것
       vector[0] += -1;
     } else if (this.m_cursorKeys.right.isDown) {
       vector[0] += 1;
@@ -185,13 +197,7 @@ export default class PlayingScene extends Phaser.Scene {
       vector[1] += 1;
     }
 
-    if (vector[0] !== 0 || vector[1] !== 0) {
-      this.m_player.move(vector);
-      this.socket.emit("playerMovement", {
-        x: this.m_player.x,
-        y: this.m_player.y,
-      });
-    }
+    this.m_player.move(vector);
   }
 
   addOtherPlayers(playerInfo) {

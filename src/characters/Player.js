@@ -31,18 +31,6 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     if (vector[0] === -1) this.flipX = false;
     else if (vector[0] === 1) this.flipX = true;
 
-    if (vector[0] !== 0 || vector[1] !== 0) {
-      if (!this.m_moving) {
-        this.play("player_anim");
-        this.m_moving = true;
-      }
-    } else {
-      if (this.m_moving) {
-        this.play("player_idle");
-        this.m_moving = false;
-      }
-    }
-
     this.scene.socket.emit("playerMovement", {
       x: this.scene.m_player.x,
       y: this.scene.m_player.y,
