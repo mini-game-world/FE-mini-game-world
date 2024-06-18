@@ -86,7 +86,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
         this.once('animationcomplete', () => {
             this.m_attacking = false;
-            this.play('player_idle');
+            this.play('player_anim');
         });
     }
 }
