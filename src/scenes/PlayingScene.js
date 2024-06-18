@@ -59,19 +59,6 @@ export default class PlayingScene extends Phaser.Scene {
           otherPlayer.m_moving = false;
         }
 
-        if (playerInfo.isStun) {
-            this.tweens.add({
-              targets: otherPlayer,
-              alpha: 0,
-              yoyo: true,
-              repeat: 1,
-              duration: 100,
-              onComplete: () => {
-                otherPlayer.setAlpha(1); // 원래 상태로 복원
-              },
-            });
-          }
-
         // 이전 위치를 업데이트합니다.
         otherPlayer.previousX = otherPlayer.x;
         otherPlayer.previousY = otherPlayer.y;
@@ -89,23 +76,57 @@ export default class PlayingScene extends Phaser.Scene {
       }
     });
 
-    this.socket.on("attacked", (status) => {
-        if (status) {
-          this.m_player.m_canMove = false;
+    // this.socket.on("attacked", (status) => {
+    //     if (status) {
+    //       this.m_player.m_canMove = false;
       
-          this.tweens.add({
-            targets: this.m_player,
-            alpha: 0,
-            yoyo: true,
-            repeat: 1,
-            duration: 100,
-            onComplete: () => {
-              this.m_player.m_canMove = true;
-              this.m_player.setAlpha(1); 
-            },
-          });
-        }
-      });
+    //       this.tweens.add({
+    //         targets: this.m_player,
+    //         alpha: 0,
+    //         yoyo: true,
+    //         repeat: 1,
+    //         duration: 100,
+    //         onComplete: () => {
+    //           this.m_player.m_canMove = true;
+    //           this.m_player.setAlpha(1); 
+    //         },
+    //       });
+    //     }
+    //   });
+
+      // 서버로부터 공격받은 플레이어들의 ID 배열을 받음
+this.socket.on("attackedPlayers", (attackedPlayerIds) => {
+    attackedPlayerIds.forEach((playerId) => {
+      if (this.otherPlayers[playerId]) {
+        const attackedPlayer = this.otherPlayers[playerId];
+  
+        // 깜박이는 효과 추가
+        this.tweens.add({
+          targets: attackedPlayer,
+          alpha: 0,
+          yoyo: true,
+          repeat: 1,
+          duration: 100,
+          onComplete: () => {
+            attackedPlayer.setAlpha(1); // 원래 상태로 복원
+          },
+        });
+      } else if (playerId === this.socket.id) {
+        this.m_player.m_canMove = false;
+        this.tweens.add({
+          targets: this.m_player,
+          alpha: 0,
+          yoyo: true,
+          repeat: 1,
+          duration: 100,
+          onComplete: () => {
+            this.m_player.setAlpha(1); // 원래 상태로 복원
+          },
+        });
+      }
+    });
+  });
+  
       
 
     this.socket.on("disconnected", (playerId) => {
