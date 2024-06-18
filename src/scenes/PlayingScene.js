@@ -59,6 +59,19 @@ export default class PlayingScene extends Phaser.Scene {
           otherPlayer.m_moving = false;
         }
 
+        if (playerInfo.isStun) {
+            this.tweens.add({
+              targets: otherPlayer,
+              alpha: 0,
+              yoyo: true,
+              repeat: 1,
+              duration: 100,
+              onComplete: () => {
+                otherPlayer.setAlpha(1); // 원래 상태로 복원
+              },
+            });
+          }
+
         // 이전 위치를 업데이트합니다.
         otherPlayer.previousX = otherPlayer.x;
         otherPlayer.previousY = otherPlayer.y;
@@ -80,11 +93,20 @@ export default class PlayingScene extends Phaser.Scene {
         if (status) {
           this.m_player.m_canMove = false;
       
-          this.time.delayedCall(1000, () => {
-            this.m_player.m_canMove = true;
+          this.tweens.add({
+            targets: this.m_player,
+            alpha: 0,
+            yoyo: true,
+            repeat: 1,
+            duration: 100,
+            onComplete: () => {
+              this.m_player.m_canMove = true;
+              this.m_player.setAlpha(1); 
+            },
           });
         }
       });
+      
 
     this.socket.on("disconnected", (playerId) => {
       if (this.otherPlayers[playerId]) {
