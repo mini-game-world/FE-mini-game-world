@@ -81,9 +81,9 @@ export default class PlayingScene extends Phaser.Scene {
             attackedPlayerIds.forEach((playerId) => {
                 if (this.otherPlayers[playerId]) {
                     const attackedPlayer = this.otherPlayers[playerId];
-        
+
                     attackedPlayer.play("player_stun");
-        
+
                     this.tweens.add({
                         targets: attackedPlayer,
                         alpha: 0,
@@ -92,15 +92,15 @@ export default class PlayingScene extends Phaser.Scene {
                         duration: 70,
                         onComplete: () => {
                             attackedPlayer.setAlpha(1);
-                            attackedPlayer.play("player_idle"); 
+                            attackedPlayer.play("player_idle");
                             attackedPlayer.m_canMove = true;
                         },
                     });
                 } else if (playerId === this.socket.id) {
                     this.m_player.m_canMove = false;
-        
+
                     this.m_player.play("player_stun");
-        
+
                     this.tweens.add({
                         targets: this.m_player,
                         alpha: 0,
@@ -109,15 +109,39 @@ export default class PlayingScene extends Phaser.Scene {
                         duration: 70,
                         onComplete: () => {
                             this.m_player.setAlpha(1);
-                            this.m_player.play("player_idle"); 
+                            this.m_player.play("player_idle");
                             this.m_player.m_canMove = true;
                         },
                     });
                 }
             });
         });
-        
 
+        this.socket.on("bombUsers", (playerId) => {
+            console.log(playerId);
+            // 모든 플레이어의 폭탄 소유 여부 업데이트
+                playerId.forEach(id => {
+                    console.log(id)
+                if (id === this.socket.id) {
+                    // 현재 클라이언트의 플레이어
+                    if (this.m_player[id]) {
+                        this.m_player.showBomb();
+                    } else {
+                        this.m_player.hideBomb();
+                    }
+                } else {
+                    // 다른 플레이어
+                    if (this.otherPlayers[id]) {
+                        if (this.otherPlayers[id]) {
+                            this.otherPlayers[id].showBomb();
+                        } else {
+                            this.otherPlayers[id].hideBomb();
+                        }
+                        }
+                    }
+        })
+        });
+        
 
 
         this.socket.on("disconnected", (playerId) => {

@@ -21,6 +21,7 @@ import lionImg from "../assets/spritesheets/lion.png";
 import catnipImg from "../assets/spritesheets/catnip.png";
 import clawWhiteImg from "../assets/spritesheets/claw-white.png";
 import clawYellowImg from "../assets/spritesheets/claw-yellow.png";
+import bombImg from "../assets/spritesheets/bomb.png";
 
 import beamOgg from "../assets/sounds/beam.ogg";
 import scratchOgg from "../assets/sounds/scratch.ogg";
@@ -104,6 +105,10 @@ export default class LoadingScene extends Phaser.Scene {
         this.load.spritesheet("exp-up", expUpImg, {
             frameWidth: 16,
             frameHeight: 16,
+        });
+        this.load.spritesheet("bomb", bombImg, {
+            frameWidth: 303,
+            frameHeight: 142,
         });
 
         // AUDIOS
@@ -263,6 +268,12 @@ export default class LoadingScene extends Phaser.Scene {
             }),
             frameRate: 20,
             repeat: 0,
+        });
+        this.anims.create({
+            key: "bomb_anim",
+            frames: this.anims.generateFrameNumbers("bomb"),
+            frameRate: 5,
+            repeat: -1,
         });
     }
 }

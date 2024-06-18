@@ -6,9 +6,9 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         scene,
         x = Config.width / 2,
         y = Config.height / 2,
-        texture = "player"
+       
     ) {
-        super(scene, x, y, texture);
+        super(scene, x, y);
         scene.add.existing(this);
         scene.physics.add.existing(this);
 
@@ -20,6 +20,12 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         this.m_moving = false;
         this.m_attacking = false;
         this.m_canMove = true;
+
+        // 폭탄 스프라이트 추가
+        // this.play("bomb_anim");
+        this.bombSprite = scene.add.sprite(this.x, this.y - 40, 'bomb').setScale(0.3);
+        this.bombSprite.play("bomb_anim"); // 폭탄 애니메이션 재생
+        this.bombSprite.setVisible(false); // 초기에는 보이지 않도록 설정
     }
 
     move(vector) {
@@ -40,8 +46,9 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
                 y: this.y,
             });
         }
+        // 폭탄 스프라이트 위치 업데이트
+        this.bombSprite.setPosition(this.x, this.y - 50);
     }
-
 
     attack() {
         if (this.m_attacking) return; // 이미 공격 중이면 아무것도 하지 않음
@@ -58,5 +65,14 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
                 this.m_moving = false;
             }
         });
+    }
+
+    showBomb() {
+        this.bombSprite.setVisible(true); // 폭탄 스프라이트 보이기
+        // this.bombSprite.play("bomb_anim"); // 폭탄 애니메이션 재생
+    }
+
+    hideBomb() {
+        this.bombSprite.setVisible(false); // 폭탄 스프라이트 숨기기
     }
 }
