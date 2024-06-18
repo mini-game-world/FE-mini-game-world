@@ -9,6 +9,8 @@ export default class PlayingScene extends Phaser.Scene {
   constructor() {
     super("playGame");
     this.otherPlayers = {};
+    this.clawCooldown = 1000; 
+    this.lastClawTime = 0; 
   }
 
   create() {
@@ -71,44 +73,23 @@ export default class PlayingScene extends Phaser.Scene {
       if (this.otherPlayers[clientId]) {
         const otherPlayer = this.otherPlayers[clientId];
 
-        // 특정 클라이언트의 플레이어에게 claw를 실행합니다.
         this.createClawForPlayer(otherPlayer);
       }
     });
 
-    // this.socket.on("attacked", (status) => {
-    //     if (status) {
-    //       this.m_player.m_canMove = false;
-      
-    //       this.tweens.add({
-    //         targets: this.m_player,
-    //         alpha: 0,
-    //         yoyo: true,
-    //         repeat: 1,
-    //         duration: 100,
-    //         onComplete: () => {
-    //           this.m_player.m_canMove = true;
-    //           this.m_player.setAlpha(1); 
-    //         },
-    //       });
-    //     }
-    //   });
-
-      // 서버로부터 공격받은 플레이어들의 ID 배열을 받음
 this.socket.on("attackedPlayers", (attackedPlayerIds) => {
     attackedPlayerIds.forEach((playerId) => {
       if (this.otherPlayers[playerId]) {
         const attackedPlayer = this.otherPlayers[playerId];
   
-        // 깜박이는 효과 추가
         this.tweens.add({
           targets: attackedPlayer,
           alpha: 0,
           yoyo: true,
           repeat: 1,
-          duration: 100,
+          duration: 50,
           onComplete: () => {
-            attackedPlayer.setAlpha(1); // 원래 상태로 복원
+            attackedPlayer.setAlpha(1); 
           },
         });
       } else if (playerId === this.socket.id) {
@@ -118,9 +99,9 @@ this.socket.on("attackedPlayers", (attackedPlayerIds) => {
           alpha: 0,
           yoyo: true,
           repeat: 1,
-          duration: 100,
+          duration: 50,
           onComplete: () => {
-            this.m_player.setAlpha(1); // 원래 상태로 복원
+            this.m_player.setAlpha(1); 
           },
         });
       }
@@ -166,8 +147,8 @@ this.socket.on("attackedPlayers", (attackedPlayerIds) => {
   update() {
     this.movePlayerManager();
 
-    if (Phaser.Input.Keyboard.JustDown(this.m_attackKey)) {
-      this.createClaw();
+    if (Phaser.Input.Keyboard.JustDown(this.m_attackKey)) { 
+            this.createClaw();
     }
 
     this.m_background.setX(this.m_player.x - Config.width / 2);
@@ -178,6 +159,10 @@ this.socket.on("attackedPlayers", (attackedPlayerIds) => {
   }
 
   createClaw() {
+    const currentTime = new Date().getTime();
+    if (currentTime - this.lastClawTime < this.clawCooldown) {
+      return; 
+    }
     const offset = -40;
     const clawX = this.m_player.x + (this.m_player.flipX ? -offset : offset);
     const clawY = this.m_player.y;
@@ -186,11 +171,13 @@ this.socket.on("attackedPlayers", (attackedPlayerIds) => {
 
     const vector = [this.m_player.flipX ? -1 : 1, 0];
     claw.move(vector);
+    claw.setBodySize(28, 32);
 
     this.socket.emit("attackPosition", {
         x: clawX,
         y: clawY,
     });
+    this.lastClawTime = currentTime; 
   }
 
   createClawForPlayer(player) {
