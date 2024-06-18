@@ -76,6 +76,16 @@ export default class PlayingScene extends Phaser.Scene {
       }
     });
 
+    this.socket.on("attacked", (status) => {
+        if (status) {
+          this.m_player.m_canMove = false;
+      
+          this.time.delayedCall(1000, () => {
+            this.m_player.m_canMove = true;
+          });
+        }
+      });
+
     this.socket.on("disconnected", (playerId) => {
       if (this.otherPlayers[playerId]) {
         this.otherPlayers[playerId].destroy();
@@ -115,12 +125,6 @@ export default class PlayingScene extends Phaser.Scene {
 
     if (Phaser.Input.Keyboard.JustDown(this.m_attackKey)) {
       this.createClaw();
-      //   this.m_player.attack();
-
-      this.socket.emit("attackPosition", {
-        x: this.m_player.x,
-        y: this.m_player.y,
-      });
     }
 
     this.m_background.setX(this.m_player.x - Config.width / 2);
@@ -139,6 +143,11 @@ export default class PlayingScene extends Phaser.Scene {
 
     const vector = [this.m_player.flipX ? -1 : 1, 0];
     claw.move(vector);
+
+    this.socket.emit("attackPosition", {
+        x: clawX,
+        y: clawY,
+    });
   }
 
   createClawForPlayer(player) {
