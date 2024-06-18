@@ -11,6 +11,7 @@ import explosionImg from "../assets/spritesheets/explosion.png";
 import playerImgMove from "../assets/spritesheets/playerRun1.png";
 import playerImgIdle from "../assets/spritesheets/playerIdle1.png";
 import playerImgAttack from "../assets/spritesheets/playerAttack1.png";
+import playerImgStun from "../assets/spritesheets/playerStun1.png";
 import expUpImg from "../assets/spritesheets/expUp.png";
 import mobImg1 from "../assets/spritesheets/mob1.png";
 import mobImg2 from "../assets/spritesheets/mob2.png";
@@ -57,6 +58,10 @@ export default class LoadingScene extends Phaser.Scene {
             frameHeight: 220,
         });
         this.load.spritesheet("playerAttack1", playerImgAttack, {
+            frameWidth: 200,
+            frameHeight: 220,
+        });
+        this.load.spritesheet("playerStun1", playerImgStun, {
             frameWidth: 200,
             frameHeight: 220,
         });
@@ -182,6 +187,13 @@ export default class LoadingScene extends Phaser.Scene {
             frames: this.anims.generateFrameNumbers("playerAttack1"),
             frameRate: 12,
             repeat: 0
+        });
+
+        this.anims.create({
+            key: "player_stun",
+            frames: this.anims.generateFrameNumbers("playerStun1", { start: 0, end: 3 }),
+            frameRate: 12,
+            repeat: 0,
         });
 
         // EFFECT
