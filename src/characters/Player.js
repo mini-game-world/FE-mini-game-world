@@ -19,10 +19,11 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
     this.m_moving = false;
     this.m_attacking = false;
+    this.m_canMove = true;
   }
 
   move(vector) {
-    if (this.m_attacking) return;
+    if (this.m_attacking || !this.m_canMove) return;
     let PLAYER_SPEED = 3;
 
     this.x += vector[0] * PLAYER_SPEED;
