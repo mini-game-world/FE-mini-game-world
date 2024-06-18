@@ -156,6 +156,7 @@ export default class PlayingScene extends Phaser.Scene {
     const x = Math.floor(Math.random() * 700) + 50;
     const y = Math.floor(Math.random() * 500) + 50;
     this.m_player = new Player(this, x, y, "player");
+    this.m_player.setDepth(30);
     this.m_player.play("player_idle");
     this.cameras.main.startFollow(this.m_player);
 
