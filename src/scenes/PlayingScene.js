@@ -50,6 +50,15 @@ export default class PlayingScene extends Phaser.Scene {
       }
     });
 
+    this.socket.on("attackPlayer", (clientId) => {
+        if (this.otherPlayers[clientId]) {
+          const otherPlayer = this.otherPlayers[clientId];
+      
+          // 특정 클라이언트의 플레이어에게 claw를 실행합니다.
+          this.createClawForPlayer(otherPlayer);
+        }
+      });      
+
     this.socket.on("disconnected", (playerId) => {
       if (this.otherPlayers[playerId]) {
         this.otherPlayers[playerId].destroy();
@@ -89,7 +98,12 @@ export default class PlayingScene extends Phaser.Scene {
 
     if (Phaser.Input.Keyboard.JustDown(this.m_attackKey)) {
       this.createClaw();
-      this.m_player.attack();
+    //   this.m_player.attack();
+
+    this.socket.emit("attackPosition",{
+        x: this.m_player.x,
+        y: this.m_player.y
+    })
     }
 
     this.m_background.setX(this.m_player.x - Config.width / 2);
@@ -100,18 +114,26 @@ export default class PlayingScene extends Phaser.Scene {
   }
 
   createClaw() {
-    // 플레이어의 위치에서 일정 거리(offset)만큼 앞으로 이동시킨 위치에서 Claw를 생성합니다.
-    const offset = -40; // 예시로 30 픽셀 앞으로 이동시킵니다.
+    const offset = -40;
     const clawX = this.m_player.x + (this.m_player.flipX ? -offset : offset);
     const clawY = this.m_player.y;
 
-    // Claw를 생성합니다. 플레이어의 위치, 방향 등을 적절히 설정하여 생성합니다.
     const claw = new Claw(this, [clawX, clawY], this.m_player.flipX, 10, 1);
 
-    // 플레이어의 움직임 벡터를 전달하여 Claw도 움직이도록 합니다.
-    const vector = [this.m_player.flipX ? -1 : 1, 0]; // 플레이어의 방향에 따라 Claw의 방향 설정
+    const vector = [this.m_player.flipX ? -1 : 1, 0]; 
     claw.move(vector);
   }
+
+  createClawForPlayer(player) {
+    const offset = -40; 
+    const clawX = player.x + (player.flipX ? -offset : offset);
+    const clawY = player.y;
+  
+    const claw = new Claw(this, [clawX, clawY], player.flipX, 10, 1);
+  
+    const vector = [player.flipX ? -1 : 1, 0]; 
+    claw.move(vector);
+  }  
 
   createPlayer() {
     const x = Math.floor(Math.random() * 700) + 50;
@@ -120,7 +142,6 @@ export default class PlayingScene extends Phaser.Scene {
     this.m_player.play("player_idle");
     this.cameras.main.startFollow(this.m_player);
 
-    // 플레이어 정보를 서버로 전송
     this.socket.emit("joinRoom", {
       room: 0,
       x: this.m_player.x,
