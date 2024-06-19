@@ -8,25 +8,21 @@ import SocketManager from "../network/socketManager";
 export default class PlayingScene extends Phaser.Scene {
   constructor() {
     super("playGame");
-    this.otherPlayers = [];
+    this.otherPlayers = {};
   }
 
   create() {
-    // SocketManager 인스턴스를 생성하고 씬을 전달
     this.socketManager = new SocketManager(this);
 
     this.m_scratchSound = this.sound.add("audio_scratch");
 
-    // 배경 설정
     setBackground(this, "background1");
 
-    // 입력 키 설정
     this.m_cursorKeys = this.input.keyboard.createCursorKeys();
     this.m_attackKey = this.input.keyboard.addKey(
       Phaser.Input.Keyboard.KeyCodes.Z
     );
 
-    // 플레이어 생성
     this.createMyCharacter();
   }
 
@@ -46,10 +42,10 @@ export default class PlayingScene extends Phaser.Scene {
 
     this.m_background.tilePositionX = this.m_player.x - Config.width / 2;
     this.m_background.tilePositionY = this.m_player.y - Config.height / 2;
-
   }
 
   updateGhost() {
+
     if (!this.m_player.m_isPlay || this.m_player.m_isDead) {
       if (this.m_player.texture.key !== "playerDead") {
         this.m_player.setTexture("playerDead");
@@ -57,24 +53,26 @@ export default class PlayingScene extends Phaser.Scene {
         this.m_player.setAlpha(0.5); 
       }
     } else {
-      if(this.m_player.texture.key === "playerDead"){
+      if (this.m_player.texture.key === "playerDead") {
         this.m_player.setTexture("playerIdle1");
         this.m_player.play("player_idle");
         this.m_player.setAlpha(1);
       }
     }
-    this.otherPlayers.forEach((id) => {
-      if (!this.otherPlayers[id].m_isPlay || this.otherPlayers[id].m_isDead) {
-        if (this.otherPlayer.texture.key !== "playerDead") {
-          this.otherPlayers[id].setTexture("playerDead");
-          this.otherPlayers[id].play("player_dead");
-          this.m_player.setAlpha(0.5); 
-        } 
+
+    Object.keys(this.otherPlayers).forEach((id) => {
+      const otherPlayer = this.otherPlayers[id];
+      if (!otherPlayer.m_isPlay || otherPlayer.m_isDead) {
+        if (otherPlayer.texture.key !== "playerDead") {
+          otherPlayer.setTexture("playerDead");
+          otherPlayer.play("player_dead");
+          otherPlayer.setAlpha(0.5); 
+        }
       } else {
-        if(this.otherPlayers[id].texture.key === "playerDead"){
-          this.otherPlayers[id].setTexture("playerIdle1");
-          this.otherPlayers[id].play("player_idle");
-          this.m_player.setAlpha(1);
+        if (otherPlayer.texture.key === "playerDead") {
+          otherPlayer.setTexture("playerIdle1");
+          otherPlayer.play("player_idle");
+          otherPlayer.setAlpha(1);
         }
       }
     });
@@ -91,7 +89,6 @@ export default class PlayingScene extends Phaser.Scene {
     claw.move(vector);
     claw.setBodySize(28, 32);
 
-    // 서버에 공격 위치를 알림
     this.socketManager.attackPosition(clawX, clawY);
   }
 
@@ -123,11 +120,9 @@ export default class PlayingScene extends Phaser.Scene {
   bombPlayers(players) {
     this.m_player.m_hasBomb = false;
     this.m_player.hideBomb();
-    Object.keys(this.otherPlayers).forEach((id) => {
-      if (this.otherPlayers[id]) {
-        this.otherPlayers[id].m_hasBomb = false;
-        this.otherPlayers[id].hideBomb();
-      }
+    Object.values(this.otherPlayers).forEach((player) => {
+      player.m_hasBomb = false;
+      player.hideBomb();
     });
 
     players.forEach((playerId) => {
@@ -170,7 +165,6 @@ export default class PlayingScene extends Phaser.Scene {
     } else {
       if (this.m_player.m_moving && !this.m_player.m_attacking) {
         this.m_player.play("player_idle");
-        // 플레이어가 멈출 때 한 번만 서버로 위치를 전송
         this.socketManager.playerMovement(this.m_player.x, this.m_player.y);
       }
       this.m_player.m_moving = false;
@@ -185,14 +179,13 @@ export default class PlayingScene extends Phaser.Scene {
   }
 
   updatePlayerPosition(otherPlayer, playerInfo) {
-    // 이전 위치와 현재 위치를 비교하여 방향을 설정
+
     if (playerInfo.x > otherPlayer.x) {
       otherPlayer.flipX = true;
     } else if (playerInfo.x < otherPlayer.x) {
       otherPlayer.flipX = false;
     }
 
-    // 이동 여부에 따라 애니메이션을 설정
     if (playerInfo.x !== otherPlayer.x || playerInfo.y !== otherPlayer.y) {
       if (!otherPlayer.m_moving) {
         otherPlayer.play("player_anim");
@@ -206,6 +199,7 @@ export default class PlayingScene extends Phaser.Scene {
     }
 
     otherPlayer.setPosition(playerInfo.x, playerInfo.y);
+
     // 폭탄 위치 업데이트
     if (otherPlayer.m_hasBomb) {
       otherPlayer.bombSprite.setPosition(playerInfo.x, playerInfo.y - 50);
@@ -261,9 +255,7 @@ export default class PlayingScene extends Phaser.Scene {
       if (id === this.socketManager.socketId) {
         this.m_player.m_isPlay = false;
         this.m_player.m_isDead = true;
-        // this.m_player.setTexture("playerDead");
       } else if (this.otherPlayers[id]) {
-        // this.otherPlayers[id].setTexture("playerDead");
         this.otherPlayers[id].m_isPlay = false;
         this.otherPlayers[id].m_isDead = true;
       }
