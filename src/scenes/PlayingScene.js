@@ -3,292 +3,200 @@ import Config from "../Config";
 import Player from "../characters/Player";
 import Claw from "../effects/Claw";
 import { setBackground } from "../utils/backgroundManager";
-import { io } from "socket.io-client";
+import SocketManager from "../network/socketManager";
 
 export default class PlayingScene extends Phaser.Scene {
-    constructor() {
-        super("playGame");
-        this.otherPlayers = {};
-        this.clawCooldown = 1000;
-        this.lastClawTime = 0;
+  constructor() {
+    super("playGame");
+    this.otherPlayers = {};
+  }
+
+  create() {
+    // SocketManager 인스턴스를 생성하고 씬을 전달
+    this.socketManager = new SocketManager(this);
+
+    this.m_scratchSound = this.sound.add("audio_scratch");
+
+    // 배경 설정
+    setBackground(this, "background1");
+
+    // 입력 키 설정
+    this.m_cursorKeys = this.input.keyboard.createCursorKeys();
+    this.m_attackKey = this.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.Z
+    );
+
+    // 플레이어 생성
+    this.createMyCharacter();
+
+    // 충돌 감지 설정
+    this.physics.add.collider(
+      this.m_player,
+      this.otherPlayersGroup,
+      this.handlePlayerCollision,
+      null,
+      this
+    );
+  }
+
+  update() {
+    this.movePlayerManager();
+
+    if (Phaser.Input.Keyboard.JustDown(this.m_attackKey)) {
+      this.m_player.attack();
     }
 
-    create() {
-        this.socket = io("http://143.248.177.132:3000");
+    this.m_background.setX(this.m_player.x - Config.width / 2);
+    this.m_background.setY(this.m_player.y - Config.height / 2);
 
-        // 서버와 연결된 후 자신의 소켓 아이디를 출력
-        this.socket.on("connect", () => {
-            console.log("My socket ID:", this.socket.id);
-        });
+    this.m_background.tilePositionX = this.m_player.x - Config.width / 2;
+    this.m_background.tilePositionY = this.m_player.y - Config.height / 2;
+  }
 
-        this.socket.on("currentPlayers", (players) => {
-            Object.keys(players).forEach((id) => {
-                if (players[id].playerId !== this.socket.id) {
-                    this.addOtherPlayers(players[id]);
-                }
-            });
-        });
+  createClaw() {
+    const offset = -40;
+    const clawX = this.m_player.x + (this.m_player.flipX ? -offset : offset);
+    const clawY = this.m_player.y;
 
-        this.socket.on("newPlayer", (playerInfo) => {
-            this.addOtherPlayers(playerInfo);
-        });
+    const claw = new Claw(this, [clawX, clawY], this.m_player.flipX, 10, 1);
 
-        this.socket.on("playerMoved", (playerInfo) => {
-            if (this.otherPlayers[playerInfo.playerId]) {
-                const otherPlayer = this.otherPlayers[playerInfo.playerId];
+    const vector = [this.m_player.flipX ? -1 : 1, 0];
+    claw.move(vector);
+    claw.setBodySize(28, 32);
 
-                // 이전 위치와 현재 위치를 비교하여 방향을 설정합니다.
-                if (playerInfo.x > otherPlayer.x) {
-                    otherPlayer.flipX = true;
-                } else if (playerInfo.x < otherPlayer.x) {
-                    otherPlayer.flipX = false;
-                }
+    // 서버에 공격 위치를 알림
+    this.socketManager.attackPosition(clawX, clawY);
+  }
 
-                if (
-                    playerInfo.x > otherPlayer.x ||
-                    playerInfo.x < otherPlayer.x ||
-                    playerInfo.y > otherPlayer.y ||
-                    playerInfo.y < otherPlayer.y
-                ) {
-                    if (!otherPlayer.m_moving) {
-                        otherPlayer.play("player_anim");
-                    }
-                    otherPlayer.m_moving = true;
-                } else {
-                    if (otherPlayer.m_moving) {
-                        otherPlayer.play("player_idle");
-                    }
-                    otherPlayer.m_moving = false;
-                }
+  createClawForPlayer(player) {
+    const offset = -40;
+    const clawX = player.x + (player.flipX ? -offset : offset);
+    const clawY = player.y;
 
-                // 이전 위치를 업데이트합니다.
-                otherPlayer.previousX = otherPlayer.x;
-                otherPlayer.previousY = otherPlayer.y;
+    const claw = new Claw(this, [clawX, clawY], player.flipX, 10, 1);
 
-                otherPlayer.setPosition(playerInfo.x, playerInfo.y);
-            }
-        });
+    const vector = [player.flipX ? -1 : 1, 0];
+    claw.move(vector);
+  }
 
-        this.socket.on("attackPlayer", (clientId) => {
-            if (this.otherPlayers[clientId]) {
-                const otherPlayer = this.otherPlayers[clientId];
+  createMyCharacter() {
+    const x = Math.floor(Math.random() * 700) + 50;
+    const y = Math.floor(Math.random() * 500) + 50;
+    this.m_player = new Player(this, x, y, "player");
 
-                this.createClawForPlayer(otherPlayer);
-            }
-        });
+    this.m_player.setDepth(30);
+    this.m_player.play("player_idle");
+    this.cameras.main.startFollow(this.m_player);
 
-        this.socket.on("attackedPlayers", (attackedPlayerIds) => {
-            attackedPlayerIds.forEach((playerId) => {
-                if (this.otherPlayers[playerId]) {
-                    const attackedPlayer = this.otherPlayers[playerId];
+    // 서버에 방에 접속했음을 알림
+    this.socketManager.joinRoom(this.m_player.x, this.m_player.y);
 
-                    attackedPlayer.play("player_stun");
+    // 공격 애니메이션 완료 후에 createClaw 호출
+    this.m_player.on("animationcomplete-player_attack", this.createClaw, this);
+  }
 
-                    this.tweens.add({
-                        targets: attackedPlayer,
-                        alpha: 0,
-                        yoyo: true,
-                        repeat: 1,
-                        duration: 70,
-                        onComplete: () => {
-                            attackedPlayer.setAlpha(1);
-                            attackedPlayer.play("player_idle");
-                            attackedPlayer.m_canMove = true;
-                        },
-                    });
-                } else if (playerId === this.socket.id) {
-                    this.m_player.m_canMove = false;
+  movePlayerManager() {
+    if (
+      this.m_cursorKeys.left.isDown ||
+      this.m_cursorKeys.right.isDown ||
+      this.m_cursorKeys.up.isDown ||
+      this.m_cursorKeys.down.isDown
+    ) {
+      if (!this.m_player.m_moving && !this.m_player.m_attacking) {
+        this.m_player.play("player_anim");
+      }
+      this.m_player.m_moving = true;
 
-                    this.m_player.play("player_stun");
+      let vector = [0, 0];
+      if (this.m_cursorKeys.left.isDown) {
+        vector[0] += -1;
+      } else if (this.m_cursorKeys.right.isDown) {
+        vector[0] += 1;
+      }
 
-                    this.tweens.add({
-                        targets: this.m_player,
-                        alpha: 0,
-                        yoyo: true,
-                        repeat: 1,
-                        duration: 70,
-                        onComplete: () => {
-                            this.m_player.setAlpha(1);
-                            this.m_player.play("player_idle");
-                            this.m_player.m_canMove = true;
-                        },
-                    });
-                }
-            });
-        });
+      if (this.m_cursorKeys.up.isDown) {
+        vector[1] += -1;
+      } else if (this.m_cursorKeys.down.isDown) {
+        vector[1] += 1;
+      }
 
-        this.socket.on("bombUsers", (playerId) => {
-            console.log(playerId);
-            // 모든 플레이어의 폭탄 소유 여부 업데이트
-            playerId.forEach(id => {
-                console.log(id)
-                if (id === this.socket.id) {
-                    // 현재 클라이언트의 플레이어
-                    if (this.m_player[id]) {
-                        this.m_player.showBomb();
-                    } else {
-                        this.m_player.hideBomb();
-                    }
-                } else {
-                    // 다른 플레이어
-                    if (this.otherPlayers[id]) {
-                        if (this.otherPlayers[id]) {
-                            this.otherPlayers[id].showBomb();
-                        } else {
-                            this.otherPlayers[id].hideBomb();
-                        }
-                    }
-                }
-            })
-        });
-
-
-
-        this.socket.on("disconnected", (playerId) => {
-            if (this.otherPlayers[playerId]) {
-                this.otherPlayers[playerId].destroy();
-                delete this.otherPlayers[playerId];
-            }
-        });
-
-        // 사용할 sound들을 추가해놓는 부분입니다.
-        // load는 전역적으로 어떤 scene에서든 asset을 사용할 수 있도록 load 해주는 것이고,
-        // add는 해당 scene에서 사용할 수 있도록 scene의 멤버 변수로 추가할 때 사용하는 것입니다.
-        this.sound.pauseOnBlur = false;
-        this.m_beamSound = this.sound.add("audio_beam");
-        this.m_scratchSound = this.sound.add("audio_scratch");
-        this.m_hitMobSound = this.sound.add("audio_hitMob");
-        this.m_growlSound = this.sound.add("audio_growl");
-        this.m_explosionSound = this.sound.add("audio_explosion");
-        this.m_expUpSound = this.sound.add("audio_expUp");
-        this.m_hurtSound = this.sound.add("audio_hurt");
-        this.m_nextLevelSound = this.sound.add("audio_nextLevel");
-        this.m_gameOverSound = this.sound.add("audio_gameOver");
-        this.m_gameClearSound = this.sound.add("audio_gameClear");
-        this.m_pauseInSound = this.sound.add("audio_pauseIn");
-        this.m_pauseOutSound = this.sound.add("audio_pauseOut");
-
-        setBackground(this, "background1");
-
-        this.m_cursorKeys = this.input.keyboard.createCursorKeys();
-        this.m_attackKey = this.input.keyboard.addKey(
-            Phaser.Input.Keyboard.KeyCodes.Z
-        );
-
-        this.createPlayer();
-        // 충돌 감지 설정
-        this.physics.add.collider(this.m_player, this.otherPlayersGroup, this.handlePlayerCollision, null, this);
-    }
-
-    update() {
-        this.movePlayerManager();
-
-        if (Phaser.Input.Keyboard.JustDown(this.m_attackKey)) {
-            this.createClaw();
-        }
-
-        this.m_background.setX(this.m_player.x - Config.width / 2);
-        this.m_background.setY(this.m_player.y - Config.height / 2);
-
-        this.m_background.tilePositionX = this.m_player.x - Config.width / 2;
-        this.m_background.tilePositionY = this.m_player.y - Config.height / 2;
-    }
-
-    createClaw() {
-        const currentTime = new Date().getTime();
-        if (currentTime - this.lastClawTime < this.clawCooldown) {
-            return;
-        }
-        const offset = -40;
-        const clawX = this.m_player.x + (this.m_player.flipX ? -offset : offset);
-        const clawY = this.m_player.y;
-
-        const claw = new Claw(this, [clawX, clawY], this.m_player.flipX, 10, 1);
-
-        const vector = [this.m_player.flipX ? -1 : 1, 0];
-        claw.move(vector);
-        claw.setBodySize(28, 32);
-
-        this.socket.emit("attackPosition", {
-            x: clawX,
-            y: clawY,
-        });
-        this.lastClawTime = currentTime;
-    }
-
-    createClawForPlayer(player) {
-        const offset = -40;
-        const clawX = player.x + (player.flipX ? -offset : offset);
-        const clawY = player.y;
-
-        const claw = new Claw(this, [clawX, clawY], player.flipX, 10, 1);
-
-        const vector = [player.flipX ? -1 : 1, 0];
-        claw.move(vector);
-    }
-
-    createPlayer() {
-        const x = Math.floor(Math.random() * 700) + 50;
-        const y = Math.floor(Math.random() * 500) + 50;
-        this.m_player = new Player(this, x, y, "player");
-        this.m_player.setDepth(30);
+      this.m_player.move(vector);
+    } else {
+      if (this.m_player.m_moving && !this.m_player.m_attacking) {
         this.m_player.play("player_idle");
-        this.cameras.main.startFollow(this.m_player);
+      }
+      this.m_player.m_moving = false;
+    }
+  }
 
-        this.socket.emit("joinRoom", {
-            room: 0,
-            x: this.m_player.x,
-            y: this.m_player.y,
-        });
+  addOtherPlayers(playerInfo) {
+    const otherPlayer = new Player(this, playerInfo.x, playerInfo.y, "player");
+    otherPlayer.playerId = playerInfo.playerId;
+    this.otherPlayers[playerInfo.playerId] = otherPlayer;
+    otherPlayer.play("player_idle");
+  }
+
+  updatePlayerPosition(otherPlayer, playerInfo) {
+    // 이전 위치와 현재 위치를 비교하여 방향을 설정
+    if (playerInfo.x > otherPlayer.x) {
+      otherPlayer.flipX = true;
+    } else if (playerInfo.x < otherPlayer.x) {
+      otherPlayer.flipX = false;
     }
 
-    movePlayerManager() {
-        if (
-            this.m_cursorKeys.left.isDown ||
-            this.m_cursorKeys.right.isDown ||
-            this.m_cursorKeys.up.isDown ||
-            this.m_cursorKeys.down.isDown
-        ) {
-            if (!this.m_player.m_moving) {
-                this.m_player.play("player_anim");
-            }
-            this.m_player.m_moving = true;
-        } else {
-            if (this.m_player.m_moving) {
-                this.m_player.play("player_idle");
-            }
-            this.m_player.m_moving = false;
-        }
-
-        let vector = [0, 0];
-        if (this.m_cursorKeys.left.isDown) {
-            vector[0] += -1;
-        } else if (this.m_cursorKeys.right.isDown) {
-            vector[0] += 1;
-        }
-
-        if (this.m_cursorKeys.up.isDown) {
-            vector[1] += -1;
-        } else if (this.m_cursorKeys.down.isDown) {
-            vector[1] += 1;
-        }
-
-        this.m_player.move(vector);
-    }
-
-    addOtherPlayers(playerInfo) {
-        const otherPlayer = new Player(this, playerInfo.x, playerInfo.y, "player");
-        otherPlayer.playerId = playerInfo.playerId;
-        this.otherPlayers[playerInfo.playerId] = otherPlayer;
+    // 이동 여부에 따라 애니메이션을 설정
+    if (playerInfo.x !== otherPlayer.x || playerInfo.y !== otherPlayer.y) {
+      if (!otherPlayer.m_moving) {
+        otherPlayer.play("player_anim");
+      }
+      otherPlayer.m_moving = true;
+    } else {
+      if (otherPlayer.m_moving) {
         otherPlayer.play("player_idle");
+      }
+      otherPlayer.m_moving = false;
     }
 
-    handlePlayerCollision(player1, player2) {
-        if (player1.hasBomb && !player2.hasBomb) {
-            player1.hasBomb = false;
-            player2.hasBomb = true;
-            player1.hideBomb();
-            player2.showBomb();
-        }
+    otherPlayer.setPosition(playerInfo.x, playerInfo.y);
+  }
+
+  handleAttackedPlayers(attackedPlayerIds) {
+    attackedPlayerIds.forEach((playerId) => {
+      const attackedPlayer =
+        playerId === this.socketManager.socket.id
+          ? this.m_player
+          : this.otherPlayers[playerId];
+
+      if (attackedPlayer) {
+        this.stunPlayer(attackedPlayer);
+      }
+    });
+  }
+
+  stunPlayer(player) {
+    player.m_canMove = false;
+    player.play("player_stun");
+
+    this.tweens.add({
+      targets: player,
+      alpha: 0,
+      yoyo: true,
+      repeat: 1,
+      duration: 70,
+      onComplete: () => {
+        player.setAlpha(1);
+        player.play("player_idle");
+        player.m_canMove = true;
+      },
+    });
+  }
+
+  handlePlayerCollision(player1, player2) {
+    if (player1.hasBomb && !player2.hasBomb) {
+      player1.hasBomb = false;
+      player2.hasBomb = true;
+      player1.hideBomb();
+      player2.showBomb();
     }
+  }
 }
