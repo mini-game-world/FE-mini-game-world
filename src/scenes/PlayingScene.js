@@ -88,18 +88,14 @@ export default class PlayingScene extends Phaser.Scene {
     this.m_player.play("player_idle");
     this.cameras.main.startFollow(this.m_player);
 
-    // 서버에 방에 접속했음을 알림
     this.socketManager.joinRoom(this.m_player.x, this.m_player.y);
 
-    // 공격 애니메이션 완료 후에 createClaw 호출
     this.m_player.on("animationcomplete-player_attack", this.createClaw, this);
   }
 
 
   bombPlayers(players) {
     console.log("폭탄배열업데이뚜");
-    console.log(players);
-    // 현재 플레이어와 다른 모든 플레이어의 폭탄 소유 여부 초기화
     this.m_player.m_hasBomb = false;
     this.m_player.hideBomb();
     Object.keys(this.otherPlayers).forEach((id) => {
@@ -108,16 +104,16 @@ export default class PlayingScene extends Phaser.Scene {
         this.otherPlayers[id].hideBomb();
       }
     });
-  
-    // 서버에서 받은 데이터로 폭탄 소유 여부 업데이트
-    Object.keys(players).forEach((id) => {
-        console.log(id);
-        if (id === this.socketManager.socketId) {
-          this.m_player.m_hasBomb = true;
-          this.m_player.showBomb();
-        } else if (this.otherPlayers[id]) {
-          this.otherPlayers[id].m_hasBomb = true;
-          this.otherPlayers[id].showBomb();
+    
+    players.forEach((playerId) => {
+      console.log(players);
+      console.log(playerId);
+      if (playerId === this.socketManager.socketId) {
+        this.m_player.m_hasBomb = true;
+        this.m_player.showBomb();
+      } else if (this.otherPlayers[playerId]) {
+        this.otherPlayers[playerId].m_hasBomb = true;
+        this.otherPlayers[playerId].showBomb();
       }
     });
   }
