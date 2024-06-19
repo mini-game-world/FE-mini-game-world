@@ -148,6 +148,8 @@ export default class PlayingScene extends Phaser.Scene {
     } else {
       if (this.m_player.m_moving && !this.m_player.m_attacking) {
         this.m_player.play("player_idle");
+        // 플레이어가 멈출 때 한 번만 서버로 위치를 전송
+        this.socketManager.playerMovement(this.m_player.x, this.m_player.y);
       }
       this.m_player.m_moving = false;
     }
