@@ -5,6 +5,7 @@ class SocketManager {
   constructor(scene) {
     this.scene = scene;
     this.socket = io("http://143.248.177.117:3000");
+    this.socketId = null;
 
     this.initializeSocketEvents();
   }
@@ -12,7 +13,8 @@ class SocketManager {
   initializeSocketEvents() {
     // 서버와 연결된 후 자신의 소켓 아이디를 출력
     this.socket.on("connect", () => {
-      console.log("My socket ID:", this.socket.id);
+      this.socketId = this.socket.id;
+      console.log("My socket ID:", this.socketId);
     });
 
     // 현재 접속해 있는 플레이어들을 받아와서 화면에 추가
@@ -50,30 +52,10 @@ class SocketManager {
       this.scene.handleAttackedPlayers(attackedPlayerIds);
     });
 
-    this.socket.on("bombUsers", (playerId) => {
-      console.log(playerId);
-      // 모든 플레이어의 폭탄 소유 여부 업데이트
-      playerId.forEach((id) => {
-        console.log(id);
-        if (id === this.socket.id) {
-          // 현재 클라이언트의 플레이어
-          if (this.scene.m_player[id]) {
-            this.scene.m_player.showBomb();
-          } else {
-            this.scene.m_player.hideBomb();
-          }
-        } else {
-          // 다른 플레이어
-          if (this.scene.otherPlayers[id]) {
-            if (this.scene.otherPlayers[id]) {
-              this.scene.otherPlayers[id].showBomb();
-            } else {
-              this.scene.otherPlayers[id].hideBomb();
-            }
-          }
-        }
-      });
+    this.socket.on("bombUsers", (players) => {
+      this.scene.bombPlayers(players);
     });
+
 
     // 플레이어가 게임을 나갔을 때 화면에서 제거
     this.socket.on("disconnected", (playerId) => {

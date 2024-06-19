@@ -8,7 +8,7 @@ import SocketManager from "../network/socketManager";
 export default class PlayingScene extends Phaser.Scene {
   constructor() {
     super("playGame");
-    this.otherPlayers = {};
+    this.otherPlayers = [];
   }
 
   create() {
@@ -29,14 +29,14 @@ export default class PlayingScene extends Phaser.Scene {
     // 플레이어 생성
     this.createMyCharacter();
 
-    // 충돌 감지 설정
-    this.physics.add.collider(
-      this.m_player,
-      this.otherPlayersGroup,
-      this.handlePlayerCollision,
-      null,
-      this
-    );
+    // // 충돌 감지 설정
+    // this.physics.add.collider(
+    //   this.m_player,
+    //   this.otherPlayersGroup,
+    //   this.handlePlayerCollision,
+    //   null,
+    //   this
+    // );
   }
 
   update() {
@@ -94,6 +94,34 @@ export default class PlayingScene extends Phaser.Scene {
     // 공격 애니메이션 완료 후에 createClaw 호출
     this.m_player.on("animationcomplete-player_attack", this.createClaw, this);
   }
+
+
+  bombPlayers(players) {
+    console.log("폭탄배열업데이뚜");
+    console.log(players);
+    // 현재 플레이어와 다른 모든 플레이어의 폭탄 소유 여부 초기화
+    this.m_player.m_hasBomb = false;
+    this.m_player.hideBomb();
+    Object.keys(this.otherPlayers).forEach((id) => {
+      if (this.otherPlayers[id]) {
+        this.otherPlayers[id].m_hasBomb = false;
+        this.otherPlayers[id].hideBomb();
+      }
+    });
+  
+    // 서버에서 받은 데이터로 폭탄 소유 여부 업데이트
+    Object.keys(players).forEach((id) => {
+        console.log(id);
+        if (id === this.socketManager.socketId) {
+          this.m_player.m_hasBomb = true;
+          this.m_player.showBomb();
+        } else if (this.otherPlayers[id]) {
+          this.otherPlayers[id].m_hasBomb = true;
+          this.otherPlayers[id].showBomb();
+      }
+    });
+  }
+  
 
   movePlayerManager() {
     if (
@@ -191,12 +219,12 @@ export default class PlayingScene extends Phaser.Scene {
     });
   }
 
-  handlePlayerCollision(player1, player2) {
-    if (player1.hasBomb && !player2.hasBomb) {
-      player1.hasBomb = false;
-      player2.hasBomb = true;
-      player1.hideBomb();
-      player2.showBomb();
-    }
-  }
+//   handlePlayerCollision(player1, player2) {
+//     if (player1.hasBomb && !player2.hasBomb) {
+//       player1.hasBomb = false;
+//       player2.hasBomb = true;
+//       player1.hideBomb();
+//       player2.showBomb();
+//     }
+//   }
 }
