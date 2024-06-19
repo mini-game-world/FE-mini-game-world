@@ -252,7 +252,7 @@ export default class PlayingScene extends Phaser.Scene {
 
   playGame(arr) {
     if (arr[0] === 1) {
-      console.log("게임 중");
+      // console.log("게임 중");
       this.socketManager.bombplayerId.forEach((id) => {
         if (id === this.socketManager.socketId) {
           this.m_player.m_isPlay = true;
