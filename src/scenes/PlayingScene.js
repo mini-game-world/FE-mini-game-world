@@ -46,18 +46,28 @@ export default class PlayingScene extends Phaser.Scene {
 
     this.m_background.tilePositionX = this.m_player.x - Config.width / 2;
     this.m_background.tilePositionY = this.m_player.y - Config.height / 2;
+
   }
 
   updateGhost() {
     if (!this.m_player.m_isPlay || this.m_player.m_isDead) {
-      this.m_player.setTexture("playerDead");
+      if (this.m_player.texture.key !== "playerDead") {
+        this.m_player.setTexture("playerDead");
       this.m_player.play("player_dead");
-    } 
-  
+      }
+      
+    } else {
+      if(this.m_player.texture.key === "playerDead"){
+        this.m_player.setTexture("playerIdle1");
+        this.m_player.play("player_idle");
+      }
+    }
     this.otherPlayers.forEach((id) => {
       if (!this.otherPlayers[id].m_isPlay || this.otherPlayers[id].m_isDead) {
-        this.otherPlayers[id].setTexture("playerDead");
-        this.otherPlayers[id].play("player_dead");
+        if (this.otherPlayer.texture.key !== "playerDead") {
+          this.otherPlayers[id].setTexture("playerDead");
+          this.otherPlayers[id].play("player_dead");
+        }
       } 
     });
   }
