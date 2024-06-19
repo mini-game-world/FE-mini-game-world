@@ -120,8 +120,8 @@ export default class PlayingScene extends Phaser.Scene {
         this.socket.on("bombUsers", (playerId) => {
             console.log(playerId);
             // 모든 플레이어의 폭탄 소유 여부 업데이트
-                playerId.forEach(id => {
-                    console.log(id)
+            playerId.forEach(id => {
+                console.log(id)
                 if (id === this.socket.id) {
                     // 현재 클라이언트의 플레이어
                     if (this.m_player[id]) {
@@ -137,11 +137,11 @@ export default class PlayingScene extends Phaser.Scene {
                         } else {
                             this.otherPlayers[id].hideBomb();
                         }
-                        }
                     }
-        })
+                }
+            })
         });
-        
+
 
 
         this.socket.on("disconnected", (playerId) => {
@@ -176,6 +176,8 @@ export default class PlayingScene extends Phaser.Scene {
         );
 
         this.createPlayer();
+        // 충돌 감지 설정
+        this.physics.add.collider(this.m_player, this.otherPlayersGroup, this.handlePlayerCollision, null, this);
     }
 
     update() {
@@ -279,5 +281,14 @@ export default class PlayingScene extends Phaser.Scene {
         otherPlayer.playerId = playerInfo.playerId;
         this.otherPlayers[playerInfo.playerId] = otherPlayer;
         otherPlayer.play("player_idle");
+    }
+
+    handlePlayerCollision(player1, player2) {
+        if (player1.hasBomb && !player2.hasBomb) {
+            player1.hasBomb = false;
+            player2.hasBomb = true;
+            player1.hideBomb();
+            player2.showBomb();
+        }
     }
 }
