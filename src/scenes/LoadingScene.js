@@ -206,6 +206,13 @@ export default class LoadingScene extends Phaser.Scene {
             repeat: 0,
         });
 
+        this.anims.create({
+            key: "player_dead",
+            frames: this.anims.generateFrameNumbers("playerDead"),
+            frameRate: 12,
+            repeat: -1,
+        });
+
         // EFFECT
         this.anims.create({
             key: "explode",

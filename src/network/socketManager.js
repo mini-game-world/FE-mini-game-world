@@ -53,21 +53,26 @@ class SocketManager {
       this.scene.handleAttackedPlayers(attackedPlayerIds);
     });
 
-    this.socket.on("playingGame", (room_arr)=>{
-      this.scene.playGame(room_arr);
-  })
-
+    // 술래
     this.socket.on("bombUsers", (players) => {
       this.scene.bombPlayers(players);
     });
 
+    // 죽은 플레이어
     this.socket.on("deadUsers", (players) => {
+      console.log("얘 죽음", players)
       this.scene.handleDeadPlayers(players);
     });
 
+    // 게임 참여 플레이어
     this.socket.on("startBombGame", (players) => {
       this.bombplayerId = players;
     });
+
+    // 방 게임 상태
+    this.socket.on("playingGame", (room_arr)=>{
+      this.scene.playGame(room_arr);
+  })
 
     // 플레이어가 게임을 나갔을 때 화면에서 제거
     this.socket.on("disconnected", (playerId) => {
