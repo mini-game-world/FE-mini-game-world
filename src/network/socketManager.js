@@ -6,6 +6,7 @@ class SocketManager {
     this.scene = scene;
     this.socket = io("http://143.248.177.117:3000");
     this.socketId = null;
+    this.bombplayerId = [];
 
     this.initializeSocketEvents();
   }
@@ -52,10 +53,21 @@ class SocketManager {
       this.scene.handleAttackedPlayers(attackedPlayerIds);
     });
 
+    this.socket.on("playingGame", (room_arr)=>{
+      this.scene.playGame(room_arr);
+  })
+
     this.socket.on("bombUsers", (players) => {
       this.scene.bombPlayers(players);
     });
 
+    this.socket.on("deadUsers", (players) => {
+      this.scene.handleDeadPlayers(players);
+    });
+
+    this.socket.on("startBombGame", (players) => {
+      this.bombplayerId = players;
+    });
 
     // 플레이어가 게임을 나갔을 때 화면에서 제거
     this.socket.on("disconnected", (playerId) => {

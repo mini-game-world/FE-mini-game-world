@@ -28,19 +28,11 @@ export default class PlayingScene extends Phaser.Scene {
 
     // 플레이어 생성
     this.createMyCharacter();
-
-    // // 충돌 감지 설정
-    // this.physics.add.collider(
-    //   this.m_player,
-    //   this.otherPlayersGroup,
-    //   this.handlePlayerCollision,
-    //   null,
-    //   this
-    // );
   }
 
   update() {
     this.movePlayerManager();
+    this.updateGhost();
 
     if (Phaser.Input.Keyboard.JustDown(this.m_attackKey)) {
       this.m_player.attack();
@@ -52,6 +44,19 @@ export default class PlayingScene extends Phaser.Scene {
     this.m_background.tilePositionX = this.m_player.x - Config.width / 2;
     this.m_background.tilePositionY = this.m_player.y - Config.height / 2;
   }
+
+
+  updateGhost() {
+    if (!this.m_player.m_isPlay || !this.m_player.m_isDead) {
+      this.m_player.setTexture("playerDead");
+    }
+    this.otherPlayers.forEach((id) => {
+      if(!this.otherPlayers[id].m_isPlay || !this.otherPlayers[id].m_isDead) {
+        this.otherPlayers[id].setTexture("playerDead");
+      }
+    })
+  }
+
 
   createClaw() {
     const offset = -40;
@@ -95,7 +100,6 @@ export default class PlayingScene extends Phaser.Scene {
 
 
   bombPlayers(players) {
-    console.log("폭탄배열업데이뚜");
     this.m_player.m_hasBomb = false;
     this.m_player.hideBomb();
     Object.keys(this.otherPlayers).forEach((id) => {
@@ -106,8 +110,6 @@ export default class PlayingScene extends Phaser.Scene {
     });
     
     players.forEach((playerId) => {
-      console.log(players);
-      console.log(playerId);
       if (playerId === this.socketManager.socketId) {
         this.m_player.m_hasBomb = true;
         this.m_player.showBomb();
@@ -217,12 +219,32 @@ export default class PlayingScene extends Phaser.Scene {
     });
   }
 
-//   handlePlayerCollision(player1, player2) {
-//     if (player1.hasBomb && !player2.hasBomb) {
-//       player1.hasBomb = false;
-//       player2.hasBomb = true;
-//       player1.hideBomb();
-//       player2.showBomb();
-//     }
-//   }
+  playGame(arr) {
+    if(arr[0] == 1) {
+      this.socketManager.bombplayerId.forEach((id) => {
+        console.log(id);
+        if (id === this.socketManager.socketId) {
+          this.m_player.m_isPlay = true;
+        } else if (this.otherPlayers[id]) {
+          this.otherPlayers[id].m_isPlay = true;
+        }
+    });
+    }
+  }
+
+  handleDeadPlayers(players) {
+    console.log(players);
+    players.forEach((id) => {
+      console.log(id);
+        if (id === this.socketManager.socketId) {
+          this.m_player.m_isPlay = false;
+          this.m_player.m_isDead = true;
+          // this.m_player.setTexture("playerDead");
+        } else if (this.otherPlayers[id]) {
+          // this.otherPlayers[id].setTexture("playerDead");
+          this.otherPlayers[id].m_isPlay = false;
+          this.otherPlayers[id].m_isDead = true;
+        }
+    });
+  }
 }

@@ -21,9 +21,11 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     this.m_attacking = false;
     this.m_canMove = true;
     this.m_hasBomb = false;
+    this.m_isPlay = false;
+    this.m_isDead = false;
+
 
     // 폭탄 스프라이트 추가
-    // this.play("bomb_anim");
     this.bombSprite = scene.add
       .sprite(this.x, this.y - 40, "bomb")
       .setScale(0.3);

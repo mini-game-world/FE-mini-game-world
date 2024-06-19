@@ -12,6 +12,7 @@ import playerImgMove from "../assets/spritesheets/playerRun1.png";
 import playerImgIdle from "../assets/spritesheets/playerIdle1.png";
 import playerImgAttack from "../assets/spritesheets/playerAttack1.png";
 import playerImgStun from "../assets/spritesheets/playerStun1.png";
+import playerImgDead from "../assets/spritesheets/playerDead.png";
 import expUpImg from "../assets/spritesheets/expUp.png";
 import mobImg1 from "../assets/spritesheets/mob1.png";
 import mobImg2 from "../assets/spritesheets/mob2.png";
@@ -65,6 +66,10 @@ export default class LoadingScene extends Phaser.Scene {
         this.load.spritesheet("playerStun1", playerImgStun, {
             frameWidth: 200,
             frameHeight: 220,
+        });
+        this.load.spritesheet("playerDead", playerImgDead, {
+            frameWidth: 32,
+            frameHeight: 32,
         });
         this.load.spritesheet("mob1", mobImg1, {
             frameWidth: 28,
