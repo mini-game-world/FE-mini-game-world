@@ -236,6 +236,7 @@ export default class PlayingScene extends Phaser.Scene {
   }
 
   stunPlayer(player) {
+    if(player.m_hasBomb) return;
     player.m_canMove = false;
     player.play("player_stun");
 
