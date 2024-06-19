@@ -67,6 +67,11 @@ export default class PlayingScene extends Phaser.Scene {
         if (this.otherPlayer.texture.key !== "playerDead") {
           this.otherPlayers[id].setTexture("playerDead");
           this.otherPlayers[id].play("player_dead");
+        } else {
+          if(this.m_player.texture.key === "playerDead"){
+            this.m_player.setTexture("playerIdle1");
+            this.m_player.play("player_idle");
+          }
         }
       } 
     });
