@@ -54,11 +54,13 @@ export default class PlayingScene extends Phaser.Scene {
       if (this.m_player.texture.key !== "playerDead") {
         this.m_player.setTexture("playerDead");
         this.m_player.play("player_dead");
+        this.m_player.setAlpha(0.5); 
       }
     } else {
       if(this.m_player.texture.key === "playerDead"){
         this.m_player.setTexture("playerIdle1");
         this.m_player.play("player_idle");
+        this.m_player.setAlpha(1);
       }
     }
     this.otherPlayers.forEach((id) => {
@@ -66,11 +68,13 @@ export default class PlayingScene extends Phaser.Scene {
         if (this.otherPlayer.texture.key !== "playerDead") {
           this.otherPlayers[id].setTexture("playerDead");
           this.otherPlayers[id].play("player_dead");
+          this.m_player.setAlpha(0.5); 
         } 
       } else {
         if(this.otherPlayers[id].texture.key === "playerDead"){
           this.otherPlayers[id].setTexture("playerIdle1");
           this.otherPlayers[id].play("player_idle");
+          this.m_player.setAlpha(1);
         }
       }
     });
