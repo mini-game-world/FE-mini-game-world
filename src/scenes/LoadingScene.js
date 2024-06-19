@@ -68,8 +68,8 @@ export default class LoadingScene extends Phaser.Scene {
             frameHeight: 220,
         });
         this.load.spritesheet("playerDead", playerImgDead, {
-            frameWidth: 32,
-            frameHeight: 32,
+            frameWidth: 150,
+            frameHeight: 150,
         });
         this.load.spritesheet("mob1", mobImg1, {
             frameWidth: 28,

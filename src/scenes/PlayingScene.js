@@ -34,7 +34,10 @@ export default class PlayingScene extends Phaser.Scene {
     this.movePlayerManager();
     this.updateGhost();
 
-    if (Phaser.Input.Keyboard.JustDown(this.m_attackKey) && this.m_player.m_isPlay) {
+    if (
+      Phaser.Input.Keyboard.JustDown(this.m_attackKey) &&
+      this.m_player.m_isPlay
+    ) {
       this.m_player.attack();
     }
 
@@ -45,24 +48,18 @@ export default class PlayingScene extends Phaser.Scene {
     this.m_background.tilePositionY = this.m_player.y - Config.height / 2;
   }
 
-
   updateGhost() {
     if (!this.m_player.m_isPlay || this.m_player.m_isDead) {
       this.m_player.setTexture("playerDead");
       this.m_player.play("player_dead");
-      this.m_player.setScale(1.5);
-    } else {
-      this.m_player.setScale(0.4);
-    }
+    } 
+  
     this.otherPlayers.forEach((id) => {
-      if(!this.otherPlayers[id].m_isPlay || this.otherPlayers[id].m_isDead) {
+      if (!this.otherPlayers[id].m_isPlay || this.otherPlayers[id].m_isDead) {
         this.otherPlayers[id].setTexture("playerDead");
         this.otherPlayers[id].play("player_dead");
-        this.otherPlayers[id].setScale(1.5);
-      } else {
-        this.otherPlayers[id].setScale(0.4);
-      }
-    })
+      } 
+    });
   }
 
   createClaw() {
@@ -105,7 +102,6 @@ export default class PlayingScene extends Phaser.Scene {
     this.m_player.on("animationcomplete-player_attack", this.createClaw, this);
   }
 
-
   bombPlayers(players) {
     this.m_player.m_hasBomb = false;
     this.m_player.hideBomb();
@@ -115,7 +111,7 @@ export default class PlayingScene extends Phaser.Scene {
         this.otherPlayers[id].hideBomb();
       }
     });
-    
+
     players.forEach((playerId) => {
       if (playerId === this.socketManager.socketId) {
         this.m_player.m_hasBomb = true;
@@ -126,7 +122,6 @@ export default class PlayingScene extends Phaser.Scene {
       }
     });
   }
-  
 
   movePlayerManager() {
     if (
@@ -193,6 +188,10 @@ export default class PlayingScene extends Phaser.Scene {
     }
 
     otherPlayer.setPosition(playerInfo.x, playerInfo.y);
+    // 폭탄 위치 업데이트
+    if (otherPlayer.m_hasBomb) {
+      otherPlayer.bombSprite.setPosition(playerInfo.x, playerInfo.y - 50);
+    }
   }
 
   handleAttackedPlayers(attackedPlayerIds) {
@@ -227,29 +226,29 @@ export default class PlayingScene extends Phaser.Scene {
   }
 
   playGame(arr) {
-    if(arr[0] === 1) {
-      console.log("게임 중")
+    if (arr[0] === 1) {
+      console.log("게임 중");
       this.socketManager.bombplayerId.forEach((id) => {
         if (id === this.socketManager.socketId) {
           this.m_player.m_isPlay = true;
         } else if (this.otherPlayers[id]) {
           this.otherPlayers[id].m_isPlay = true;
         }
-    });
+      });
     }
   }
 
   handleDeadPlayers(players) {
     players.forEach((id) => {
-        if (id === this.socketManager.socketId) {
-          this.m_player.m_isPlay = false;
-          this.m_player.m_isDead = true;
-          // this.m_player.setTexture("playerDead");
-        } else if (this.otherPlayers[id]) {
-          // this.otherPlayers[id].setTexture("playerDead");
-          this.otherPlayers[id].m_isPlay = false;
-          this.otherPlayers[id].m_isDead = true;
-        }
+      if (id === this.socketManager.socketId) {
+        this.m_player.m_isPlay = false;
+        this.m_player.m_isDead = true;
+        // this.m_player.setTexture("playerDead");
+      } else if (this.otherPlayers[id]) {
+        // this.otherPlayers[id].setTexture("playerDead");
+        this.otherPlayers[id].m_isPlay = false;
+        this.otherPlayers[id].m_isDead = true;
+      }
     });
   }
 }
