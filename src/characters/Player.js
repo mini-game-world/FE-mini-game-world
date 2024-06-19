@@ -2,61 +2,50 @@ import Phaser from "phaser";
 import Config from "../Config";
 
 export default class Player extends Phaser.Physics.Arcade.Sprite {
-    constructor(
-        scene,
-        x = Config.width / 2,
-        y = Config.height / 2,
-        texture = "player"
-    ) {
-        super(scene, x, y, texture);
-        scene.add.existing(this);
-        scene.physics.add.existing(this);
+  constructor(
+    scene,
+    x = Config.width / 2,
+    y = Config.height / 2,
+    texture = "player"
+  ) {
+    super(scene, x, y, texture);
+    scene.add.existing(this);
+    scene.physics.add.existing(this);
 
-        this.scale = 0.4;
-        this.setDepth(20);
+    this.scale = 0.4;
+    this.setDepth(20);
 
-        this.setBodySize(28, 32);
+    this.setBodySize(28, 32);
 
-        this.m_moving = false;
-        this.m_attacking = false;
-        this.m_canMove = true;
-    }
+    this.m_moving = false;
+    this.m_attacking = false;
+    this.m_canMove = true;
+  }
 
-    move(vector) {
-        if (this.m_attacking || !this.m_canMove) return;
-        let PLAYER_SPEED = 3;
+  move(vector) {
+    if (this.m_attacking || !this.m_canMove) return;
+    let PLAYER_SPEED = 3;
 
-        const previousPosition = { x: this.x, y: this.y };
+    this.x += vector[0] * PLAYER_SPEED;
+    this.y += vector[1] * PLAYER_SPEED;
 
-        this.x += vector[0] * PLAYER_SPEED;
-        this.y += vector[1] * PLAYER_SPEED;
+    if (vector[0] === -1) this.flipX = false;
+    else if (vector[0] === 1) this.flipX = true;
 
-        if (vector[0] === -1) this.flipX = false;
-        else if (vector[0] === 1) this.flipX = true;
+    this.scene.socketManager.playerMovement(this.x, this.y);
+  }
 
-        if (this.x !== previousPosition.x || this.y !== previousPosition.y) {
-            this.scene.socket.emit("playerMovement", {
-                x: this.x,
-                y: this.y,
-            });
-        }
-    }
-
-
-    attack() {
-        if (this.m_attacking) return; // 이미 공격 중이면 아무것도 하지 않음
-        this.m_attacking = true;
-        this.play("attack", true);
-        this.once("animationcomplete", () => {
-            this.m_attacking = false;
-            if (!this.m_moving) {
-                this.play('player_anim');
-                this.m_moving = true;
-            } else if (this.m_moving) {
-
-                this.play('player_idle');
-                this.m_moving = false;
-            }
-        });
-    }
+  attack() {
+    if (this.m_attacking) return;
+    this.m_attacking = true;
+    this.play("player_attack");
+    this.once("animationcomplete-player_attack", () => {
+      this.m_attacking = false;
+      if (this.m_moving) {
+        this.play("player_anim");
+      } else {
+        this.play("player_idle");
+      }
+    });
+  }
 }
