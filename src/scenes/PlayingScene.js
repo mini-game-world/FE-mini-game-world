@@ -129,11 +129,24 @@ export default class PlayingScene extends Phaser.Scene {
       if (playerId === this.socketManager.socketId) {
         this.m_player.m_hasBomb = true;
         this.m_player.showBomb();
+        this.updateBombPosition(this.m_player);
       } else if (this.otherPlayers[playerId]) {
         this.otherPlayers[playerId].m_hasBomb = true;
         this.otherPlayers[playerId].showBomb();
+        this.updateBombPosition(this.otherPlayers[playerId]);
       }
     });
+  }
+
+  updateBombPosition(player) {
+    if (player.m_hasBomb) {
+      if (!player.bombSprite) {
+        player.bombSprite = this.add.sprite(player.x, player.y - 50, "bomb");
+        player.bombSprite.setDepth(50); 
+      } else {
+        player.bombSprite.setPosition(player.x, player.y - 50);
+      }
+    } 
   }
 
   movePlayerManager() {
