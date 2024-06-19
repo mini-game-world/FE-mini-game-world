@@ -263,6 +263,17 @@ export default class PlayingScene extends Phaser.Scene {
     }
   }
 
+  handlePlayers(players){
+    players.forEach((id) => {
+      if (id === this.socketManager.socketId) {
+        this.m_player.m_isPlay = true;
+      } else if (this.otherPlayers[id]) {
+        this.otherPlayers[id].m_isPlay = true;
+      }
+    });
+    this.updateGhost();
+  }
+
   handleDeadPlayers(players) {
     players.forEach((id) => {
       if (id === this.socketManager.socketId) {

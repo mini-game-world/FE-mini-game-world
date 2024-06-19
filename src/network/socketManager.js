@@ -67,6 +67,7 @@ class SocketManager {
     // 게임 참여 플레이어
     this.socket.on("startBombGame", (players) => {
       this.bombplayerId = players;
+      this.scene.handlePlayers(players);
     });
 
     // 방 게임 상태
