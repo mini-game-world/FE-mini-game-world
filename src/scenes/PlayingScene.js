@@ -147,6 +147,9 @@ export default class PlayingScene extends Phaser.Scene {
         player.bombSprite.setPosition(player.x, player.y - 50);
       }
     } 
+    else{
+      player.bombSprite.destroy()
+    }
   }
 
   movePlayerManager() {

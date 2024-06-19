@@ -78,6 +78,7 @@ class SocketManager {
     // 플레이어가 게임을 나갔을 때 화면에서 제거
     this.socket.on("disconnected", (playerId) => {
       if (this.scene.otherPlayers[playerId]) {
+        this.scene.otherPlayers[playerId].hideBomb();
         this.scene.otherPlayers[playerId].destroy();
         delete this.scene.otherPlayers[playerId];
       }
