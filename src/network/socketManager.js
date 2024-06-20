@@ -4,7 +4,7 @@ import { io } from "socket.io-client";
 class SocketManager {
   constructor(scene) {
     this.scene = scene;
-    this.socket = io("http://143.248.177.117:3000");
+    this.socket = io("http://143.248.177.142:3000");
     this.socketId = null;
     this.bombplayerId = [];
 
@@ -60,7 +60,7 @@ class SocketManager {
 
     // 죽은 플레이어
     this.socket.on("deadUsers", (players) => {
-      console.log("얘 죽음", players)
+      console.log("얘 죽음", players);
       this.scene.handleDeadPlayers(players);
     });
 
@@ -71,9 +71,15 @@ class SocketManager {
     });
 
     // 방 게임 상태
-    this.socket.on("playingGame", (room_arr)=>{
+    this.socket.on("playingGame", (room_arr) => {
+      console.log("방 게임 상태", room_arr);
       this.scene.playGame(room_arr);
-  })
+    });
+
+    this.socket.on("gameWinner", (playerId) => {
+      console.log("최종 우승자", playerId);
+      this.scene.nextWinnerScene(playerId);
+    });
 
     // 플레이어가 게임을 나갔을 때 화면에서 제거
     this.socket.on("disconnected", (playerId) => {

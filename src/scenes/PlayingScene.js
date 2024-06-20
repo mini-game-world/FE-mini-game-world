@@ -42,15 +42,18 @@ export default class PlayingScene extends Phaser.Scene {
 
     this.m_background.tilePositionX = this.m_player.x - Config.width / 2;
     this.m_background.tilePositionY = this.m_player.y - Config.height / 2;
+
+    if (this.winnerText) {
+      this.winnerText.setPosition(this.m_player.x, this.m_player.y - 50);
+    }
   }
 
   updateGhost() {
-
     if (!this.m_player.m_isPlay || this.m_player.m_isDead) {
       if (this.m_player.texture.key !== "playerDead") {
         this.m_player.setTexture("playerDead");
         this.m_player.play("player_dead");
-        this.m_player.setAlpha(0.5); 
+        this.m_player.setAlpha(0.5);
       }
     } else {
       if (this.m_player.texture.key === "playerDead") {
@@ -66,7 +69,7 @@ export default class PlayingScene extends Phaser.Scene {
         if (otherPlayer.texture.key !== "playerDead") {
           otherPlayer.setTexture("playerDead");
           otherPlayer.play("player_dead");
-          otherPlayer.setAlpha(0.5); 
+          otherPlayer.setAlpha(0.5);
         }
       } else {
         if (otherPlayer.texture.key === "playerDead") {
@@ -142,13 +145,12 @@ export default class PlayingScene extends Phaser.Scene {
     if (player.m_hasBomb) {
       if (!player.bombSprite) {
         player.bombSprite = this.add.sprite(player.x, player.y - 50, "bomb");
-        player.bombSprite.setDepth(50); 
+        player.bombSprite.setDepth(50);
       } else {
         player.bombSprite.setPosition(player.x, player.y - 50);
       }
-    } 
-    else{
-      player.bombSprite.destroy()
+    } else {
+      player.bombSprite.destroy();
     }
   }
 
@@ -195,7 +197,6 @@ export default class PlayingScene extends Phaser.Scene {
   }
 
   updatePlayerPosition(otherPlayer, playerInfo) {
-
     if (playerInfo.x > otherPlayer.x) {
       otherPlayer.flipX = true;
     } else if (playerInfo.x < otherPlayer.x) {
@@ -236,7 +237,7 @@ export default class PlayingScene extends Phaser.Scene {
   }
 
   stunPlayer(player) {
-    if(player.m_hasBomb) return;
+    if (player.m_hasBomb) return;
     player.m_canMove = false;
     player.play("player_stun");
 
@@ -267,7 +268,7 @@ export default class PlayingScene extends Phaser.Scene {
     }
   }
 
-  handlePlayers(players){
+  handlePlayers(players) {
     players.forEach((id) => {
       if (id === this.socketManager.socketId) {
         this.m_player.m_isPlay = true;
@@ -288,5 +289,38 @@ export default class PlayingScene extends Phaser.Scene {
         this.otherPlayers[id].m_isDead = true;
       }
     });
+  }
+
+  nextWinnerScene(playerId) {
+    if (this.winnerText) {
+      this.winnerText.destroy();
+    }
+
+    this.winnerText = this.add
+      .text(
+        this.m_player.x,
+        this.m_player.y - 50,
+        `최종 우승자!! ${playerId}`,
+        {
+          fontFamily: "Arial Black",
+          fontSize: 38,
+          color: "#ffffff",
+          stroke: "#000000",
+          strokeThickness: 8,
+          align: "center",
+        }
+      )
+      .setOrigin(0.5)
+      .setDepth(100);
+
+    this.time.delayedCall(
+      5000,
+      () => {
+        this.winnerText.destroy();
+        this.winnerText = null;
+      },
+      [],
+      this
+    );
   }
 }
