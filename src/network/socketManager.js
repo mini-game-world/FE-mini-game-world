@@ -4,7 +4,7 @@ import { io } from "socket.io-client";
 class SocketManager {
   constructor(scene) {
     this.scene = scene;
-    this.socket = io("http://143.248.177.142:3000");
+    this.socket = io("http://3.37.5.116:3000");
     this.socketId = null;
     this.bombplayerId = [];
 
