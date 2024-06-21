@@ -6,6 +6,7 @@ import Player from "../characters/Player";
 export default class PlayingScene extends Phaser.Scene {
   constructor() {
     super("playGame");
+    this.myPlayer = null;
     this.players = {};
   }
 
@@ -15,16 +16,19 @@ export default class PlayingScene extends Phaser.Scene {
     setBackground(this, "background1");
   }
 
-  update() {}
+  update() {
+    if (this.myPlayer){
+    this.myPlayer.update();
+    }
+  }
 
-  addPlayer(playerInfo) {
+  createMyPlayer(playerInfo) { 
+    this.myPlayer = new Player(this, playerInfo.playerId);
+  }
+
+  createOtherPlayers(playerInfo) {
     const player = new Player(this, playerInfo);
     this.players[playerInfo.id] = player;
   }
 
-  updatePlayerPosition(playerInfo) {
-    if (this.players[playerInfo.id]) {
-      this.players[playerInfo.id].updatePosition(playerInfo.x, playerInfo.y);
-    }
-  }
 }

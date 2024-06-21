@@ -1,5 +1,4 @@
 import Phaser from "phaser";
-import Move from "./Move";
 
 export default class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, playerInfo) {
@@ -9,13 +8,14 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     this.id = playerInfo.id;
     this.isAttacking = false;
 
-    this.sprite = scene.add.existing(this);
+    this.scene.add.existing(this);
     this.setScale(0.4);
 
-    this.move = new Move(scene, this); 
-  }
+    this.cursors = scene.input.keyboard.createCursorKeys();
+    this.keys = scene.input.keyboard.addKeys({
+      attack: Phaser.Input.Keyboard.KeyCodes.Z, 
+    });
 
-  update() {
-    this.move.update(); 
+    this.play(`player${this.avatar}_Idle`);
   }
 }
