@@ -18,12 +18,20 @@ class SocketManager {
 
     // 현재 접속해 있는 플레이어들을 받아와서 화면에 추가
     this.socket.on("currentPlayers", (players) => {
+      console.log(players);
       Object.keys(players).forEach((id) => {
+        this.scene.addPlayer(players[id]);
       });
     });
 
     // 새로운 플레이어가 접속했을 때 화면에 추가
     this.socket.on("newPlayer", (playerInfo) => {
+      this.scene.addPlayer(playerInfo);
+    });
+
+    // 플레이어의 이동 위치 갱신
+    this.socket.on("playerMoved", (playerInfo) => {
+      this.scene.updatePlayerPosition(playerInfo);
     });
   }
 }
