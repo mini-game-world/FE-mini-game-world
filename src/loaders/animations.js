@@ -26,32 +26,33 @@ export function createAnimations(scene) {
     //     repeat: 0,
     // });
 
-    for (let i = 0; i <= 5; i++) {
-        scene.anims.create({
-          key: `player${i}_Run`,
-          frames: scene.anims.generateFrameNumbers(`playerRun${i}`),
-          frameRate: 12,
-          repeat: -1,
-        });
-        scene.anims.create({
-          key: `player${i}_Idle`,
-          frames: scene.anims.generateFrameNumbers(`playerIdle${i}`),
-          frameRate: 12,
-          repeat: -1,
-        });
-        scene.anims.create({
-          key: `player${i}_Stun`,
-          frames: scene.anims.generateFrameNumbers(`playerStun${i}`),
-          frameRate: 12,
-          repeat: 0,
-        });
-        scene.anims.create({
-          key: `player${i}_Attack`,
-          frames: scene.anims.generateFrameNumbers(`playerAttack${i}`),
-          frameRate: 12,
-          repeat: 0,
-        });
-      }
+    // js
+    // for (let i = 0; i <= 5; i++) {
+    //     scene.anims.create({
+    //       key: `player${i}_Run`,
+    //       frames: scene.anims.generateFrameNumbers(`playerRun${i}`),
+    //       frameRate: 12,
+    //       repeat: -1,
+    //     });
+    //     scene.anims.create({
+    //       key: `player${i}_Idle`,
+    //       frames: scene.anims.generateFrameNumbers(`playerIdle${i}`),
+    //       frameRate: 12,
+    //       repeat: -1,
+    //     });
+    //     scene.anims.create({
+    //       key: `player${i}_Stun`,
+    //       frames: scene.anims.generateFrameNumbers(`playerStun${i}`),
+    //       frameRate: 12,
+    //       repeat: 0,
+    //     });
+    //     scene.anims.create({
+    //       key: `player${i}_Attack`,
+    //       frames: scene.anims.generateFrameNumbers(`playerAttack${i}`),
+    //       frameRate: 12,
+    //       repeat: 0,
+    //     });
+    //   }
   
 
     scene.anims.create({
