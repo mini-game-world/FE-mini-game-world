@@ -6,7 +6,7 @@ class SocketManager {
     this.scene = scene;
     this.socket = io("http://143.248.177.142:3000");
     this.socketId = null;
-    this.bombplayerId = [];
+    // this.bombplayerId = [];
 
     this.initializeSocketEvents();
   }
@@ -22,14 +22,14 @@ class SocketManager {
     this.socket.on("currentPlayers", (players) => {
       Object.keys(players).forEach((id) => {
         if (players[id].playerId !== this.socket.id) {
-          this.scene.addOtherPlayers(players[id]);
+          // this.scene.addOtherPlayers(players[id]);
         }
       });
     });
 
     // 새로운 플레이어가 접속했을 때 화면에 추가
     this.socket.on("newPlayer", (playerInfo) => {
-      this.scene.addOtherPlayers(playerInfo);
+      // this.scene.addOtherPlayers(playerInfo);
     });
 
     //   // 다른 플레이어가 이동했을 때 위치를 업데이트
