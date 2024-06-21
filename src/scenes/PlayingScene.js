@@ -4,6 +4,7 @@ import Player from "../characters/Player";
 import Claw from "../effects/Claw";
 import { setBackground } from "../utils/backgroundManager";
 import SocketManager from "../network/socketManager";
+import WinnerDisplay from "../ui/WinnerDisplay"; // 새로운 WinnerDisplay 클래스 임포트
 
 export default class PlayingScene extends Phaser.Scene {
   constructor() {
@@ -13,9 +14,7 @@ export default class PlayingScene extends Phaser.Scene {
 
   create() {
     this.socketManager = new SocketManager(this);
-
     this.m_scratchSound = this.sound.add("audio_scratch");
-
     setBackground(this, "background1");
 
     this.m_cursorKeys = this.input.keyboard.createCursorKeys();
@@ -24,6 +23,7 @@ export default class PlayingScene extends Phaser.Scene {
     );
 
     this.createMyCharacter();
+    this.winnerDisplay = new WinnerDisplay(this); // WinnerDisplay 인스턴스 생성
   }
 
   update() {
@@ -43,9 +43,7 @@ export default class PlayingScene extends Phaser.Scene {
     this.m_background.tilePositionX = this.m_player.x - Config.width / 2;
     this.m_background.tilePositionY = this.m_player.y - Config.height / 2;
 
-    if (this.winnerText) {
-      this.winnerText.setPosition(this.m_player.x, this.m_player.y - 50);
-    }
+    this.winnerDisplay.updatePosition(this.m_player.x, this.m_player.y - 50); // 우승자 표시 위치 업데이트
   }
 
   updateGhost() {
@@ -292,35 +290,10 @@ export default class PlayingScene extends Phaser.Scene {
   }
 
   nextWinnerScene(playerId) {
-    if (this.winnerText) {
-      this.winnerText.destroy();
-    }
-
-    this.winnerText = this.add
-      .text(
-        this.m_player.x,
-        this.m_player.y - 50,
-        `최종 우승자!! ${playerId}`,
-        {
-          fontFamily: "Arial Black",
-          fontSize: 38,
-          color: "#ffffff",
-          stroke: "#000000",
-          strokeThickness: 8,
-          align: "center",
-        }
-      )
-      .setOrigin(0.5)
-      .setDepth(100);
-
-    this.time.delayedCall(
-      5000,
-      () => {
-        this.winnerText.destroy();
-        this.winnerText = null;
-      },
-      [],
-      this
+    this.winnerDisplay.showWinner(
+      playerId,
+      this.m_player.x,
+      this.m_player.y - 50
     );
   }
 }
