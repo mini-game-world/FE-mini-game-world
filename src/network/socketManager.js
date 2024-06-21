@@ -60,7 +60,6 @@ class SocketManager {
 
     // 죽은 플레이어
     this.socket.on("deadUsers", (players) => {
-      console.log("얘 죽음", players);
       this.scene.handleDeadPlayers(players);
     });
 
@@ -77,7 +76,6 @@ class SocketManager {
     });
 
     this.socket.on("gameWinner", (playerId) => {
-      console.log("최종 우승자", playerId);
       this.scene.nextWinnerScene(playerId);
     });
 

@@ -44,6 +44,13 @@ export function createAnimations(scene) {
 
     // ATTACKS
     scene.anims.create({
+      key: "scratch_white",
+      frames: scene.anims.generateFrameNumbers("claw_white"),
+      frameRate: 20,
+      repeat: 0,
+      hideOnComplete: true,
+    });
+    scene.anims.create({
         key: "bomb_anim",
         frames: scene.anims.generateFrameNumbers("bomb"),
         frameRate: 5,
