@@ -7,6 +7,10 @@ import explosionImg from "../assets/spritesheets/explosion.png";
 import clawWhiteImg from "../assets/spritesheets/claw-white.png";
 import bombImg from "../assets/spritesheets/bomb.png";
 
+import playerRun0 from '../assets/spritesheets/players/playerRun0.png'
+import playerIdle0 from '../assets/spritesheets/players/playerIdle0.png'
+import playerStun0 from '../assets/spritesheets/players/playerStun0.png'
+import playerAttack0 from '../assets/spritesheets/players/playerAttack0.png'
 import playerRun1 from '../assets/spritesheets/players/playerRun1.png'
 import playerIdle1 from '../assets/spritesheets/players/playerIdle1.png'
 import playerStun1 from '../assets/spritesheets/players/playerStun1.png'
@@ -64,6 +68,22 @@ export function loadSpritesheets(scene) {
     //           frameHeight: 220,
     //         });
     // }
+    scene.load.spritesheet("playerRun0", playerRun0, {
+        frameWidth: 200,
+        frameHeight: 220,
+      });
+      scene.load.spritesheet("playerIdle0", playerIdle0, {
+          frameWidth: 200,
+          frameHeight: 220,
+        });
+      scene.load.spritesheet("playerStun0", playerStun0, {
+          frameWidth: 200,
+          frameHeight: 220,
+        });
+      scene.load.spritesheet("playerAttack0", playerAttack0, {
+          frameWidth: 200,
+          frameHeight: 220,
+        });
 
     scene.load.spritesheet("playerRun1", playerRun1, {
         frameWidth: 200,

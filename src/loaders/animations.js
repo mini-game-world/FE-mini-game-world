@@ -26,7 +26,7 @@ export function createAnimations(scene) {
     //     repeat: 0,
     // });
 
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 0; i <= 5; i++) {
         scene.anims.create({
           key: `player${i}_Run`,
           frames: scene.anims.generateFrameNumbers(`playerRun${i}`),
