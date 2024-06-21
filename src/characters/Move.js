@@ -33,7 +33,7 @@ export default class Move {
 
     if (velocityX !== 0 || velocityY !== 0) {
       this.player.anims.play(`player${this.player.avatar}_Run`, true);
-      this.player.setFlipX(velocityX < 0);
+      this.player.setFlipX(velocityX > 0);
     } else {
       this.player.anims.play(`player${this.player.avatar}_Idle`, true);
     }

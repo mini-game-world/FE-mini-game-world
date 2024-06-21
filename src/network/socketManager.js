@@ -18,6 +18,7 @@ class SocketManager {
 
     // 현재 접속해 있는 플레이어들을 받아와서 화면에 추가
     this.socket.on("currentPlayers", (players) => {
+      console.log('현재 접속해있는 플레이어' ,players);
       Object.keys(players).forEach((index) => {
         if(players[index].playerId === this.socket.id) this.scene.createMyPlayer(players[index]);
         else this.scene.createOtherPlayers(players[index])
@@ -26,13 +27,19 @@ class SocketManager {
 
     // 새로운 플레이어가 접속했을 때 화면에 추가
     this.socket.on("newPlayer", (playerInfo) => {
+      console.log('새 플레이어 접속',playerInfo);
       this.scene.createOtherPlayers(playerInfo);
     });
 
     // 플레이어의 이동 위치 갱신 
     this.socket.on("playerMoved", (playerInfo) => {
+      console.log('이동 갱신',playerInfo);
+
       this.scene.updatePlayerPosition(playerInfo);
     });
+  }
+  sendPlayerMovement(playerInfo) {
+    this.socket.emit('playerMovement', playerInfo)
   }
 }
 

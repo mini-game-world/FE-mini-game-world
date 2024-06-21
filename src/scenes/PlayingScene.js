@@ -14,16 +14,21 @@ export default class PlayingScene extends Phaser.Scene {
     this.socketManager = new SocketManager(this);
 
     setBackground(this, "background1");
+
+    // 카메라 설정
+    this.cameras.main.setBounds(0, 0, this.game.config.width, this.game.config.height);
   }
 
   update() {
     if (this.myPlayer){
     this.myPlayer.update();
     }
+    Object.values(this.players).forEach(player => player.update())
   }
 
   createMyPlayer(playerInfo) { 
     this.myPlayer = new Player(this, playerInfo.playerId);
+    this.myPlayer.setPosition(playerInfo.x, playerInfo.y);
   }
 
   createOtherPlayers(playerInfo) {
@@ -31,4 +36,10 @@ export default class PlayingScene extends Phaser.Scene {
     this.players[playerInfo.id] = player;
   }
 
+  updatePlayerPosition(playerInfo) {
+    if (this.players[playerInfo.id]) {
+      const player = this.players[playerInfo.id]
+      player.setPosition(playerInfo.x, playerInfo.y)
+    }
+  }
 }
