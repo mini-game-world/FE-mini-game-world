@@ -36,6 +36,10 @@ class SocketManager {
   emitPlayerMovement(data) {
     this.socket.emit("playerMovement", data);
   }
+
+   emitPlayerAttack(data) {
+    this.socket.emit("attackPosition",data);
+   }
 }
 
 export default new SocketManager();

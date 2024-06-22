@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import SocketManager from "../utils/SocketManager";
+import Claw from "./Claw";
 
 class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y, texture, avatar) {
@@ -100,12 +101,24 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     if (this.keys.attack.isDown) {
       this.isAttacking = true;
       this.anims.play(`attack${this.avatar}`, true);
+      this.createClawAttack();
     } else if (velocityX !== 0 || velocityY !== 0) {
       this.anims.play(`move${this.avatar}`, true);
       this.setFlipX(velocityX > 0);
     } else {
       this.anims.play(`idle${this.avatar}`, true);
     }
+  }
+
+  createClawAttack() {
+    const offset = -50;
+    const clawX = this.x + (this.flipX ? -offset : offset);
+    const clawY = this.y;
+    const isHeadingRight = this.flipX;
+    const startingPosition = [clawX, clawY];
+    const damage = 10;
+    const scale = 1.5;
+    const claw = new Claw(this.scene, startingPosition, isHeadingRight, damage, scale);
   }
 
   setPosition(x, y) {

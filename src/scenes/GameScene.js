@@ -3,6 +3,7 @@ import Player from "../components/Player";
 import Bomb from "../components/Bomb";
 import Timer from "../components/Timer";
 import SocketManager from "../utils/SocketManager";
+import Claw from "../components/Claw";
 
 class GameScene extends Phaser.Scene {
   constructor() {
@@ -36,6 +37,7 @@ class GameScene extends Phaser.Scene {
             avatar
           );
           this.players[SocketManager.socket.id] = this.player;
+          // this.player.on("animationcomplete", this.createClaw, this);
         }
       });
     });
@@ -71,7 +73,21 @@ class GameScene extends Phaser.Scene {
         delete this.players[id];
       }
     });
+
   }
+  // createClaw() {
+  //   const offset = -40;
+  //   const clawX = this.x + (this.flipX ? -offset : offset);
+  //   const clawY = this.y;
+
+  //   const claw = new Claw(this, [clawX, clawY], this.flipX, 10, 1);
+
+  //   const vector = [this.flipX ? -1 : 1, 0];
+  //   claw.move(vector);
+  //   claw.setBodySize(28, 32);
+
+  //   // this.socketManager.attackPosition(clawX, clawY);
+  // }
 
   update() {
     if (this.player) {
