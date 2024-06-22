@@ -1,11 +1,15 @@
 import Phaser from "phaser";
 import SocketManager from "../utils/SocketManager";
 
-class Player {
+class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y, texture, avatar) {
+    super(scene, x, y, texture);
     this.scene = scene;
-    this.sprite = scene.physics.add.sprite(x, y, texture);
-    this.sprite.setCollideWorldBounds(true);
+    this.avatar = avatar;
+
+    this.scene.add.existing(this);
+    this.scene.physics.add.existing(this);
+    this.setCollideWorldBounds(true);
 
     this.cursors = scene.input.keyboard.createCursorKeys();
     this.keys = scene.input.keyboard.addKeys({
@@ -16,9 +20,8 @@ class Player {
       attack: Phaser.Input.Keyboard.KeyCodes.Z, // 공격 키 추가
     });
 
-    this.avatar = avatar;
     this.createAnimations();
-    this.sprite.anims.play(`idle${this.avatar}`, true);
+    this.anims.play(`idle${this.avatar}`, true);
 
     this.isAttacking = false; // 공격 상태를 추적
 
@@ -53,7 +56,7 @@ class Player {
     });
 
     // 공격 애니메이션이 완료될 때 콜백
-    this.sprite.on("animationcomplete", (anim, frame) => {
+    this.on("animationcomplete", (anim, frame) => {
       if (anim.key === `attack${this.avatar}`) {
         this.isAttacking = false;
       }
@@ -73,39 +76,42 @@ class Player {
     return { velocityX, velocityY };
   }
 
-  update() {
+  preUpdate(time, delta) {
+    super.preUpdate(time, delta);
+
     if (this.isAttacking) {
-      this.sprite.setVelocity(0, 0);
+      this.setVelocity(0, 0);
       return;
     }
 
     const { velocityX, velocityY } = this.getVelocity();
-    this.sprite.setVelocity(velocityX, velocityY);
+    this.setVelocity(velocityX, velocityY);
 
     // Check if position has changed
-    if (this.prevX !== this.sprite.x || this.prevY !== this.sprite.y) {
-      this.prevX = this.sprite.x;
-      this.prevY = this.sprite.y;
+    if (this.prevX !== this.x || this.prevY !== this.y) {
+      this.prevX = this.x;
+      this.prevY = this.y;
       // Emit position only when it has changed
-      SocketManager.emitPlayerMove({ x: this.sprite.x, y: this.sprite.y });
+      SocketManager.emitPlayerMove({ x: this.x, y: this.y });
     }
 
     if (this.keys.attack.isDown) {
       this.isAttacking = true;
-      this.sprite.anims.play(`attack${this.avatar}`, true);
+      this.anims.play(`attack${this.avatar}`, true);
     } else if (velocityX !== 0 || velocityY !== 0) {
-      this.sprite.anims.play(`move${this.avatar}`, true);
-      this.sprite.setFlipX(velocityX > 0);
+      this.anims.play(`move${this.avatar}`, true);
+      this.setFlipX(velocityX > 0);
     } else {
-      this.sprite.anims.play(`idle${this.avatar}`, true);
+      this.anims.play(`idle${this.avatar}`, true);
     }
   }
+
   setPosition(x, y) {
-    this.sprite.setPosition(x, y);
+    super.setPosition(x, y);
   }
 
   destroy() {
-    this.sprite.destroy();
+    super.destroy();
   }
 }
 
