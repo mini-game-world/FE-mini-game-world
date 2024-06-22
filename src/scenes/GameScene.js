@@ -17,24 +17,23 @@ class GameScene extends Phaser.Scene {
     SocketManager.connect();
 
     SocketManager.onCurrentPlayers((players) => {
-      console.log("onCurrentPlayers");
-      console.log(players);
       Object.keys(players).forEach((id) => {
-        if (players[id].playerId !== SocketManager.socket.id) {
-          this.players[players[id].playerId] = new Player(
+      const {playerId,x,y, avatar} = players[id];
+        if (playerId !== SocketManager.socket.id) {
+          this.players[playerId] = new Player(
             this,
-            players[id].x,
-            players[id].y,
-            `player${players[id].avatar}`,
-            players[id].avatar
+            x,
+            y,
+            `player${avatar}`,
+            avatar
           );
         } else {
           this.player = new Player(
             this,
-            players[id].x,
-            players[id].y,
-            `player${players[id].avatar}`,
-            players[id].avatar
+            x,
+            y,
+            `player${avatar}`,
+            avatar
           );
           this.players[SocketManager.socket.id] = this.player;
         }
@@ -42,19 +41,21 @@ class GameScene extends Phaser.Scene {
     });
 
     SocketManager.onNewPlayer((player) => {
-      this.players[player.id] = new Player(
+      const {playerId,x,y, avatar} = player;
+      console.log(playerId,x,y, avatar);
+      this.players[playerId] = new Player(
         this,
-        player.x,
-        player.y,
-        `player${player.avatar}`,
-        player.avatar
+        x,
+        y,
+        `player${avatar}`,
+        avatar
       );
     });
 
     SocketManager.onPlayerMoved((player) => {
-      console.log("onPlayerMoved");
-      if (this.players[player.id]) {
-        this.players[player.id].setPosition(player.x, player.y);
+      const {playerId, x, y} = player;
+      if (this.players[playerId]) {
+        this.players[playerId].setPosition(x, y);
       }
     });
 

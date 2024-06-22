@@ -33,8 +33,8 @@ class SocketManager {
     this.socket.on("playerDisconnected", callback);
   }
 
-  emitPlayerMove(data) {
-    this.socket.emit("playerMove", data);
+  emitPlayerMovement(data) {
+    this.socket.emit("playerMovement", data);
   }
 }
 

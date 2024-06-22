@@ -11,6 +11,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.scene.physics.add.existing(this);
     this.setCollideWorldBounds(true);
 
+    this.scale = 0.4;
+    this.setDepth(30);
+
     this.cursors = scene.input.keyboard.createCursorKeys();
     this.keys = scene.input.keyboard.addKeys({
       up: Phaser.Input.Keyboard.KeyCodes.UP,
@@ -76,8 +79,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     return { velocityX, velocityY };
   }
 
-  preUpdate(time, delta) {
-    super.preUpdate(time, delta);
+  update() {
 
     if (this.isAttacking) {
       this.setVelocity(0, 0);
@@ -92,7 +94,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       this.prevX = this.x;
       this.prevY = this.y;
       // Emit position only when it has changed
-      SocketManager.emitPlayerMove({ x: this.x, y: this.y });
+      SocketManager.emitPlayerMovement({ x: this.x, y: this.y });
     }
 
     if (this.keys.attack.isDown) {
