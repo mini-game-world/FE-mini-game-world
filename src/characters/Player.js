@@ -1,74 +1,93 @@
 import Phaser from "phaser";
-import Config from "../Config";
 
-export default class Player extends Phaser.Physics.Arcade.Sprite {
-  constructor(
-    scene,
-    x = Config.width / 2,
-    y = Config.height / 2,
-    texture = "player"
-  ) {
-    super(scene, x, y, texture);
-    scene.add.existing(this);
-    scene.physics.add.existing(this);
+class Player {
+  constructor(scene, x, y, texture) {
+    this.scene = scene;
+    this.sprite = scene.physics.add.sprite(x, y, texture);
+    this.sprite.setCollideWorldBounds(true);
 
-    this.scale = 0.4;
-    this.setDepth(20);
+    this.cursors = scene.input.keyboard.createCursorKeys();
+    this.keys = scene.input.keyboard.addKeys({
+      up: Phaser.Input.Keyboard.KeyCodes.UP,
+      down: Phaser.Input.Keyboard.KeyCodes.DOWN,
+      left: Phaser.Input.Keyboard.KeyCodes.LEFT,
+      right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
+      attack: Phaser.Input.Keyboard.KeyCodes.Z, // 공격 키 추가
+    });
 
-    this.setBodySize(28, 32);
-
-    this.m_moving = false;
-    this.m_attacking = false;
-    this.m_canMove = true;
-    this.m_hasBomb = false;
-    this.m_isPlay = false;
-    this.m_isDead = false;
-
-
-    // 폭탄 스프라이트 추가
-    this.bombSprite = scene.add
-      .sprite(this.x, this.y - 40, "bomb")
-      .setScale(0.3);
-    this.bombSprite.play("bomb_anim"); // 폭탄 애니메이션 재생
-    this.bombSprite.setVisible(false); // 초기에는 보이지 않도록 설정
+    this.createAnimations();
+    this.isAttacking = false; // 공격 상태를 추적
   }
 
-  move(vector) {
-    if (this.m_attacking || !this.m_canMove) return;
-    let PLAYER_SPEED = 3;
+  createAnimations() {
+    this.scene.anims.create({
+      key: "idle",
+      frames: this.scene.anims.generateFrameNumbers("player"),
+      frameRate: 12,
+      repeat: -1,
+    });
 
-    this.x += vector[0] * PLAYER_SPEED;
-    this.y += vector[1] * PLAYER_SPEED;
+    this.scene.anims.create({
+      key: "move",
+      frames: this.scene.anims.generateFrameNumbers("player_move"),
+      frameRate: 10,
+      repeat: -1,
+    });
 
-    if (vector[0] === -1) this.flipX = false;
-    else if (vector[0] === 1) this.flipX = true;
+    this.scene.anims.create({
+      key: "attack",
+      frames: this.scene.anims.generateFrameNumbers("player_attack"),
+      frameRate: 12,
+      repeat: 0,
+    });
 
-    this.scene.socketManager.playerMovement(this.x, this.y);
-    
-    // 폭탄 스프라이트 위치 업데이트
-    this.bombSprite.setPosition(this.x, this.y - 50);
-  }
-
-  showBomb() {
-    this.bombSprite.setVisible(true); // 폭탄 스프라이트 보이기
-    // this.bombSprite.play("bomb_anim"); // 폭탄 애니메이션 재생
-  }
-
-  hideBomb() {
-    this.bombSprite.setVisible(false); // 폭탄 스프라이트 숨기기
-  }
-
-  attack() {
-    if (this.m_attacking) return;
-    this.m_attacking = true;
-    this.play("player_attack");
-    this.once("animationcomplete-player_attack", () => {
-      this.m_attacking = false;
-      if (this.m_moving) {
-        this.play("player_anim");
-      } else {
-        this.play("player_idle");
+    // 공격 애니메이션이 완료될 때 콜백
+    this.sprite.on("animationcomplete", (anim, frame) => {
+      if (anim.key === "attack") {
+        this.isAttacking = false;
       }
     });
   }
+
+  getVelocity() {
+    const speed = 160;
+    let velocityX = 0;
+    let velocityY = 0;
+
+    if (this.keys.up.isDown) velocityY = -speed;
+    if (this.keys.down.isDown) velocityY = speed;
+    if (this.keys.left.isDown) velocityX = -speed;
+    if (this.keys.right.isDown) velocityX = speed;
+
+    return { velocityX, velocityY };
+  }
+
+  update() {
+    if (this.isAttacking) {
+      this.sprite.setVelocity(0, 0);
+      return;
+    }
+
+    const { velocityX, velocityY } = this.getVelocity();
+    this.sprite.setVelocity(velocityX, velocityY);
+
+    if (this.keys.attack.isDown) {
+      this.isAttacking = true;
+      this.sprite.anims.play("attack", true);
+    } else if (velocityX !== 0 || velocityY !== 0) {
+      this.sprite.anims.play("move", true);
+      this.sprite.setFlipX(velocityX > 0);
+    } else {
+      this.sprite.anims.play("idle", true);
+    }
+  }
+  setPosition(x, y) {
+    this.sprite.setPosition(x, y);
+  }
+
+  destroy() {
+    this.sprite.destroy();
+  }
 }
+
+export default Player;
