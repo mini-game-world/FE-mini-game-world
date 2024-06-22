@@ -67,26 +67,39 @@ class GameScene extends Phaser.Scene {
       }
     });
 
+    SocketManager.onPlayerAttacked((attackedPlayerIds) => {
+      attackedPlayerIds.forEach((playerId) => {
+        const attackedPlayer =
+          playerId === SocketManager.socket.id
+            ? this.player
+            : this.players[playerId];
+  
+        if (attackedPlayer) {
+          attackedPlayer.stunPlayer();
+        }
+      });
+    });
+
     SocketManager.onPlayerDisconnected((id) => {
       if (this.players[id]) {
         this.players[id].destroy();
         delete this.players[id];
       }
     });
-
   }
-  // createClaw() {
-  //   const offset = -40;
-  //   const clawX = this.x + (this.flipX ? -offset : offset);
-  //   const clawY = this.y;
 
-  //   const claw = new Claw(this, [clawX, clawY], this.flipX, 10, 1);
 
-  //   const vector = [this.flipX ? -1 : 1, 0];
-  //   claw.move(vector);
-  //   claw.setBodySize(28, 32);
+  // handleAttackedPlayers(attackedPlayerIds) {
+    // attackedPlayerIds.forEach((playerId) => {
+    //   const attackedPlayer =
+    //     playerId === this.socketManager.socket.id
+    //       ? this.m_player
+    //       : this.otherPlayers[playerId];
 
-  //   // this.socketManager.attackPosition(clawX, clawY);
+    //   if (attackedPlayer) {
+    //     this.stunPlayer(attackedPlayer);
+    //   }
+    // });
   // }
 
   update() {

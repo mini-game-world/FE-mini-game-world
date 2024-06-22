@@ -59,6 +59,15 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       repeat: 0,
     });
 
+    this.scene.anims.create({
+      key: `stun${this.avatar}`,
+      frames: this.scene.anims.generateFrameNumbers(
+        `player_stun${this.avatar}`
+      ),
+      frameRate: 12,
+      repeat: 0,
+    });
+
     // 공격 애니메이션이 완료될 때 콜백
     this.on("animationcomplete", (anim, frame) => {
       if (anim.key === `attack${this.avatar}`) {
@@ -120,6 +129,21 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     const scale = 1.5;
     new Claw(this.scene, startingPosition, isHeadingRight, damage, scale);
     SocketManager.emitPlayerAttack({x: clawX, y: clawY});
+  }
+
+  stunPlayer() {
+    this.anims.play(`stun${this.avatar}`, true);
+    this.scene.tweens.add({
+      targets: this,
+      alpha: 0,
+      yoyo: true,
+      repeat: 1,
+      duration: 70,
+      onComplete: () => {
+        this.setAlpha(1);
+        this.anims.play(`idle${this.avatar}`, true);
+      },
+    });
   }
 
   setPosition(x, y) {

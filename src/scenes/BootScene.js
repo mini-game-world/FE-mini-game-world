@@ -22,6 +22,10 @@ class BootScene extends Phaser.Scene {
         frameWidth: 200,
         frameHeight: 220,
       });
+      this.load.spritesheet(`player_stun${i}`, `/players/player_stun${i}.png`, {
+        frameWidth: 200,
+        frameHeight: 220,
+      });
     }
 
     

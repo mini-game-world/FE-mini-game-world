@@ -29,6 +29,10 @@ class SocketManager {
     this.socket.on("playerMoved", callback);
   }
 
+  onPlayerAttacked(callback) {
+    this.socket.on("attackedPlayers", callback);
+  }
+
   onPlayerDisconnected(callback) {
     this.socket.on("playerDisconnected", callback);
   }
