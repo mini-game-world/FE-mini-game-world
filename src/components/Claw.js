@@ -9,7 +9,8 @@ export default class Claw extends Phaser.Physics.Arcade.Sprite {
         scene.add.existing(this);
         scene.physics.world.enableBody(this);
         // 공격 소리를 추가합니다.
-        // this.scratch_sound.play({ volume: 0.5 });
+        this.scratch_sound = scene.sound.add('scratch_sound', { volume: 0.5 });
+        this.scratch_sound.play();
         
         // Claw 공격은 앞 1회, 뒤 1회가 한 세트입니다.
         // DURATION은 각 Claw 공격의 지속 시간(ms)입니다.

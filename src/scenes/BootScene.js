@@ -8,6 +8,7 @@ class BootScene extends Phaser.Scene {
   preload() {
     this.load.setPath("src/assets");
     this.load.image("background", "background.png");
+    this.load.audio('scratch_sound', '/sounds/scratch.ogg');
 
     for (let i = 0; i < 6; i++) {
       this.load.spritesheet(`player${i}`, `/players/player${i}.png`, {
