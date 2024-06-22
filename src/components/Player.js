@@ -28,6 +28,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.anims.play(`idle${this.avatar}`, true);
 
     this.isAttacking = false; // 공격 상태를 추적
+    this.isStunned = false; // 스턴 상태를 추적
 
     this.prevX = x;
     this.prevY = y;
@@ -91,7 +92,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
   update() {
 
-    if (this.isAttacking) {
+    if (this.isAttacking || this.isStunned) {
       this.setVelocity(0, 0);
       return;
     }
@@ -134,17 +135,22 @@ class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   stunPlayer() {
+    this.isStunned = true;
+    this.setVelocity(0, 0);
     this.anims.play(`stun${this.avatar}`, true);
     this.scene.tweens.add({
       targets: this,
       alpha: 0,
       yoyo: true,
       repeat: 1,
-      duration: 70,
+      duration: 50,
       onComplete: () => {
         this.setAlpha(1);
         this.anims.play(`idle${this.avatar}`, true);
       },
+    });
+    this.scene.time.delayedCall(500, () => {
+      this.isStunned = false;
     });
   }
 

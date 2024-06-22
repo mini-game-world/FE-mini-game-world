@@ -68,16 +68,12 @@ class GameScene extends Phaser.Scene {
     });
 
     SocketManager.onPlayerAttacked((attackedPlayerIds) => {
+      if(attackedPlayerIds.length != 0){ // 이걸 굳이 우리가?
+      console.log("attackedPlayers",attackedPlayerIds);
       attackedPlayerIds.forEach((playerId) => {
-        const attackedPlayer =
-          playerId === SocketManager.socket.id
-            ? this.player
-            : this.players[playerId];
-  
-        if (attackedPlayer) {
-          attackedPlayer.stunPlayer();
-        }
+      this.players[playerId].stunPlayer();
       });
+    }
     });
 
     SocketManager.onAttackPlayer((playerId) => {
