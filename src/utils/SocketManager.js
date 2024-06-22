@@ -33,6 +33,10 @@ class SocketManager {
     this.socket.on("attackedPlayers", callback);
   }
 
+  onAttackPlayer(callback) {
+    this.socket.on("attackPlayer", callback);
+  }
+
   onPlayerDisconnected(callback) {
     this.socket.on("playerDisconnected", callback);
   }

@@ -80,6 +80,10 @@ class GameScene extends Phaser.Scene {
       });
     });
 
+    SocketManager.onAttackPlayer((playerId) => {
+      this.players[playerId].createClawAttack(false);
+    });
+
     SocketManager.onPlayerDisconnected((id) => {
       if (this.players[id]) {
         this.players[id].destroy();
@@ -87,20 +91,6 @@ class GameScene extends Phaser.Scene {
       }
     });
   }
-
-
-  // handleAttackedPlayers(attackedPlayerIds) {
-    // attackedPlayerIds.forEach((playerId) => {
-    //   const attackedPlayer =
-    //     playerId === this.socketManager.socket.id
-    //       ? this.m_player
-    //       : this.otherPlayers[playerId];
-
-    //   if (attackedPlayer) {
-    //     this.stunPlayer(attackedPlayer);
-    //   }
-    // });
-  // }
 
   update() {
     if (this.player) {

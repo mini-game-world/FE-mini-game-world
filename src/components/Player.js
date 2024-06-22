@@ -119,7 +119,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  createClawAttack() {
+  createClawAttack(isSelfInitiated = true) {
     const offset = -50;
     const clawX = this.x + (this.flipX ? -offset : offset);
     const clawY = this.y;
@@ -128,7 +128,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     const damage = 10;
     const scale = 1.5;
     new Claw(this.scene, startingPosition, isHeadingRight, damage, scale);
-    SocketManager.emitPlayerAttack({x: clawX, y: clawY});
+    if(isSelfInitiated){
+      SocketManager.emitPlayerAttack({x: clawX, y: clawY});
+    }
   }
 
   stunPlayer() {
