@@ -128,7 +128,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     const startingPosition = [clawX, clawY];
     const damage = 10;
     const scale = 1.5;
-    new Claw(this.scene, startingPosition, isHeadingRight, damage, scale);
+    new Claw(this.scene, startingPosition, isHeadingRight, damage, scale, isSelfInitiated);
     if(isSelfInitiated){
       SocketManager.emitPlayerAttack({x: clawX, y: clawY});
     }
