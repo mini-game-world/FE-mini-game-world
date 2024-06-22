@@ -42,7 +42,6 @@ class GameScene extends Phaser.Scene {
 
     SocketManager.onNewPlayer((player) => {
       const {playerId,x,y, avatar} = player;
-      console.log(playerId,x,y, avatar);
       this.players[playerId] = new Player(
         this,
         x,
@@ -55,7 +54,14 @@ class GameScene extends Phaser.Scene {
     SocketManager.onPlayerMoved((player) => {
       const {playerId, x, y} = player;
       if (this.players[playerId]) {
+        const prevX = this.players[playerId].x;
         this.players[playerId].setPosition(x, y);
+        this.players[playerId].anims.play(`move${this.players[playerId].avatar}`, true);
+        this.players[playerId].setFlipX(prevX < x); // 방향 설정
+        clearTimeout(this.players[playerId].idleTimeout);
+        this.players[playerId].idleTimeout = setTimeout(() => {
+          this.players[playerId].anims.play(`idle${this.players[playerId].avatar}`, true);
+        }, 100);
       }
     });
 
