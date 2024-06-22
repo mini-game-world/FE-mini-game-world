@@ -6,20 +6,23 @@ class BootScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.setPath("src/assets");
-    this.load.image("background", "background.png");
-    this.load.spritesheet("player", "player.png", {
-      frameWidth: 200,
-      frameHeight: 220,
-    });
-    this.load.spritesheet("player_move", "player_move.png", {
-      frameWidth: 200,
-      frameHeight: 220,
-    });
-    this.load.spritesheet("player_attack", "player_attack.png", {
-      frameWidth: 200,
-      frameHeight: 220,
-    });
+    this.load.setPath("src/assets/players");
+    this.load.image("background", "../../assets/background.png");
+    for (let i = 0; i < 6; i++) {
+      this.load.spritesheet(`player${i}`, `player${i}.png`, {
+        frameWidth: 200,
+        frameHeight: 220,
+      });
+      this.load.spritesheet(`player_move${i}`, `player_move${i}.png`, {
+        frameWidth: 200,
+        frameHeight: 220,
+      });
+      this.load.spritesheet(`player_attack${i}`, `player_attack${i}.png`, {
+        frameWidth: 200,
+        frameHeight: 220,
+      });
+    }
+
     this.load.image("bomb", "bomb.png");
   }
 

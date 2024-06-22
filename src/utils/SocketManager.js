@@ -3,14 +3,12 @@ import io from "socket.io-client";
 class SocketManager {
   constructor() {
     this.socket = null;
-    this.socketId = null;
   }
 
   connect() {
     this.socket = io("http://143.248.177.142:3000");
 
     this.socket.on("connect", () => {
-      this.socketId = this.socket.id;
       console.log("Connected to server");
     });
 
@@ -25,6 +23,18 @@ class SocketManager {
 
   onNewPlayer(callback) {
     this.socket.on("newPlayer", callback);
+  }
+
+  onPlayerMoved(callback) {
+    this.socket.on("playerMoved", callback);
+  }
+
+  onPlayerDisconnected(callback) {
+    this.socket.on("playerDisconnected", callback);
+  }
+
+  emitPlayerMove(data) {
+    this.socket.emit("playerMove", data);
   }
 }
 
