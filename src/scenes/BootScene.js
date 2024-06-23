@@ -10,7 +10,7 @@ class BootScene extends Phaser.Scene {
     this.load.image("background", "background.png");
     this.load.audio('scratch_sound', '/sounds/scratch.ogg');
 
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 31; i++) {
       this.load.spritesheet(`player${i}`, `/players/player${i}.png`, {
         frameWidth: 200,
         frameHeight: 220,
