@@ -1,6 +1,0 @@
-// .eslintrc.json
-{
-  "rules": {
-    "no-unused-vars": "warn" // 경고로 처리하도록 변경합니다.
-  }
-}
