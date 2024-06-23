@@ -73,6 +73,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.on("animationcomplete", (anim, frame) => {
       if (anim.key === `attack${this.avatar}`) {
         this.isAttacking = false;
+        this.createClawAttack();
       }
     });
   }
@@ -111,7 +112,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     if (this.keys.attack.isDown) {
       this.isAttacking = true;
       this.anims.play(`attack${this.avatar}`, true);
-      this.createClawAttack();
     } else if (velocityX !== 0 || velocityY !== 0) {
       this.anims.play(`move${this.avatar}`, true);
       this.setFlipX(velocityX > 0);
