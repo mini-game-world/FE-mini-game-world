@@ -105,7 +105,9 @@ class GameScene extends Phaser.Scene {
           if (isPlaying == 1){
             player.setPlayStatus(1);
           }else{
-            player.setPlayStatus(0);
+            setTimeout(function() {
+              player.setPlayStatus(0);
+            }, 5000);
           }
         });
     });
