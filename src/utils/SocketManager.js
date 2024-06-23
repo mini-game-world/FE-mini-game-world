@@ -53,6 +53,10 @@ class SocketManager {
     this.socket.on("deadUsers", callback);
   }
 
+  onChangeBombUser(callback) {
+    this.socket.on("changeBombUser", callback);
+  }
+
   emitPlayerMovement(data) {
     this.socket.emit("playerMovement", data);
   }
