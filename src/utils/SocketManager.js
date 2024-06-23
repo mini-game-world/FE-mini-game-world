@@ -41,6 +41,10 @@ class SocketManager {
     this.socket.on("playerDisconnected", callback);
   }
 
+  onPlayingGame(callback) {
+    this.socket.on("playingGame", callback);
+  }
+
   emitPlayerMovement(data) {
     this.socket.emit("playerMovement", data);
   }

@@ -3,10 +3,10 @@ import SocketManager from "../utils/SocketManager";
 import Claw from "./Claw";
 
 class Player extends Phaser.Physics.Arcade.Sprite {
-  constructor(scene, x, y, texture, avatar) {
+  constructor(scene, x, y, texture, info) {
     super(scene, x, y, texture);
     this.scene = scene;
-    this.avatar = avatar;
+    this.avatar = info.avatar;
 
     this.scene.add.existing(this);
     this.scene.physics.add.existing(this);
@@ -29,6 +29,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
     this.isAttacking = false; // 공격 상태를 추적
     this.isStunned = false; // 스턴 상태를 추적
+
+    this.isPlay =  info.isPlay;
+    this.setPlayStatus(this.isPlay);
 
     this.prevX = x;
     this.prevY = y;
@@ -146,7 +149,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       repeat: 1,
       duration: 50,
       onComplete: () => {
-        this.setAlpha(1);
         this.anims.play(`idle${this.avatar}`, true);
       },
     });
@@ -155,6 +157,13 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     });
   }
 
+  setPlayStatus(isPlay){
+  if (isPlay >0){
+    this.setAlpha(1);
+  }else{
+    this.setAlpha(0.5);
+  }
+}
   setPosition(x, y) {
     super.setPosition(x, y);
   }

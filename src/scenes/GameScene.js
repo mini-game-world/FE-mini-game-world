@@ -19,14 +19,15 @@ class GameScene extends Phaser.Scene {
 
     SocketManager.onCurrentPlayers((players) => {
       Object.keys(players).forEach((id) => {
-      const {playerId,x,y, avatar} = players[id];
+      const {playerId,x,y, avatar, isPlay} = players[id];
+      const info = {avatar, isPlay};
         if (playerId !== SocketManager.socket.id) {
           this.players[playerId] = new Player(
             this,
             x,
             y,
             `player${avatar}`,
-            avatar
+            info
           );
         } else {
           this.player = new Player(
@@ -34,22 +35,22 @@ class GameScene extends Phaser.Scene {
             x,
             y,
             `player${avatar}`,
-            avatar
+            info
           );
           this.players[SocketManager.socket.id] = this.player;
-          // this.player.on("animationcomplete", this.createClaw, this);
         }
       });
     });
 
     SocketManager.onNewPlayer((player) => {
-      const {playerId,x,y, avatar} = player;
+      const {playerId, x, y, avatar, isPlay} = player;
+      const info = {avatar, isPlay};
       this.players[playerId] = new Player(
         this,
         x,
         y,
         `player${avatar}`,
-        avatar
+        info
       );
     });
 
@@ -85,6 +86,18 @@ class GameScene extends Phaser.Scene {
         this.players[id].destroy();
         delete this.players[id];
       }
+    });
+
+    SocketManager.onPlayingGame((isPlaying) => {
+      Object.values(this.players).forEach((player) => {
+          if (isPlaying == 1){
+            console.log("게임시작");
+            player.setPlayStatus(1);
+          }else{
+            console.log("게임종료");
+            player.setPlayStatus(0);
+          }
+        });
     });
   }
 
