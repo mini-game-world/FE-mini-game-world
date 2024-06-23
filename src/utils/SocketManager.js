@@ -6,7 +6,7 @@ class SocketManager {
   }
 
   connect() {
-    this.socket = io("http://143.248.177.142:3000");
+    this.socket = io("https://www.jungleptest.xyz");
 
     this.socket.on("connect", () => {
       console.log("Connected to server");

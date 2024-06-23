@@ -56,7 +56,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.scene.anims.create({
       key: `idle${this.avatar}`,
       frames: this.scene.anims.generateFrameNumbers(`player${this.avatar}`),
-      frameRate: 6,
+      frameRate: 5,
       repeat: -1,
     });
 
@@ -65,7 +65,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       frames: this.scene.anims.generateFrameNumbers(
         `player_move${this.avatar}`
       ),
-      frameRate: 6,
+      frameRate: 5,
       repeat: -1,
     });
 
@@ -83,7 +83,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       frames: this.scene.anims.generateFrameNumbers(
         `player_stun${this.avatar}`
       ),
-      frameRate: 6,
+      frameRate: 5,
       repeat: 0,
     });
 
