@@ -19,10 +19,10 @@ class GameScene extends Phaser.Scene {
 
     SocketManager.onCurrentPlayers((players) => {
       Object.keys(players).forEach((id) => {
-      const {playerId,x,y, avatar, isPlay} = players[id];
-      const info = {avatar, isPlay};
-        if (playerId !== SocketManager.socket.id) {
-          this.players[playerId] = new Player(
+      const {x, y, avatar, isPlay, isDead} = players[id];
+      const info = {avatar, isPlay, isDead};
+        if (id !== SocketManager.socket.id) {
+          this.players[id] = new Player(
             this,
             x,
             y,
@@ -57,14 +57,22 @@ class GameScene extends Phaser.Scene {
     SocketManager.onPlayerMoved((player) => {
       const {playerId, x, y} = player;
       if (this.players[playerId]) {
-        const prevX = this.players[playerId].x;
-        this.players[playerId].setPosition(x, y);
-        this.players[playerId].anims.play(`move${this.players[playerId].avatar}`, true);
-        this.players[playerId].setFlipX(prevX < x); // 방향 설정
-        clearTimeout(this.players[playerId].idleTimeout);
-        this.players[playerId].idleTimeout = setTimeout(() => {
-          this.players[playerId].anims.play(`idle${this.players[playerId].avatar}`, true);
-        }, 100);
+        console.log("onPlayerMoved",this.players[playerId].isDead)
+        if (this.players[playerId].isDead) {
+          const prevX = this.players[playerId].x;
+          this.players[playerId].setPosition(x, y);
+          this.players[playerId].anims.play('dead', true);
+          this.players[playerId].setFlipX(prevX < x); // 방향 설정
+        } else {
+          const prevX = this.players[playerId].x;
+          this.players[playerId].setPosition(x, y);
+          this.players[playerId].anims.play(`move${this.players[playerId].avatar}`, true);
+          this.players[playerId].setFlipX(prevX < x); // 방향 설정
+          clearTimeout(this.players[playerId].idleTimeout);
+          this.players[playerId].idleTimeout = setTimeout(() => {
+            this.players[playerId].anims.play(`idle${this.players[playerId].avatar}`, true);
+          }, 100);
+        }
       }
     });
 

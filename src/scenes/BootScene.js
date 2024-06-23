@@ -28,7 +28,10 @@ class BootScene extends Phaser.Scene {
         frameHeight: 220,
       });
     }
-
+    this.load.spritesheet("playerDead", "playerDead.png", {
+      frameWidth: 150,
+      frameHeight: 150,
+    });
     
     this.load.audio("audio_scratch", "/sounds/scratch.ogg"); 
 
