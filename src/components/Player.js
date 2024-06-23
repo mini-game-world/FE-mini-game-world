@@ -104,7 +104,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   getVelocity() {
-    const speed = 160;
+    const speed = 300;
     let velocityX = 0;
     let velocityY = 0;
 
