@@ -112,7 +112,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       SocketManager.emitPlayerMovement({ x: this.x, y: this.y });
     }
 
-    if (this.keys.attack.isDown) {
+    if (this.keys.attack.isDown && this.isPlay) {
       this.isAttacking = true;
       this.anims.play(`attack${this.avatar}`, true);
     } else if (velocityX !== 0 || velocityY !== 0) {
@@ -159,8 +159,10 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
   setPlayStatus(isPlay){
   if (isPlay >0){
+    this.isPlay = true;
     this.setAlpha(1);
   }else{
+    this.isPlay = false;
     this.setAlpha(0.5);
   }
 }

@@ -70,7 +70,6 @@ class GameScene extends Phaser.Scene {
 
     SocketManager.onPlayerAttacked((attackedPlayerIds) => {
       if(attackedPlayerIds.length != 0){ // 이걸 굳이 우리가?
-      console.log("attackedPlayers",attackedPlayerIds);
       attackedPlayerIds.forEach((playerId) => {
       this.players[playerId].stunPlayer();
       });
@@ -89,12 +88,15 @@ class GameScene extends Phaser.Scene {
     });
 
     SocketManager.onPlayingGame((isPlaying) => {
+      if (isPlaying == 1){
+        console.log("게임시작");
+      }else{
+        console.log("게임종료");
+      }
       Object.values(this.players).forEach((player) => {
           if (isPlaying == 1){
-            console.log("게임시작");
             player.setPlayStatus(1);
           }else{
-            console.log("게임종료");
             player.setPlayStatus(0);
           }
         });
