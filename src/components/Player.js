@@ -34,6 +34,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.isPlay =  info.isPlay;
     this.setPlayStatus(this.isPlay);
 
+    this.isDead = false;
+
     this.prevX = x;
     this.prevY = y;
 
@@ -117,7 +119,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       SocketManager.emitPlayerMovement({ x: this.x, y: this.y });
     }
 
-    if (this.keys.attack.isDown && this.isPlay) {
+    if (this.keys.attack.isDown && this.isPlay && !this.isDead) {
       this.isAttacking = true;
       this.anims.play(`attack${this.avatar}`, true);
     } else if (velocityX !== 0 || velocityY !== 0) {
@@ -164,9 +166,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
   setPlayStatus(isPlay){
   if (isPlay >0){
+    this.isDead = false;
     this.isPlay = true;
     this.setAlpha(1);
   }else{
+    this.isDead = false;
     this.isPlay = false;
     this.setAlpha(0.5);
     this.removeBomb();
@@ -184,6 +188,15 @@ removeBomb() {
     this.bomb.destroy(); // Remove bomb if it exists
     this.bomb = null;
   }
+}
+
+setDeadUser(){
+  if (this.bomb) {
+    this.bomb.destroy(); // Remove bomb if it exists
+    this.bomb = null;
+  }
+  this.setAlpha(0.2);
+  this.isDead = true;
 }
 
   setPosition(x, y) {

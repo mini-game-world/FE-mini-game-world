@@ -49,6 +49,10 @@ class SocketManager {
     this.socket.on("bombUsers", callback);
   }
 
+  onDeadUsers(callback) {
+    this.socket.on("deadUsers", callback);
+  }
+
   emitPlayerMovement(data) {
     this.socket.emit("playerMovement", data);
   }

@@ -104,10 +104,16 @@ class GameScene extends Phaser.Scene {
 
     SocketManager.onBombUsers((players) => {
       players.forEach((playerId) => {
-          console.log(this.players[playerId]);
           this.players[playerId].setBombUser();
         });
     });
+
+    SocketManager.onDeadUsers((players) => {
+      players.forEach((playerId) => {
+          this.players[playerId].setDeadUser();
+        });
+    });
+    
   }
 
   update() {
