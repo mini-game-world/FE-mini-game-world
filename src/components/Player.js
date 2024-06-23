@@ -145,6 +145,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   stunPlayer() {
+    if(this.bomb) return;
     this.isStunned = true;
     this.isAttacking = false; // Stop attacking if stunned
     this.setVelocity(0, 0);
