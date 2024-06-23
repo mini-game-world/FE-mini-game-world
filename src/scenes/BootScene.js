@@ -37,7 +37,10 @@ class BootScene extends Phaser.Scene {
         frameHeight: 32,
     });
 
-    this.load.image("bomb", "bomb.png");
+    this.load.spritesheet("bomb", "bomb.png", {
+      frameWidth: 303,
+      frameHeight: 142,
+  });
   }
 
   create() {
@@ -50,6 +53,13 @@ class BootScene extends Phaser.Scene {
       repeat: 0,
       hideOnComplete: true,
     });
+
+    this.anims.create({
+      key: "bomb",
+      frames: this.anims.generateFrameNumbers("bomb"),
+      frameRate: 5,
+      repeat: -1,
+  });
 
     this.scene.start("GameScene");
   }

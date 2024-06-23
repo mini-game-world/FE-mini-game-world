@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import SocketManager from "../utils/SocketManager";
 import Claw from "./Claw";
+import Bomb from "./Bomb";
 
 class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y, texture, info) {
@@ -35,6 +36,10 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
     this.prevX = x;
     this.prevY = y;
+
+    this.bomb = null;
+
+    // SocketManager.onBombUsers(this.handleBombUsers.bind(this));
   }
 
   createAnimations() {
@@ -164,13 +169,31 @@ class Player extends Phaser.Physics.Arcade.Sprite {
   }else{
     this.isPlay = false;
     this.setAlpha(0.5);
+    this.removeBomb();
   }
 }
+
+setBombUser() {
+    if (!this.bomb) {
+      this.bomb = new Bomb(this.scene, this);
+    }
+}
+
+removeBomb() {
+  if (this.bomb) {
+    this.bomb.destroy(); // Remove bomb if it exists
+    this.bomb = null;
+  }
+}
+
   setPosition(x, y) {
     super.setPosition(x, y);
   }
 
   destroy() {
+    if (this.bomb) {
+      this.bomb.destroy();
+    }
     super.destroy();
   }
 }

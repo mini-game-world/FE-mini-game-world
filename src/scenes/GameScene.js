@@ -101,6 +101,13 @@ class GameScene extends Phaser.Scene {
           }
         });
     });
+
+    SocketManager.onBombUsers((players) => {
+      players.forEach((playerId) => {
+          console.log(this.players[playerId]);
+          this.players[playerId].setBombUser();
+        });
+    });
   }
 
   update() {
