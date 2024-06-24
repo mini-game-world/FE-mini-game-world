@@ -106,11 +106,9 @@ class GameScene extends Phaser.Scene {
         });
       }else{
         console.log("게임종료");
-        setTimeout(function () {
           Object.values(this.players).forEach((player) => {
             player.setPlayStatus(0);
           });
-        }, 5000);
       }
     });
 

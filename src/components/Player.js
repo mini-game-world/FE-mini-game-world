@@ -199,7 +199,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   setPlayStatus(isPlay){
-  if (isPlay >0){
+  if (isPlay > 0){
     this.isDead = false;
     this.isPlay = true;
     this.setAlpha(1);
