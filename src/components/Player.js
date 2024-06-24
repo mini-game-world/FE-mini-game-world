@@ -15,49 +15,77 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.scene.physics.add.existing(this);
     this.setCollideWorldBounds(true);
 
+    this.bomb = null;
+    this.playerNickname = info.nickname;
+    this.nickname = new Nickname(scene, this, info.nickname);
+
     this.scale = 0.4;
     this.setDepth(30);
 
-    this.cursors = scene.input.keyboard.createCursorKeys();
-    this.keys = scene.input.keyboard.addKeys({
+    this.createInputKeyBoard();
+    this.createAnimations();
+
+    this.isAttacking = false;
+    this.isStunned = false;
+    this.isPlay = this.processInfo(info.isPlay);
+    this.isDead = this.processInfo(info.isDead);
+
+    if (this.isDead) {
+      this.setDeadStatus(); // 죽은 상태
+    } else {
+      if (this.isPlay) {
+        this.setPlayStatus(); // 게임 중인 상태
+      } else {
+        this.setReadyStatus(); // 준비 상태
+      }
+    }
+
+    this.prevX = x;
+    this.prevY = y;
+  }
+
+  processInfo(value) {
+    if (value === undefined) {
+      return false;
+    }
+    return value === 1;
+  }
+
+  createInputKeyBoard() {
+    this.cursors = this.scene.input.keyboard.createCursorKeys();
+    this.keys = this.scene.input.keyboard.addKeys({
       up: Phaser.Input.Keyboard.KeyCodes.UP,
       down: Phaser.Input.Keyboard.KeyCodes.DOWN,
       left: Phaser.Input.Keyboard.KeyCodes.LEFT,
       right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
       attack: Phaser.Input.Keyboard.KeyCodes.Z, // 공격 키 추가
     });
+  }
 
-    this.createAnimations();
+  setDeadStatus() {
+    this.removeBomb();
+    this.setTexture("playerDead");
+    this.anims.play(`dead`, true);
+    this.isDead = true;
+    this.setAlpha(0.5);
+    this.nickname.setColor("#000000");
+  }
 
-    this.isAttacking = false; // 공격 상태를 추적
-    this.isStunned = false; // 스턴 상태를 추적
+  setReadyStatus() {
+    this.setTexture(`player${this.avatar}`);
+    this.setAlpha(0.5);
+    this.anims.play(`idle${this.avatar}`, true);
+    this.nickname.setColor("#ffffff");
+    this.removeBomb();
+    this.isDead = false;
+    this.isPlay = false;
+  }
 
-    this.playerNickname = info.nickname;
-    this.nickname = new Nickname(scene, this, info.nickname);
-
-    this.isPlay =  info.isPlay;
-    this.setPlayStatus(this.isPlay);
-
-    this.isDead = info.isDead | false;
-
-
-    if (this.isDead == 1 && this.isPlay == 1){
-      this.anims.play(`dead`, true);
-      this.setAlpha(0.5);
-      this.nickname.setColor("#000000");
-    }else{
-      this.anims.play(`idle${this.avatar}`, true);
-      this.nickname.setColor("#ffffff");
-    }
-
-
-    this.prevX = x;
-    this.prevY = y;
-
-    this.bomb = null;
-
-
-    // SocketManager.onBombUsers(this.handleBombUsers.bind(this));
+  setPlayStatus() {
+    this.setAlpha(1);
+    this.isPlay = true;
+    this.isDead = false;
+    this.nickname.setColor("#ffffff");
   }
 
   createAnimations() {
@@ -100,7 +128,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       frames: this.scene.anims.generateFrameNumbers("playerDead"),
       frameRate: 6,
       repeat: -1,
-  });
+    });
 
     // 공격 애니메이션이 완료될 때 콜백
     this.on("animationcomplete", (anim, frame) => {
@@ -125,7 +153,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   update() {
-
     if (this.isAttacking || this.isStunned) {
       this.setVelocity(0, 0);
       return;
@@ -141,14 +168,13 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       // Emit position only when it has changed
       SocketManager.emitPlayerMovement({ x: this.x, y: this.y });
     }
-    
-    if(this.isDead){
+
+    if (this.isDead) {
       this.anims.play("dead", true);
       if (velocityX !== 0 || velocityY !== 0) {
         this.setFlipX(velocityX > 0);
       }
-    }
-    else {
+    } else {
       if (this.keys.attack.isDown && this.isPlay && !this.isDead) {
         this.isAttacking = true;
         this.anims.play(`attack${this.avatar}`, true);
@@ -169,18 +195,25 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     const startingPosition = [clawX, clawY];
     const damage = 10;
     const scale = 1.5;
-    new Claw(this.scene, startingPosition, isHeadingRight, damage, scale, isSelfInitiated);
-    if(isSelfInitiated){
-      SocketManager.emitPlayerAttack({x: clawX, y: clawY});
+    new Claw(
+      this.scene,
+      startingPosition,
+      isHeadingRight,
+      damage,
+      scale,
+      isSelfInitiated
+    );
+    if (isSelfInitiated) {
+      SocketManager.emitPlayerAttack({ x: clawX, y: clawY });
     }
   }
 
   stunPlayer() {
-    if(this.bomb) return;
+    if (this.bomb) return;
     this.isStunned = true;
-    this.isAttacking = false; // Stop attacking if stunned
+    this.isAttacking = false;
     this.setVelocity(0, 0);
-    if(!this.isDead){
+    if (!this.isDead) {
       this.anims.play(`stun${this.avatar}`, true);
     }
     this.scene.tweens.add({
@@ -190,7 +223,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       repeat: 1,
       duration: 50,
       onComplete: () => {
-        if(!this.isDead){
+        if (!this.isDead) {
           this.anims.play(`idle${this.avatar}`, true);
         }
       },
@@ -200,45 +233,25 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     });
   }
 
-  setPlayStatus(isPlay){
-  if (isPlay > 0){
-    this.isDead = false;
-    this.isPlay = true;
-    this.setAlpha(1);
-    this.nickname.setColor("#ffffff");
-  }else{
-    this.isDead = false;
-    this.isPlay = false;
-    this.anims.play(`idle${this.avatar}`, true);
-    this.setAlpha(0.5);
-    this.removeBomb();
-    this.nickname.setColor("#ffffff");
-  }
-}
-
-setBombUser() {
+  setBombUser() {
     if (!this.bomb) {
       this.bomb = new Bomb(this.scene, this);
     }
-}
-
-removeBomb() {
-  if (this.bomb) {
-    this.bomb.destroy();
-    this.bomb = null;
   }
-}
 
-setDeadUser(){
-  this.removeBomb();
-  this.isDead = true;
-  this.anims.play("dead", true);
-  this.setAlpha(0.5);
-  this.nickname.setColor("#000000");
-}
+  removeBomb() {
+    if (this.bomb) {
+      this.bomb.destroy();
+      this.bomb = null;
+    }
+  }
 
   showWinner(winnerPlayer) {
-    this.WinnerPlayer = new WinnerPlayer(this.scene, this, winnerPlayer.playerNickname);
+    this.WinnerPlayer = new WinnerPlayer(
+      this.scene,
+      this,
+      winnerPlayer.playerNickname
+    );
     this.scene.time.delayedCall(
       5000,
       () => {
@@ -259,9 +272,12 @@ setDeadUser(){
   destroy() {
     if (this.bomb) {
       this.bomb.destroy();
+      this.bomb = null;
     }
-    this.nickname.destroy();
-    this.nickname = null;
+    if (this.nickname) {
+      this.nickname.destroy();
+      this.nickname = null;
+    }
     super.destroy();
   }
 }
