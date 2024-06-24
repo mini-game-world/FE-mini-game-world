@@ -139,6 +139,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       // Emit position only when it has changed
       SocketManager.emitPlayerMovement({ x: this.x, y: this.y });
     }
+    
     if(this.isDead){
       this.anims.play("dead", true);
       if (velocityX !== 0 || velocityY !== 0) {
@@ -221,19 +222,16 @@ setBombUser() {
 
 removeBomb() {
   if (this.bomb) {
-    this.bomb.destroy(); // Remove bomb if it exists
+    this.bomb.destroy();
     this.bomb = null;
   }
 }
 
 setDeadUser(){
-  if (this.bomb) {
-    this.bomb.destroy(); // Remove bomb if it exists
-    this.bomb = null;
-  }
-  this.setAlpha(0.5);
+  this.removeBomb();
   this.isDead = true;
   this.anims.play("dead", true);
+  this.setAlpha(0.5);
   this.nickname.setColor("#fb0000");
 }
 
@@ -246,6 +244,7 @@ setDeadUser(){
       this.bomb.destroy();
     }
     this.nickname.destroy();
+    this.nickname = null;
     super.destroy();
   }
 }

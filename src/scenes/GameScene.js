@@ -101,18 +101,17 @@ class GameScene extends Phaser.Scene {
     SocketManager.onPlayingGame((isPlaying) => {
       if (isPlaying == 1){
         console.log("게임시작");
+        Object.values(this.players).forEach((player) => {
+            player.setPlayStatus(1);
+        });
       }else{
         console.log("게임종료");
+        setTimeout(function () {
+          Object.values(this.players).forEach((player) => {
+            player.setPlayStatus(0);
+          });
+        }, 5000);
       }
-      Object.values(this.players).forEach((player) => {
-          if (isPlaying == 1){
-            player.setPlayStatus(1);
-          }else{
-            setTimeout(function() {
-              player.setPlayStatus(0);
-            }, 5000);
-          }
-        });
     });
 
     SocketManager.onBombUsers((players) => {
