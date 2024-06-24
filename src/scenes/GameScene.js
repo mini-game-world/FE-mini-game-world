@@ -1,16 +1,20 @@
 import Phaser from "phaser";
 import Player from "../components/Player";
 import SocketManager from "../utils/SocketManager";
+import PlayerCountText from "../components/PlayerCountText";
 
 class GameScene extends Phaser.Scene {
   constructor() {
     super("GameScene");
     this.player = null;
     this.players = {};
+    this.playerCountText = null;
   }
 
   create() {
     this.add.image(400, 300, "background");
+
+    this.playerCountText = new PlayerCountText(this, 16, 16, 0);
 
     SocketManager.connect();
 
@@ -27,12 +31,14 @@ class GameScene extends Phaser.Scene {
           this.cameras.main.setZoom(1);
         }
       });
+      this.updatePlayerCountText();
     });
 
     SocketManager.onNewPlayer((player) => {
       const { playerId, x, y, avatar, isPlay, nickname } = player;
       const info = { avatar, isPlay, nickname };
       this.players[playerId] = new Player(this, x, y, `player${avatar}`, info);
+      this.updatePlayerCountText();
     });
 
     SocketManager.onPlayerMoved((player) => {
@@ -80,6 +86,8 @@ class GameScene extends Phaser.Scene {
       if (this.players[id]) {
         this.players[id].destroy();
         delete this.players[id];
+
+        this.updatePlayerCountText();
       }
     });
 
@@ -119,9 +127,18 @@ class GameScene extends Phaser.Scene {
     });
   }
 
+  updatePlayerCountText() {
+    const playerCount = Object.keys(this.players).length;
+    this.playerCountText.update(playerCount);
+  }
+
   update() {
     if (this.player) {
       this.player.update();
+    }
+
+    if(this.playerCountText){
+      this.playerCountText.updatePosition();
     }
   }
 }
