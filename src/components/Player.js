@@ -9,7 +9,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     super(scene, x, y, texture);
     this.scene = scene;
     this.avatar = info.avatar;
-    this.nickname = new Nickname(scene, this, info.nickname); // Nickname 객체 생성
 
     this.scene.add.existing(this);
     this.scene.physics.add.existing(this);
@@ -50,12 +49,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.prevY = y;
 
     this.bomb = null;
-
-    // this.nicknameText = this.scene.add.text(this.x, this.y + 50, this.nickname, {
-    //   fontSize: '16px',
-    //   fill: '#fff',
-    //   align: 'center',
-    // }).setOrigin(0.5, 0.5).setDepth(30);
+    this.nickname = new Nickname(scene, this, info.nickname);
 
     // SocketManager.onBombUsers(this.handleBombUsers.bind(this));
   }
@@ -158,8 +152,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.anims.play(`idle${this.avatar}`, true);
       }
     }
-
-    this.nickname.updatePosition(); // Nickname 위치 업데이트
   }
 
   createClawAttack(isSelfInitiated = true) {
@@ -236,14 +228,11 @@ setDeadUser(){
   this.setAlpha(0.5);
   this.isDead = true;
   this.anims.play("dead", true);
-  // this.setTexture("playerDead");
+  this.nickname.setColor("#fb0000");
 }
 
   setPosition(x, y) {
     super.setPosition(x, y);
-    if(this.nickname){
-      this.nickname.updatePosition();
-    }
   }
 
   destroy() {
