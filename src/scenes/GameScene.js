@@ -39,6 +39,8 @@ class GameScene extends Phaser.Scene {
             info
           );
           this.players[SocketManager.socket.id] = this.player;
+          this.cameras.main.startFollow(this.player);
+          this.cameras.main.setZoom(1);
         }
       });
     });
