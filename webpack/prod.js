@@ -7,23 +7,6 @@ module.exports = merge(base, {
   mode: "production",
   output: {
     filename: "bundle.min.js",
-    publicPath: "/",
-  },
-  module: {
-    rules: [
-      {
-        test: /\.(png|jpe?g|gif|svg|ogg)$/i,
-        use: [
-          {
-            loader: "file-loader",
-            options: {
-              name: "[path][name].[ext]",
-              outputPath: "src/assets",
-            },
-          },
-        ],
-      },
-    ],
   },
   devtool: false,
   performance: {
