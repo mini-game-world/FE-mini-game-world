@@ -3,6 +3,7 @@ import SocketManager from "../utils/SocketManager";
 import Claw from "./Claw";
 import Bomb from "./Bomb";
 import Nickname from "./NickName";
+import WinnerPlayer from "./WinnerPlayer";
 
 class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y, texture, info) {
@@ -31,6 +32,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.isAttacking = false; // 공격 상태를 추적
     this.isStunned = false; // 스턴 상태를 추적
 
+    this.playerNickname = info.nickname;
     this.nickname = new Nickname(scene, this, info.nickname);
 
     this.isPlay =  info.isPlay;
@@ -42,7 +44,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     if (this.isDead == 1 && this.isPlay == 1){
       this.anims.play(`dead`, true);
       this.setAlpha(0.5);
-      this.nickname.setColor("#fb0000");
+      this.nickname.setColor("#000000");
     }else{
       this.anims.play(`idle${this.avatar}`, true);
       this.nickname.setColor("#ffffff");
@@ -232,8 +234,23 @@ setDeadUser(){
   this.isDead = true;
   this.anims.play("dead", true);
   this.setAlpha(0.5);
-  this.nickname.setColor("#fb0000");
+  this.nickname.setColor("#000000");
 }
+
+  showWinner(winnerPlayer) {
+    this.WinnerPlayer = new WinnerPlayer(this.scene, this, winnerPlayer.playerNickname);
+    this.scene.time.delayedCall(
+      5000,
+      () => {
+        if (this.WinnerPlayer) {
+          this.WinnerPlayer.destroy();
+          this.WinnerPlayer = null;
+        }
+      },
+      [],
+      this.scene
+    );
+  }
 
   setPosition(x, y) {
     super.setPosition(x, y);

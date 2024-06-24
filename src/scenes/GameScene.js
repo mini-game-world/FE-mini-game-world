@@ -18,7 +18,6 @@ class GameScene extends Phaser.Scene {
     SocketManager.connect();
 
     SocketManager.onCurrentPlayers((players) => {
-      console.log(players);
       Object.keys(players).forEach((id) => {
       const {x, y, avatar, isPlay, isDead, nickname} = players[id];
       const info = {avatar, isPlay, isDead, nickname};
@@ -128,6 +127,11 @@ class GameScene extends Phaser.Scene {
       this.players[players[0]].setBombUser();
       this.players[players[1]].removeBomb();
     });
+
+    SocketManager.onWinnerPlayer((winnerId) => {
+      this.player.showWinner(this.players[winnerId]);
+    });
+
   }
 
   update() {
