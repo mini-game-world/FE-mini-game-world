@@ -1,5 +1,7 @@
 import Phaser from "phaser";
 
+import backgroundImg from "../assets/background.png";
+
 class BootScene extends Phaser.Scene {
   constructor() {
     super("BootScene");
@@ -7,7 +9,7 @@ class BootScene extends Phaser.Scene {
 
   preload() {
     // this.load.setPath("src/assets");
-    this.load.image("background", "src/assets/background.png");
+    this.load.image("background", backgroundImg);
     this.load.audio("scratch_sound", "/sounds/scratch.ogg");
 
     for (let i = 0; i < 31; i++) {
