@@ -18,9 +18,10 @@ class GameScene extends Phaser.Scene {
     SocketManager.connect();
 
     SocketManager.onCurrentPlayers((players) => {
+      console.log(players);
       Object.keys(players).forEach((id) => {
-      const {x, y, avatar, isPlay, isDead} = players[id];
-      const info = {avatar, isPlay, isDead};
+      const {x, y, avatar, isPlay, isDead, nickname} = players[id];
+      const info = {avatar, isPlay, isDead, nickname};
         if (id !== SocketManager.socket.id) {
           this.players[id] = new Player(
             this,
@@ -43,8 +44,8 @@ class GameScene extends Phaser.Scene {
     });
 
     SocketManager.onNewPlayer((player) => {
-      const {playerId, x, y, avatar, isPlay} = player;
-      const info = {avatar, isPlay};
+      const {playerId, x, y, avatar, isPlay, nickname} = player;
+      const info = {avatar, isPlay, nickname};
       this.players[playerId] = new Player(
         this,
         x,

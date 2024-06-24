@@ -8,6 +8,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     super(scene, x, y, texture);
     this.scene = scene;
     this.avatar = info.avatar;
+    this.nickname = info.nickname;
 
     this.scene.add.existing(this);
     this.scene.physics.add.existing(this);
@@ -48,6 +49,12 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.prevY = y;
 
     this.bomb = null;
+
+    this.nicknameText = this.scene.add.text(this.x, this.y + 50, this.nickname, {
+      fontSize: '16px',
+      fill: '#fff',
+      align: 'center',
+    }).setOrigin(0.5, 0.5).setDepth(30);
 
     // SocketManager.onBombUsers(this.handleBombUsers.bind(this));
   }
@@ -125,6 +132,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
     const { velocityX, velocityY } = this.getVelocity();
     this.setVelocity(velocityX, velocityY);
+
+    this.nicknameText.setPosition(this.x, this.y + 50);
 
     // Check if position has changed
     if (this.prevX !== this.x || this.prevY !== this.y) {
@@ -237,6 +246,7 @@ setDeadUser(){
     if (this.bomb) {
       this.bomb.destroy();
     }
+    this.nicknameText.destroy();
     super.destroy();
   }
 }
