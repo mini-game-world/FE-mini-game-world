@@ -18,7 +18,7 @@ module.exports = merge(base, {
             loader: "file-loader",
             options: {
               name: "[path][name].[ext]",
-              outputPath: "assets/",
+              outputPath: "src/assets",
             },
           },
         ],
