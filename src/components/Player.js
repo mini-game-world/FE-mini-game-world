@@ -27,21 +27,25 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     });
 
     this.createAnimations();
-    // this.anims.play(`idle${this.avatar}`, true);
 
     this.isAttacking = false; // 공격 상태를 추적
     this.isStunned = false; // 스턴 상태를 추적
+
+    this.nickname = new Nickname(scene, this, info.nickname);
 
     this.isPlay =  info.isPlay;
     this.setPlayStatus(this.isPlay);
 
     this.isDead = info.isDead | false;
 
-    if (this.isDead == 1){
+
+    if (this.isDead == 1 && this.isPlay == 1){
       this.anims.play(`dead`, true);
       this.setAlpha(0.5);
+      this.nickname.setColor("#fb0000");
     }else{
       this.anims.play(`idle${this.avatar}`, true);
+      this.nickname.setColor("#ffffff");
     }
 
 
@@ -49,7 +53,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.prevY = y;
 
     this.bomb = null;
-    this.nickname = new Nickname(scene, this, info.nickname);
+
 
     // SocketManager.onBombUsers(this.handleBombUsers.bind(this));
   }
@@ -198,12 +202,14 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.isDead = false;
     this.isPlay = true;
     this.setAlpha(1);
+    this.nickname.setColor("#ffffff");
   }else{
     this.isDead = false;
     this.isPlay = false;
     this.anims.play(`idle${this.avatar}`, true);
     this.setAlpha(0.5);
     this.removeBomb();
+    this.nickname.setColor("#ffffff");
   }
 }
 
