@@ -16,8 +16,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.setCollideWorldBounds(true);
 
     this.bomb = null;
-    this.playerNickname = info.nickname;
-    this.nickname = new Nickname(scene, this, info.nickname);
+    this.name = info.nickname;
+    this.nickname = new Nickname(scene, this, this.name);
 
     this.scale = 0.4;
     this.setDepth(30);
@@ -246,12 +246,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  showWinner(winnerPlayer) {
-    this.WinnerPlayer = new WinnerPlayer(
-      this.scene,
-      this,
-      winnerPlayer.playerNickname
-    );
+  showWinner(winner) {
+    this.WinnerPlayer = new WinnerPlayer(this.scene, this, winner.name);
     this.scene.time.delayedCall(
       5000,
       () => {

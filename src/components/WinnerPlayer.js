@@ -19,8 +19,6 @@ class WinnerPlayer extends Phaser.GameObjects.Text {
 
     // Update position on each frame
     this.scene.events.on('update', this.updatePosition, this);
-
-    
   }
   
   updatePosition() {
