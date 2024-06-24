@@ -2,13 +2,14 @@ import Phaser from "phaser";
 import SocketManager from "../utils/SocketManager";
 import Claw from "./Claw";
 import Bomb from "./Bomb";
+import Nickname from "./NickName";
 
 class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y, texture, info) {
     super(scene, x, y, texture);
     this.scene = scene;
     this.avatar = info.avatar;
-    this.nickname = info.nickname;
+    this.nickname = new Nickname(scene, this, info.nickname); // Nickname 객체 생성
 
     this.scene.add.existing(this);
     this.scene.physics.add.existing(this);
@@ -50,11 +51,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
     this.bomb = null;
 
-    this.nicknameText = this.scene.add.text(this.x, this.y + 50, this.nickname, {
-      fontSize: '16px',
-      fill: '#fff',
-      align: 'center',
-    }).setOrigin(0.5, 0.5).setDepth(30);
+    // this.nicknameText = this.scene.add.text(this.x, this.y + 50, this.nickname, {
+    //   fontSize: '16px',
+    //   fill: '#fff',
+    //   align: 'center',
+    // }).setOrigin(0.5, 0.5).setDepth(30);
 
     // SocketManager.onBombUsers(this.handleBombUsers.bind(this));
   }
@@ -133,8 +134,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     const { velocityX, velocityY } = this.getVelocity();
     this.setVelocity(velocityX, velocityY);
 
-    this.nicknameText.setPosition(this.x, this.y + 50);
-
     // Check if position has changed
     if (this.prevX !== this.x || this.prevY !== this.y) {
       this.prevX = this.x;
@@ -159,6 +158,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.anims.play(`idle${this.avatar}`, true);
       }
     }
+
+    this.nickname.updatePosition(); // Nickname 위치 업데이트
   }
 
   createClawAttack(isSelfInitiated = true) {
@@ -240,13 +241,16 @@ setDeadUser(){
 
   setPosition(x, y) {
     super.setPosition(x, y);
+    if(this.nickname){
+      this.nickname.updatePosition();
+    }
   }
 
   destroy() {
     if (this.bomb) {
       this.bomb.destroy();
     }
-    this.nicknameText.destroy();
+    this.nickname.destroy();
     super.destroy();
   }
 }
