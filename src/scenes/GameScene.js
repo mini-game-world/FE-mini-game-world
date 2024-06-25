@@ -11,12 +11,14 @@ class GameScene extends Phaser.Scene {
     this.player = null;
     this.players = {};
     this.playerCountText = null;
-    this.bgm = null;
+    this.playingbgm1 = null;
+    this.waitingbgm1 = null;
   }
 
   create() {
     this.setBackground();
-    this.bgm = this.sound.add("playingBGM1", { loop: true, volume: 0.2 });
+    this.playingbgm1 = this.sound.add("playingBGM1", { loop: true, volume: 0.2 });
+    this.waitingbgm1 = this.sound.add("waitingBGM1", { loop: true, volume: 0.2 });
 
     this.playerCountText = new PlayerCountText(this, 16, 16, 0);
 
@@ -101,13 +103,13 @@ class GameScene extends Phaser.Scene {
 
     SocketManager.onPlayingGame((isPlaying) => {
       if (isPlaying == 1) {
-        this.startBGM();
+        this.startPlayingBGM();
         this.gameStatusText.showText("게임시작");
         Object.values(this.players).forEach((player) => {
           player.setPlayStatus();
         });
       } else {
-        this.stopBGM();
+        this.startWaitingBGM();
         this.gameStatusText.showText("게임종료");
         Object.values(this.players).forEach((player) => {
           player.setReadyStatus();
@@ -138,17 +140,25 @@ class GameScene extends Phaser.Scene {
       this.WinnerText = new WinnerText(this);
       this.WinnerText.showWinner(this.players[id].name);
     });
+
+    this.startWaitingBGM();
   }
 
-  startBGM() {
-    if (!this.bgm.isPlaying) {
-      this.bgm.play();
+  startPlayingBGM() {
+    if (this.waitingbgm1.isPlaying) {
+      this.waitingbgm1.stop();
+    }
+    if (!this.playingbgm1.isPlaying) {
+      this.playingbgm1.play();
     }
   }
 
-  stopBGM() {
-    if (this.bgm.isPlaying) {
-      this.bgm.stop();
+  startWaitingBGM() {
+    if (this.playingbgm1.isPlaying) {
+      this.playingbgm1.stop();
+    }
+    if (!this.waitingbgm1.isPlaying) {
+      this.waitingbgm1.play();
     }
   }
 

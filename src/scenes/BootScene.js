@@ -12,6 +12,7 @@ class BootScene extends Phaser.Scene {
     this.load.audio("explosion_sound", "/sounds/explosion.ogg");
     this.load.audio("timer_sound", "/sounds/timer.ogg");
     this.load.audio('playingBGM1', '/bgm/playingBGM1.mp3');
+    this.load.audio('waitingBGM1', '/bgm/waitingBGM1.mp3');
     this.load.tilemapTiledJSON('map', '/maps/testMap1.tmj');
     this.load.image('tiles', '/tiles/first_tileset.png')
 
