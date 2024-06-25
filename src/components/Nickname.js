@@ -3,10 +3,12 @@ import Phaser from "phaser";
 class NickName extends Phaser.GameObjects.Text {
   constructor(scene, player, text) {
     super(scene, player.x, player.y + 50, text, {
-      fontSize: '12px',
+      fontSize: '16px',
       fill: '#ffffff',
       align: 'center',
-      font: '16px 밑미 폰트 OTF',
+      fontFamily: 'Bazzi',
+      stroke: "#000000",
+      strokeThickness: 2,
     });
     this.scene = scene;
     this.player = player;

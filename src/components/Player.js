@@ -71,7 +71,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.isAttacking = false;
     this.isDead = true;
     this.setAlpha(0.5);
-    this.nickname.setColor("#000000");
+    this.nickname.setColor("#F78181");
 
     // 히트박스 충돌 비활성화
     this.body.checkCollision.none = true;

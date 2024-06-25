@@ -7,7 +7,7 @@ class GameStatusText {
         color: "#ffffff",
         padding: { x: 10, y: 5 },
         align: "center",
-        font: '32px 배달의민족 주아 OTF',
+        fontFamily: 'BMJUA',
       })
       .setOrigin(0.5, 0.5);
     this.text.setAlpha(0); // Initially hidden
