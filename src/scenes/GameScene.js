@@ -14,7 +14,23 @@ class GameScene extends Phaser.Scene {
   }
 
   create() {
-    this.add.image(400, 300, "background");
+    // this.add.image(400, 300, "background");
+
+    // 타일맵 설정
+    const map = this.make.tilemap({ key: 'map' });
+    const tileset = map.addTilesetImage('first_tileset', 'tiles');
+
+    // 타일 크기와 타일셋 이미지 크기 확인
+    if (tileset.tileWidth !== 32 || tileset.tileHeight !== 32) {
+      console.error("타일셋의 타일 크기가 32x32가 아닙니다.");
+      return;
+    }
+    
+    // 레이어 생성 (Tiled에서 설정한 레이어 이름 사용)
+    const layer = map.createLayer('Tile Layer 1', tileset, 0, 0);
+    const blocklayer = map.createLayer('block', tileset, 0, 0);
+    // layer.setCollisionByProperty({ collides: true });
+    blocklayer.setCollisionByProperty({ collides: true });
 
     this.playerCountText = new PlayerCountText(this, 16, 16, 0);
 
@@ -33,6 +49,9 @@ class GameScene extends Phaser.Scene {
           this.players[SocketManager.socket.id] = this.player;
           this.cameras.main.startFollow(this.player);
           this.cameras.main.setZoom(1);
+
+          // 충돌 설정
+          this.physics.add.collider(this.player, blocklayer);
         }
       });
       this.updatePlayerCountText();

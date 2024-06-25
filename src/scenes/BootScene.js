@@ -9,6 +9,8 @@ class BootScene extends Phaser.Scene {
     this.load.setPath("src/assets");
     this.load.image("background", "background.png");
     this.load.audio('scratch_sound', '/sounds/scratch.ogg');
+    this.load.tilemapTiledJSON('map', '/maps/testMap1.tmj');
+    this.load.image('tiles', '/tiles/first_tileset.png')
 
     for (let i = 0; i < 31; i++) {
       this.load.spritesheet(`player${i}`, `/players/player${i}.png`, {
@@ -52,7 +54,6 @@ class BootScene extends Phaser.Scene {
   }
 
   create() {
-    
 
     this.anims.create({
       key: "claw_white",
