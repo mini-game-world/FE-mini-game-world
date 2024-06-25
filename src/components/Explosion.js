@@ -5,6 +5,10 @@ class Explosion extends Phaser.GameObjects.Sprite {
     super(scene, x, y, "explosion");
     this.scene = scene;
     this.scene.add.existing(this);
+
+    this.explosion_sound = scene.sound.add("explosion_sound", { volume: 0.5 });
+    this.explosion_sound.play();
+
     this.setScale(1.5);
     this.setDepth(32);
 
