@@ -65,6 +65,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.explodeBomb();
     this.setTexture("playerDead");
     this.anims.play(`dead`, true);
+    this.isAttacking = false;
     this.isDead = true;
     this.setAlpha(0.5);
     this.nickname.setColor("#000000");
