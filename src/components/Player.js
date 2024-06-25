@@ -18,6 +18,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.body.setSize(50, 50); // 히트박스 크기 설정 (너비, 높이)
     this.body.setOffset(75, 150); // 히트박스 오프셋 설정 (x, y)
 
+    this.hasBomb = false;
     this.bomb = null;
     this.name = info.nickname;
     this.nickname = new NickName(scene, this, this.name);
@@ -155,7 +156,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   getVelocity() {
-    const speed = 300;
+    const normalSpeed = 300;
+    const speed = this.hasBomb ? 400 : normalSpeed;
     let velocityX = 0;
     let velocityY = 0;
 
@@ -252,6 +254,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     if (!this.bomb) {
       this.bomb = new Bomb(this.scene, this);
     }
+    this.hasBomb = true;
   }
 
   removeBomb() {
@@ -259,6 +262,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       this.bomb.destroy();
       this.bomb = null;
     }
+    this.hasBomb = false;
   }
 
   explodeBomb() {
