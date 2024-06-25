@@ -69,24 +69,20 @@ class GameScene extends Phaser.Scene {
       }
     });
 
-    SocketManager.onPlayerAttacked((attackedPlayerIds) => {
-      if (attackedPlayerIds.length != 0) {
-        // 이걸 굳이 우리가?
-        attackedPlayerIds.forEach((playerId) => {
-          this.players[playerId].stunPlayer();
-        });
-      }
+    SocketManager.onPlayerAttacked((ids) => {
+      ids.forEach((id) => {
+        this.players[id].stunPlayer();
+      });
     });
 
-    SocketManager.onAttackPlayer((playerId) => {
-      this.players[playerId].createClawAttack(false);
+    SocketManager.onAttackPlayer((id) => {
+      this.players[id].createClawAttack(false);
     });
 
     SocketManager.onPlayerDisconnected((id) => {
       if (this.players[id]) {
         this.players[id].destroy();
         delete this.players[id];
-
         this.updatePlayerCountText();
       }
     });
@@ -106,24 +102,26 @@ class GameScene extends Phaser.Scene {
     });
 
     SocketManager.onBombUsers((players) => {
-      players.forEach((playerId) => {
-        this.players[playerId].setBombUser();
+      players.forEach((id) => {
+        this.players[id].setBombUser();
       });
     });
 
     SocketManager.onDeadUsers((players) => {
-      players.forEach((playerId) => {
-        this.players[playerId].setDeadStatus();
+      players.forEach((id) => {
+        this.players[id].setDeadStatus();
       });
     });
 
     SocketManager.onChangeBombUser((players) => {
-      this.players[players[0]].setBombUser();
-      this.players[players[1]].removeBomb();
+      const current = players[0];
+      const previous = players[1];
+      this.players[current].setBombUser();
+      this.players[previous].removeBomb();
     });
 
-    SocketManager.onWinnerPlayer((winnerId) => {
-      this.player.showWinner(this.players[winnerId]);
+    SocketManager.onWinnerPlayer((id) => {
+      this.player.showWinner(this.players[id]);
     });
   }
 
@@ -137,7 +135,7 @@ class GameScene extends Phaser.Scene {
       this.player.update();
     }
 
-    if(this.playerCountText){
+    if (this.playerCountText) {
       this.playerCountText.updatePosition();
     }
   }
