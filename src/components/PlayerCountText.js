@@ -8,7 +8,10 @@ class PlayerCountText {
     this.text = this.scene.add.text(x, y, `접속자 수 : ${initialCount}`, {
       fontSize: "24px",
       fill: "#ffffff",
+      padding: {x: 10, y: 5}
     });
+s
+    // this.text.setScrollFactor(0);
   }
 
   update(count) {
