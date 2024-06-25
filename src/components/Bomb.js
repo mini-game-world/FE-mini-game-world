@@ -6,7 +6,14 @@ class Bomb extends Phaser.GameObjects.Sprite {
     super(scene, player.x, player.y - 10, "bomb");
     this.scene = scene;
     this.player = player;
+    this.isSelfInitiated = this.player.isSelfInitiated;
+
     this.scene.add.existing(this);
+
+    if (this.isSelfInitiated) {
+      this.timerSound = this.scene.sound.add("timer_sound");
+      this.timerSound.play();
+    }
 
     this.scale = 0.5;
     //this.setOrigin(0.5, 1); // Adjust the origin to be above the player's head
@@ -34,13 +41,20 @@ class Bomb extends Phaser.GameObjects.Sprite {
   }
 
   explode() {
-    new Explosion(this.scene, this.x, this.y, this.player.isSelfInitiated);
+    new Explosion(this.scene, this.x, this.y, this.isSelfInitiated);
     this.destroy();
   }
 
   destroy() {
     this.scene.events.off("update", this.updatePosition, this);
+    this.stopSound();
     super.destroy();
+  }
+
+  stopSound() {
+    if (this.timerSound) {
+      this.timerSound.stop();
+    }
   }
 }
 

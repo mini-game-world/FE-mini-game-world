@@ -9,7 +9,7 @@ class Explosion extends Phaser.GameObjects.Sprite {
 
     if (this.isSelfInitiated) {
       this.explosion_sound = scene.sound.add("explosion_sound", {
-        volume: 0.5,
+        volume: 0.2,
       });
       this.explosion_sound.play();
     }
