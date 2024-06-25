@@ -10,19 +10,13 @@ class PlayerCountText {
       fill: "#ffffff",
       padding: {x: 10, y: 5}
     });
-s
-    // this.text.setScrollFactor(0);
+
+    this.text.setScrollFactor(0);
+    this.text.setOrigin(0, 0);
   }
 
   update(count) {
     this.text.setText(`접속자 수 : ${count}`);
-  }
-
-  updatePosition() {
-    this.text.setPosition(
-      this.scene.cameras.main.scrollX + this.initialX,
-      this.scene.cameras.main.scrollY + this.initialY
-    );
   }
 }
 

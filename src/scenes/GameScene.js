@@ -134,10 +134,6 @@ class GameScene extends Phaser.Scene {
     if (this.player) {
       this.player.update();
     }
-
-    if (this.playerCountText) {
-      this.playerCountText.updatePosition();
-    }
   }
 }
 
