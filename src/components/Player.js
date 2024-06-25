@@ -62,7 +62,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   setDeadStatus() {
-    this.removeBomb();
+    this.explodeBomb();
     this.setTexture("playerDead");
     this.anims.play(`dead`, true);
     this.isDead = true;
@@ -245,15 +245,19 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
+  explodeBomb() {
+    if (this.bomb) {
+      this.bomb.explode();
+      this.bomb = null;
+    }
+  }
+
   setPosition(x, y) {
     super.setPosition(x, y);
   }
 
   destroy() {
-    if (this.bomb) {
-      this.bomb.destroy();
-      this.bomb = null;
-    }
+    this.removeBomb();
     if (this.nickname) {
       this.nickname.destroy();
       this.nickname = null;
