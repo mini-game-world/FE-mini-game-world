@@ -5,9 +5,9 @@ class GameStatusText {
       .text(this.scene.cameras.main.width / 2, 50, "", {
         fontSize: "32px",
         color: "#ffffff",
-        backgroundColor: "#000000",
         padding: { x: 10, y: 5 },
         align: "center",
+        font: '32px 배달의민족 주아 OTF',
       })
       .setOrigin(0.5, 0.5);
     this.text.setAlpha(0); // Initially hidden

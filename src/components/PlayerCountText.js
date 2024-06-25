@@ -5,6 +5,7 @@ class PlayerCountText {
       fontSize: "24px",
       fill: "#ffffff",
       padding: { x: 10, y: 5 },
+      font: '24px 배달의민족 주아 OTF',
     });
 
     this.text.setDepth(100);

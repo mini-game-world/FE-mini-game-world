@@ -20,6 +20,7 @@ class WinnerText {
         stroke: "#000000",
         strokeThickness: 8,
         align: "center",
+        font: '38px 배달의민족 주아 OTF',
       })
       .setDepth(100);
 
