@@ -14,36 +14,7 @@ class GameScene extends Phaser.Scene {
   }
 
   create() {
-    // this.add.image(400, 300, "background");
-
-    // 타일맵 설정
-    const map = this.make.tilemap({ key: 'map' });
-    const tileset = map.addTilesetImage('first_tileset', 'tiles');
-
-    // 타일 크기와 타일셋 이미지 크기 확인
-    if (tileset.tileWidth !== 32 || tileset.tileHeight !== 32) {
-      console.error("타일셋의 타일 크기가 32x32가 아닙니다.");
-      return;
-    }
-    
-    // 레이어 생성 (Tiled에서 설정한 레이어 이름 사용)
-    const layer = map.createLayer('Tile Layer 1', tileset, 0, 0);
-    const blocklayer = map.createLayer('block', tileset, 0, 0);
-    // layer.setCollisionByProperty({ collides: true });
-    blocklayer.setCollisionByProperty({ collides: true });
-
-    // 충돌 디버그 그래픽 추가
-    this.debugGraphics = this.add.graphics();
-    blocklayer.renderDebug(this.debugGraphics, {
-      tileColor: null, // 충돌하지 않는 타일은 표시하지 않음
-      collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
-      faceColor: new Phaser.Display.Color(0, 255, 0, 128) // 충돌하는 면은 반투명 녹색으로 표시
-    });
-    blocklayer.renderDebug(this.debugGraphics, {
-      tileColor: null,
-      collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128),
-      faceColor: new Phaser.Display.Color(0, 255, 0, 128)
-    });
+    this.setBackground();
 
     this.playerCountText = new PlayerCountText(this, 16, 16, 0);
 
@@ -64,7 +35,7 @@ class GameScene extends Phaser.Scene {
           this.cameras.main.setZoom(1);
 
           // 충돌 설정
-          this.physics.add.collider(this.player, blocklayer);
+          this.physics.add.collider(this.player, this.blocklayer);
         }
       });
       this.updatePlayerCountText();
@@ -158,6 +129,30 @@ class GameScene extends Phaser.Scene {
     SocketManager.onWinnerPlayer((id) => {
       this.WinnerText = new WinnerText(this);
       this.WinnerText.showWinner(this.players[id].name);
+    });
+  }
+
+  setBackground() {
+    // 타일맵 설정
+    const map = this.make.tilemap({ key: "map" });
+    const tileset = map.addTilesetImage("first_tileset", "tiles");
+
+    // 레이어 생성 (Tiled에서 설정한 레이어 이름 사용)
+    map.createLayer("Tile Layer 1", tileset, 0, 0);
+    this.blocklayer = map.createLayer("block", tileset, 0, 0);
+    this.blocklayer.setCollisionByProperty({ collides: true });
+
+    // 충돌 디버그 그래픽 추가
+    this.debugGraphics = this.add.graphics();
+    this.blocklayer.renderDebug(this.debugGraphics, {
+      tileColor: null, // 충돌하지 않는 타일은 표시하지 않음
+      collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
+      faceColor: new Phaser.Display.Color(0, 255, 0, 128), // 충돌하는 면은 반투명 녹색으로 표시
+    });
+    this.blocklayer.renderDebug(this.debugGraphics, {
+      tileColor: null,
+      collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128),
+      faceColor: new Phaser.Display.Color(0, 255, 0, 128),
     });
   }
 

@@ -14,7 +14,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.scene.physics.add.existing(this);
     this.setCollideWorldBounds(true);
 
-    // // 히트박스 크기 및 오프셋 설정
     this.body.setSize(50, 50); // 히트박스 크기 설정 (너비, 높이)
     this.body.setOffset(75, 150); // 히트박스 오프셋 설정 (x, y)
 
