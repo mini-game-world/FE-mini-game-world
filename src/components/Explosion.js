@@ -1,13 +1,18 @@
 import Phaser from "phaser";
 
 class Explosion extends Phaser.GameObjects.Sprite {
-  constructor(scene, x, y) {
+  constructor(scene, x, y, isSelfInitiated) {
     super(scene, x, y, "explosion");
     this.scene = scene;
     this.scene.add.existing(this);
+    this.isSelfInitiated = isSelfInitiated;
 
-    this.explosion_sound = scene.sound.add("explosion_sound", { volume: 0.5 });
-    this.explosion_sound.play();
+    if (this.isSelfInitiated) {
+      this.explosion_sound = scene.sound.add("explosion_sound", {
+        volume: 0.5,
+      });
+      this.explosion_sound.play();
+    }
 
     this.setScale(1.5);
     this.setDepth(32);

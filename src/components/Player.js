@@ -9,6 +9,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     super(scene, x, y, texture);
     this.scene = scene;
     this.avatar = info.avatar;
+    this.isSelfInitiated = info.isSelfInitiated;
 
     this.scene.add.existing(this);
     this.scene.physics.add.existing(this);
@@ -97,7 +98,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.isPlay = true;
     this.isDead = false;
     this.nickname.setColor("#ffffff");
-    
+
     // 히트박스 충돌 활성화
     this.body.checkCollision.none = false;
   }
@@ -201,7 +202,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  createClawAttack(isSelfInitiated = true) {
+  createClawAttack() {
     const offset = -50;
     const clawX = this.x + (this.flipX ? -offset : offset);
     const clawY = this.y;
@@ -215,9 +216,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       isHeadingRight,
       damage,
       scale,
-      isSelfInitiated
+      this.isSelfInitiated
     );
-    if (isSelfInitiated) {
+    if (this.isSelfInitiated) {
       SocketManager.emitPlayerAttack({ x: clawX, y: clawY });
     }
   }

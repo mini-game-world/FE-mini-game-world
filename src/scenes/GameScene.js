@@ -25,10 +25,13 @@ class GameScene extends Phaser.Scene {
     SocketManager.onCurrentPlayers((players) => {
       Object.keys(players).forEach((id) => {
         const { x, y, avatar, isPlay, isDead, nickname } = players[id];
-        const info = { avatar, isPlay, isDead, nickname };
         if (id !== SocketManager.socket.id) {
+          const isSelfInitiated = false;
+          const info = { avatar, isPlay, isDead, nickname, isSelfInitiated };
           this.players[id] = new Player(this, x, y, `player${avatar}`, info);
         } else {
+          const isSelfInitiated = true;
+          const info = { avatar, isPlay, isDead, nickname, isSelfInitiated };
           this.player = new Player(this, x, y, `player${avatar}`, info);
           this.players[SocketManager.socket.id] = this.player;
           this.cameras.main.startFollow(this.player);
@@ -43,7 +46,8 @@ class GameScene extends Phaser.Scene {
 
     SocketManager.onNewPlayer((player) => {
       const { playerId, x, y, avatar, isPlay, nickname } = player;
-      const info = { avatar, isPlay, nickname };
+      const isSelfInitiated = false;
+      const info = { avatar, isPlay, nickname, isSelfInitiated };
       this.players[playerId] = new Player(this, x, y, `player${avatar}`, info);
       this.updatePlayerCountText();
     });
@@ -82,7 +86,7 @@ class GameScene extends Phaser.Scene {
     });
 
     SocketManager.onAttackPlayer((id) => {
-      this.players[id].createClawAttack(false);
+      this.players[id].createClawAttack();
     });
 
     SocketManager.onPlayerDisconnected((id) => {

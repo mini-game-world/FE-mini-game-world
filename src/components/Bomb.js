@@ -34,7 +34,7 @@ class Bomb extends Phaser.GameObjects.Sprite {
   }
 
   explode() {
-    new Explosion(this.scene, this.x, this.y);
+    new Explosion(this.scene, this.x, this.y, this.player.isSelfInitiated);
     this.destroy();
   }
 
