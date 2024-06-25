@@ -1,11 +1,9 @@
-import Phaser from "phaser";
-
-class WinnerPlayer{
+class WinnerText {
   constructor(scene) {
     this.scene = scene;
     this.winnerText = null;
   }
-  
+
   showWinner(name) {
     if (this.winnerText) {
       this.winnerText.destroy();
@@ -25,8 +23,8 @@ class WinnerPlayer{
       })
       .setDepth(100);
 
-      this.winnerText.setScrollFactor(0);
-      this.winnerText.setOrigin(0.5, 0);
+    this.winnerText.setScrollFactor(0);
+    this.winnerText.setOrigin(0.5, 0);
 
     this.scene.time.delayedCall(
       5000,
@@ -42,9 +40,9 @@ class WinnerPlayer{
   }
 
   destroy() {
-    this.scene.events.off('update', this.updatePosition, this);
+    this.scene.events.off("update", this.updatePosition, this);
     super.destroy();
   }
 }
 
-export default WinnerPlayer;
+export default WinnerText;

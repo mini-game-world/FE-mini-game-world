@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import Player from "../components/Player";
 import SocketManager from "../utils/SocketManager";
 import PlayerCountText from "../components/PlayerCountText";
-import WinnerPlayer from "../components/WinnerPlayer";
+import WinnerText from "../components/WinnerText";
 
 class GameScene extends Phaser.Scene {
   constructor() {
@@ -122,8 +122,8 @@ class GameScene extends Phaser.Scene {
     });
 
     SocketManager.onWinnerPlayer((id) => {
-      this.WinnerPlayer = new WinnerPlayer(this);
-      this.WinnerPlayer.showWinner(this.players[id].name);
+      this.WinnerText = new WinnerText(this);
+      this.WinnerText.showWinner(this.players[id].name);
     });
   }
 
