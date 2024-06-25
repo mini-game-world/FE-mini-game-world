@@ -32,6 +32,19 @@ class GameScene extends Phaser.Scene {
     // layer.setCollisionByProperty({ collides: true });
     blocklayer.setCollisionByProperty({ collides: true });
 
+    // 충돌 디버그 그래픽 추가
+    this.debugGraphics = this.add.graphics();
+    blocklayer.renderDebug(this.debugGraphics, {
+      tileColor: null, // 충돌하지 않는 타일은 표시하지 않음
+      collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
+      faceColor: new Phaser.Display.Color(0, 255, 0, 128) // 충돌하는 면은 반투명 녹색으로 표시
+    });
+    blocklayer.renderDebug(this.debugGraphics, {
+      tileColor: null,
+      collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128),
+      faceColor: new Phaser.Display.Color(0, 255, 0, 128)
+    });
+
     this.playerCountText = new PlayerCountText(this, 16, 16, 0);
 
     this.gameStatusText = new GameStatusText(this);
