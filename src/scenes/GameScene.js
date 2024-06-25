@@ -3,6 +3,7 @@ import Player from "../components/Player";
 import SocketManager from "../utils/SocketManager";
 import PlayerCountText from "../components/PlayerCountText";
 import WinnerText from "../components/WinnerText";
+import GameStatusText from "../components/GameStatusText";
 
 class GameScene extends Phaser.Scene {
   constructor() {
@@ -16,6 +17,8 @@ class GameScene extends Phaser.Scene {
     this.add.image(400, 300, "background");
 
     this.playerCountText = new PlayerCountText(this, 16, 16, 0);
+
+    this.gameStatusText = new GameStatusText(this);
 
     SocketManager.connect();
 
@@ -45,7 +48,6 @@ class GameScene extends Phaser.Scene {
     SocketManager.onPlayerMoved((player) => {
       const { playerId, x, y } = player;
       if (this.players[playerId]) {
-        console.log("onPlayerMoved", this.players[playerId].isDead);
         if (this.players[playerId].isDead) {
           const prevX = this.players[playerId].x;
           this.players[playerId].setPosition(x, y);
@@ -90,12 +92,12 @@ class GameScene extends Phaser.Scene {
 
     SocketManager.onPlayingGame((isPlaying) => {
       if (isPlaying == 1) {
-        console.log("게임시작");
+        this.gameStatusText.showText("게임시작");
         Object.values(this.players).forEach((player) => {
           player.setPlayStatus();
         });
       } else {
-        console.log("게임종료");
+        this.gameStatusText.showText("게임종료");
         Object.values(this.players).forEach((player) => {
           player.setReadyStatus();
         });
