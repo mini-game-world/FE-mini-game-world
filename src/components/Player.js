@@ -14,8 +14,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.scene.physics.add.existing(this);
     this.setCollideWorldBounds(true);
 
-    console.log(this.body);
-
     // // 히트박스 크기 및 오프셋 설정
     this.body.setSize(50, 50); // 히트박스 크기 설정 (너비, 높이)
     this.body.setOffset(75, 150); // 히트박스 오프셋 설정 (x, y)
@@ -75,6 +73,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.isDead = true;
     this.setAlpha(0.5);
     this.nickname.setColor("#000000");
+
+    // 히트박스 충돌 비활성화
+    this.body.checkCollision.none = true;
   }
 
   setReadyStatus() {
@@ -87,6 +88,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.removeBomb();
     this.isDead = false;
     this.isPlay = false;
+
+    // 히트박스 충돌 활성화
+    this.body.checkCollision.none = false;
   }
 
   setPlayStatus() {
@@ -94,6 +98,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.isPlay = true;
     this.isDead = false;
     this.nickname.setColor("#ffffff");
+    
+    // 히트박스 충돌 활성화
+    this.body.checkCollision.none = false;
   }
 
   createAnimations() {
