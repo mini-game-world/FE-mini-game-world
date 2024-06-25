@@ -1,28 +1,44 @@
 import Phaser from "phaser";
 
-class WinnerPlayer extends Phaser.GameObjects.Text {
-  constructor(scene, player, nickname) {
-    super(scene, player.x, player.y - 200, `최종 우승자!! ${nickname}`, {
+class WinnerPlayer{
+  constructor(scene) {
+    this.scene = scene;
+    this.winnerText = null;
+  }
+  
+  showWinner(name) {
+    if (this.winnerText) {
+      this.winnerText.destroy();
+    }
+
+    const centerX = this.scene.cameras.main.width / 2;
+    const centerY = this.scene.cameras.main.height / 2 - 200;
+
+    this.winnerText = this.scene.add
+      .text(centerX, centerY, `최종 우승자!! ${name}`, {
         fontFamily: "Arial Black",
         fontSize: 38,
         color: "#ffffff",
         stroke: "#000000",
         strokeThickness: 8,
         align: "center",
-    });
-    this.scene = scene;
-    this.player = player;
-    this.scene.add.existing(this);
+      })
+      .setDepth(100);
 
-    this.setOrigin(0.5);
-    this.setDepth(100); // Ensure the nickname is above the player sprite
+      this.winnerText.setScrollFactor(0);
+      this.winnerText.setOrigin(0.5, 0);
 
-    // Update position on each frame
-    this.scene.events.on('update', this.updatePosition, this);
-  }
-  
-  updatePosition() {
-    this.setPosition(this.player.x, this.player.y - 200); // Adjust the Y offset as needed
+    this.scene.time.delayedCall(
+      5000,
+      () => {
+        if (this.winnerText) {
+          this.winnerText.destroy();
+          this.winnerText = null;
+        }
+      },
+      [],
+      this.scene
+    );
   }
 
   destroy() {

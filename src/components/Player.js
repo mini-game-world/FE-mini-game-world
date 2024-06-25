@@ -2,8 +2,7 @@ import Phaser from "phaser";
 import SocketManager from "../utils/SocketManager";
 import Claw from "./Claw";
 import Bomb from "./Bomb";
-import Nickname from "./NickName";
-import WinnerPlayer from "./WinnerPlayer";
+import Nickname from "./NickName"; 
 
 class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y, texture, info) {
@@ -244,21 +243,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       this.bomb.destroy();
       this.bomb = null;
     }
-  }
-
-  showWinner(winner) {
-    this.WinnerPlayer = new WinnerPlayer(this.scene, this, winner.name);
-    this.scene.time.delayedCall(
-      5000,
-      () => {
-        if (this.WinnerPlayer) {
-          this.WinnerPlayer.destroy();
-          this.WinnerPlayer = null;
-        }
-      },
-      [],
-      this.scene
-    );
   }
 
   setPosition(x, y) {
