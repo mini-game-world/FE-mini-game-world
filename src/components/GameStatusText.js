@@ -12,6 +12,7 @@ class GameStatusText {
       .setOrigin(0.5, 0.5);
     this.text.setAlpha(0); // Initially hidden
     this.text.setScrollFactor(0);
+    this.text.setDepth(100);
   }
 
   showText(message) {
