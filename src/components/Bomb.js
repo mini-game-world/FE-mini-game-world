@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import Explosion from "./Explosion";
 
 class Bomb extends Phaser.GameObjects.Sprite {
   constructor(scene, player) {
@@ -34,6 +35,7 @@ class Bomb extends Phaser.GameObjects.Sprite {
 
   destroy() {
     this.scene.events.off('update', this.updatePosition, this);
+    new Explosion(this.scene, this.x, this.y);
     super.destroy();
   }
 }
