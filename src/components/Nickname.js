@@ -6,7 +6,7 @@ class NickName extends Phaser.GameObjects.Text {
       fontSize: '12px',
       fill: '#ffffff',
       align: 'center',
-      font: '12px 배달의민족 주아 OTF',
+      font: '16px 밑미 폰트 OTF',
     });
     this.scene = scene;
     this.player = player;
