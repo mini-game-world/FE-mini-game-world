@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import SocketManager from "../utils/SocketManager";
 import Claw from "./Claw";
 import Bomb from "./Bomb";
-import Nickname from "./NickName"; 
+import NickName from "./NickName";
 
 class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y, texture, info) {
@@ -16,7 +16,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
     this.bomb = null;
     this.name = info.nickname;
-    this.nickname = new Nickname(scene, this, this.name);
+    this.nickname = new NickName(scene, this, this.name);
 
     this.scale = 0.4;
     this.setDepth(30);

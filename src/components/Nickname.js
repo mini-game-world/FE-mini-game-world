@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 
-class Nickname extends Phaser.GameObjects.Text {
+class NickName extends Phaser.GameObjects.Text {
   constructor(scene, player, text) {
     super(scene, player.x, player.y + 50, text, {
       fontSize: '12px',
@@ -12,14 +12,13 @@ class Nickname extends Phaser.GameObjects.Text {
     this.scene.add.existing(this);
 
     this.setOrigin(0.5, 0.5);
-    this.setDepth(40); // Ensure the nickname is above the player sprite
+    this.setDepth(40);
 
-    // Update position on each frame
     this.scene.events.on('update', this.updatePosition, this);
   }
 
   updatePosition() {
-    this.setPosition(this.player.x, this.player.y + 50); // Adjust the Y offset as needed
+    this.setPosition(this.player.x, this.player.y + 50);
   }
 
   destroy() {
@@ -28,4 +27,4 @@ class Nickname extends Phaser.GameObjects.Text {
   }
 }
 
-export default Nickname;
+export default NickName;
