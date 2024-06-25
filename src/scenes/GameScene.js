@@ -11,10 +11,12 @@ class GameScene extends Phaser.Scene {
     this.player = null;
     this.players = {};
     this.playerCountText = null;
+    this.bgm = null;
   }
 
   create() {
     this.setBackground();
+    this.bgm = this.sound.add("playingBGM1", { loop: true, volume: 0.2 });
 
     this.playerCountText = new PlayerCountText(this, 16, 16, 0);
 
@@ -99,11 +101,13 @@ class GameScene extends Phaser.Scene {
 
     SocketManager.onPlayingGame((isPlaying) => {
       if (isPlaying == 1) {
+        this.startBGM();
         this.gameStatusText.showText("게임시작");
         Object.values(this.players).forEach((player) => {
           player.setPlayStatus();
         });
       } else {
+        this.stopBGM();
         this.gameStatusText.showText("게임종료");
         Object.values(this.players).forEach((player) => {
           player.setReadyStatus();
@@ -134,6 +138,18 @@ class GameScene extends Phaser.Scene {
       this.WinnerText = new WinnerText(this);
       this.WinnerText.showWinner(this.players[id].name);
     });
+  }
+
+  startBGM() {
+    if (!this.bgm.isPlaying) {
+      this.bgm.play();
+    }
+  }
+
+  stopBGM() {
+    if (this.bgm.isPlaying) {
+      this.bgm.stop();
+    }
   }
 
   setBackground() {
