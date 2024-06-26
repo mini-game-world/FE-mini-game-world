@@ -7,7 +7,7 @@ class GameStatusText {
         color: "#ffffff",
         padding: { x: 10, y: 5 },
         align: "center",
-        fontFamily: 'BMJUA',
+        fontFamily: "BMJUA",
       })
       .setOrigin(0.5, 0.5);
     this.text.setAlpha(0); // Initially hidden
@@ -25,7 +25,18 @@ class GameStatusText {
       alpha: { from: 1, to: 0 },
       ease: "Cubic.easeOut",
       duration: 2000,
-      delay: 2000,
+    });
+  }
+
+  showReadyCount(count) {
+    this.text.setText(count);
+    this.text.setAlpha(1);
+
+    this.scene.tweens.add({
+      targets: this.text,
+      alpha: { from: 1, to: 0 },
+      ease: "Cubic.easeOut",
+      duration: 1000,
     });
   }
 }

@@ -168,6 +168,13 @@ class GameScene extends Phaser.Scene {
         }
       }
     });
+
+    SocketManager.onBombGameReady((count) => {
+      if (this.gameStatusText) {
+        this.gameStatusText.showReadyCount(count);
+      }
+    });
+
     this.startWaitingBGM();
   }
 

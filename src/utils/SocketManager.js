@@ -61,13 +61,17 @@ class SocketManager {
     this.socket.on("gameWinner", callback);
   }
 
+  onBombGameReady(callback) {
+    this.socket.on("bombGameReady", callback);
+  }
+
   emitPlayerMovement(data) {
     this.socket.emit("playerMovement", data);
   }
 
-   emitPlayerAttack(data) {
-    this.socket.emit("attackPosition",data);
-   }
+  emitPlayerAttack(data) {
+    this.socket.emit("attackPosition", data);
+  }
 }
 
 export default new SocketManager();
