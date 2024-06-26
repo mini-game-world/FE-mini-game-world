@@ -9,6 +9,9 @@ class WinnerText {
       this.winnerText.destroy();
     }
 
+    this.winnerSound = this.scene.sound.add("winner_sound");
+    this.winnerSound.play();
+
     const centerX = this.scene.cameras.main.width / 2;
     const centerY = this.scene.cameras.main.height / 2 - 200;
 
