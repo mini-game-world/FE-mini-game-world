@@ -155,7 +155,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   getVelocity() {
-    const speed = 300;
+    const speed = this.bomb ? 400 : 300;
     let velocityX = 0;
     let velocityY = 0;
 
