@@ -28,7 +28,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.createInputKeyBoard();
     this.createAnimations();
 
-    this.isAttacking = false;
+    // this.isAttacking = false;
     this.isStunned = false;
     this.isPlay = this.processInfo(info.isPlay);
     this.isDead = this.processInfo(info.isDead);
@@ -70,7 +70,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.explodeBomb();
     this.setTexture("playerDead");
     this.anims.play(`dead`, true);
-    this.isAttacking = false;
+    // this.isAttacking = false;
     this.isDead = true;
     this.setAlpha(0.5);
     this.nickname.setColor("#F78181");
@@ -148,7 +148,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     // 공격 애니메이션이 완료될 때 콜백
     this.on("animationcomplete", (anim, frame) => {
       if (anim.key === `attack${this.avatar}`) {
-        this.isAttacking = false;
+        // this.isAttacking = false;
         this.createClawAttack();
       }
     });
@@ -173,7 +173,12 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       return;
     }
 
-    if (this.isAttacking || this.isStunned) {
+    // if (this.isAttacking || this.isStunned) {
+    //   this.setVelocity(0, 0);
+    //   return;
+    // }
+
+    if (this.isStunned) {
       this.setVelocity(0, 0);
       return;
     }
@@ -196,8 +201,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       }
     } else {
       if (this.keys.attack.isDown && this.isPlay && !this.isDead) {
-        this.isAttacking = true;
+        // this.isAttacking = true;
         this.anims.play(`attack${this.avatar}`, true);
+        if (velocityX !== 0 || velocityY !== 0) {
+          this.setFlipX(velocityX > 0);
+        }
       } else if (velocityX !== 0 || velocityY !== 0) {
         this.anims.play(`move${this.avatar}`, true);
         this.setFlipX(velocityX > 0);
@@ -231,7 +239,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
   stunPlayer() {
     if (this.bomb) return;
     this.isStunned = true;
-    this.isAttacking = false;
+    // this.isAttacking = false;
     this.setVelocity(0, 0);
     if (!this.isDead) {
       this.anims.play(`stun${this.avatar}`, true);
@@ -264,7 +272,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       this.bomb = new Bomb(this.scene, this);
     }
     this.isStunned = true;
-    this.isAttacking = false;
+    // this.isAttacking = false;
     this.setVelocity(0, 0);
     this.scene.tweens.add({
       targets: this,
