@@ -259,6 +259,28 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
+  receiveBomb() {
+    if (!this.bomb) {
+      this.bomb = new Bomb(this.scene, this);
+    }
+    this.isStunned = true;
+    this.isAttacking = false;
+    this.setVelocity(0, 0);
+    this.scene.tweens.add({
+      targets: this,
+      alpha: 0,
+      yoyo: true,
+      repeat: 1,
+      duration: 50,
+      onComplete: () => {
+        this.anims.play(`idle${this.avatar}`, true);
+      },
+    });
+    this.scene.time.delayedCall(500, () => {
+      this.isStunned = false;
+    });
+  }
+
   removeBomb() {
     if (this.bomb) {
       this.bomb.destroy();

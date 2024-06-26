@@ -9,7 +9,9 @@ class WinnerText {
       this.winnerText.destroy();
     }
 
-    this.winnerSound = this.scene.sound.add("winner_sound");
+    this.winnerSound = this.scene.sound.add("winner_sound", {
+      volume: 0.2,
+    });
     this.winnerSound.play();
 
     const centerX = this.scene.cameras.main.width / 2;
@@ -23,7 +25,7 @@ class WinnerText {
         stroke: "#000000",
         strokeThickness: 8,
         align: "center",
-        fontFamily: 'BMJUA',
+        fontFamily: "BMJUA",
       })
       .setDepth(100);
 

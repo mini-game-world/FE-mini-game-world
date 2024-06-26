@@ -140,7 +140,7 @@ class GameScene extends Phaser.Scene {
     SocketManager.onChangeBombUser((players) => {
       const current = players[0];
       const previous = players[1];
-      this.players[current].setBombUser();
+      this.players[current].receiveBomb();
       this.players[previous].removeBomb();
     });
 
