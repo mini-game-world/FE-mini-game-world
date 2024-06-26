@@ -66,29 +66,35 @@ class GameScene extends Phaser.Scene {
     SocketManager.onPlayerMoved((player) => {
       const { playerId, x, y } = player;
       if (this.players[playerId]) {
-        if (this.players[playerId].isDead) {
-          const prevX = this.players[playerId].x;
-          this.players[playerId].setPosition(x, y);
-          this.players[playerId].anims.play("dead", true);
-          this.players[playerId].setFlipX(prevX < x); // 방향 설정
-        } else {
-          const prevX = this.players[playerId].x;
-          this.players[playerId].setPosition(x, y);
-          this.players[playerId].anims.play(
-            `move${this.players[playerId].avatar}`,
-            true
-          );
-          this.players[playerId].setFlipX(prevX < x); // 방향 설정
-          clearTimeout(this.players[playerId].idleTimeout);
-          this.players[playerId].idleTimeout = setTimeout(() => {
-            if (this.players[playerId]) {
-              this.players[playerId].anims.play(
-                `idle${this.players[playerId].avatar}`,
-                true
-              );
+        const playerSprite = this.players[playerId];
+        const prevX = playerSprite.x;
+
+        // Apply tween for smooth movement
+        this.tweens.add({
+          targets: playerSprite,
+          x: x,
+          y: y,
+          duration: 100, // Duration of the tween
+          ease: "Linear", // Easing function
+          onUpdate: () => {
+            if (playerSprite.isDead) {
+              playerSprite.anims.play("dead", true);
+            } else {
+              playerSprite.anims.play(`move${playerSprite.avatar}`, true);
+              playerSprite.setFlipX(prevX < x); // 방향 설정
             }
-          }, 100);
-        }
+          },
+          onComplete: () => {
+            if (!playerSprite.isDead) {
+              clearTimeout(playerSprite.idleTimeout);
+              playerSprite.idleTimeout = setTimeout(() => {
+                if (this.players[playerId]) {
+                  playerSprite.anims.play(`idle${playerSprite.avatar}`, true);
+                }
+              }, 100);
+            }
+          },
+        });
       }
     });
 
