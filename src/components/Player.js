@@ -278,6 +278,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   setWinner() {
+    if (!this.scene) return;
     this.nickname.setColor("#FFD700");
     const originalScale = this.scale;
 
@@ -287,16 +288,20 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       duration: 2000,
       ease: "Power1",
       onUpdate: () => {
+        if (!this.nickname) return;
         this.nickname.updatePosition();
       },
       onComplete: () => {
+        if (!this.scene) return;
         this.scene.time.delayedCall(2000, () => {
+          if (!this.scene) return;
           this.scene.tweens.add({
             targets: this,
             scale: originalScale,
             duration: 2000,
             ease: "Power1",
             onUpdate: () => {
+              if (!this.nickname) return;
               this.nickname.updatePosition();
             },
           });

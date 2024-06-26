@@ -79,10 +79,12 @@ class GameScene extends Phaser.Scene {
           this.players[playerId].setFlipX(prevX < x); // 방향 설정
           clearTimeout(this.players[playerId].idleTimeout);
           this.players[playerId].idleTimeout = setTimeout(() => {
-            this.players[playerId].anims.play(
-              `idle${this.players[playerId].avatar}`,
-              true
-            );
+            if (this.players[playerId]) {
+              this.players[playerId].anims.play(
+                `idle${this.players[playerId].avatar}`,
+                true
+              );
+            }
           }, 100);
         }
       }
@@ -143,13 +145,15 @@ class GameScene extends Phaser.Scene {
     });
 
     SocketManager.onWinnerPlayer((id) => {
-      const player = this.players[id];
-      player.setWinner();
-      this.WinnerText = new WinnerText(this);
-      this.WinnerText.showWinner(player.name);
-      if (this.player !== player) {
-        this.player.stopMove();
-        this.smoothCameraFollow(player);
+      if (this.players[id]) {
+        const player = this.players[id];
+        player.setWinner();
+        this.WinnerText = new WinnerText(this);
+        this.WinnerText.showWinner(player.name);
+        if (this.player !== player) {
+          this.player.stopMove();
+          this.smoothCameraFollow(player);
+        }
       }
     });
     this.startWaitingBGM();
