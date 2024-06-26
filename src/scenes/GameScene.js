@@ -204,11 +204,6 @@ class GameScene extends Phaser.Scene {
       collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
       faceColor: new Phaser.Display.Color(0, 255, 0, 128), // 충돌하는 면은 반투명 녹색으로 표시
     });
-    this.blocklayer.renderDebug(this.debugGraphics, {
-      tileColor: null,
-      collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128),
-      faceColor: new Phaser.Display.Color(0, 255, 0, 128),
-    });
   }
 
   updatePlayerCountText() {
