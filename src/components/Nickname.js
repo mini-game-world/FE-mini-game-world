@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 
-class NickName extends Phaser.GameObjects.Text {
+class Nickname extends Phaser.GameObjects.Text {
   constructor(scene, player, text) {
     super(scene, player.x, player.y + 50, text, {
       fontSize: '16px',
@@ -30,4 +30,4 @@ class NickName extends Phaser.GameObjects.Text {
   }
 }
 
-export default NickName;
+export default Nickname;
