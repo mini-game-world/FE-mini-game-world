@@ -21,7 +21,7 @@ class NickName extends Phaser.GameObjects.Text {
   }
 
   updatePosition() {
-    this.setPosition(this.player.x, this.player.y + 50);
+    this.setPosition(this.player.x, this.player.y + 50 * (this.player.scale + 0.8));
   }
 
   destroy() {

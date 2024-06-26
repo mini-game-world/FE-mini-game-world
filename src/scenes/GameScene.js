@@ -17,8 +17,14 @@ class GameScene extends Phaser.Scene {
 
   create() {
     this.setBackground();
-    this.playingbgm1 = this.sound.add("playingBGM1", { loop: true, volume: 0.2 });
-    this.waitingbgm1 = this.sound.add("waitingBGM1", { loop: true, volume: 0.2 });
+    this.playingbgm1 = this.sound.add("playingBGM1", {
+      loop: true,
+      volume: 0.2,
+    });
+    this.waitingbgm1 = this.sound.add("waitingBGM1", {
+      loop: true,
+      volume: 0.2,
+    });
 
     this.playerCountText = new PlayerCountText(this, 16, 16, 0);
 
@@ -137,8 +143,10 @@ class GameScene extends Phaser.Scene {
     });
 
     SocketManager.onWinnerPlayer((id) => {
+      const player = this.players[id];
+      player.setWinner();
       this.WinnerText = new WinnerText(this);
-      this.WinnerText.showWinner(this.players[id].name);
+      this.WinnerText.showWinner(player.name);
     });
 
     this.startWaitingBGM();

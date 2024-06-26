@@ -268,6 +268,33 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
+  setWinner() {
+    const originalScale = this.scale;
+
+    this.scene.tweens.add({
+      targets: this,
+      scale: originalScale * 3,
+      duration: 2000,
+      ease: "Power1",
+      onUpdate: () => {
+        this.nickname.updatePosition();
+      },
+      onComplete: () => {
+        this.scene.time.delayedCall(2000, () => {
+          this.scene.tweens.add({
+            targets: this,
+            scale: originalScale,
+            duration: 2000,
+            ease: "Power1",
+            onUpdate: () => {
+              this.nickname.updatePosition();
+            },
+          });
+        });
+      },
+    });
+  }
+
   setPosition(x, y) {
     super.setPosition(x, y);
   }
