@@ -77,21 +77,25 @@ class GameScene extends Phaser.Scene {
           duration: 100, // Duration of the tween
           ease: "Linear", // Easing function
           onUpdate: () => {
-            if (playerSprite.isDead) {
-              playerSprite.anims.play("dead", true);
-            } else {
-              playerSprite.anims.play(`move${playerSprite.avatar}`, true);
-              playerSprite.setFlipX(prevX < x); // 방향 설정
+            if (this.players[playerId]) {
+              if (playerSprite.isDead) {
+                playerSprite.anims.play("dead", true);
+              } else {
+                playerSprite.anims.play(`move${playerSprite.avatar}`, true);
+                playerSprite.setFlipX(prevX < x); // 방향 설정
+              }
             }
           },
           onComplete: () => {
-            if (!playerSprite.isDead) {
-              clearTimeout(playerSprite.idleTimeout);
-              playerSprite.idleTimeout = setTimeout(() => {
-                if (this.players[playerId]) {
-                  playerSprite.anims.play(`idle${playerSprite.avatar}`, true);
-                }
-              }, 100);
+            if (this.players[playerId]) {
+              if (!playerSprite.isDead) {
+                clearTimeout(playerSprite.idleTimeout);
+                playerSprite.idleTimeout = setTimeout(() => {
+                  if (this.players[playerId]) {
+                    playerSprite.anims.play(`idle${playerSprite.avatar}`, true);
+                  }
+                }, 100);
+              }
             }
           },
         });
