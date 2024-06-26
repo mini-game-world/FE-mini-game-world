@@ -147,6 +147,9 @@ class GameScene extends Phaser.Scene {
       player.setWinner();
       this.WinnerText = new WinnerText(this);
       this.WinnerText.showWinner(player.name);
+      if (this.player !== player){
+        this.player.stopMove();
+      }
     });
 
     this.startWaitingBGM();
