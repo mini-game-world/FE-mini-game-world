@@ -44,8 +44,7 @@ class GameScene extends Phaser.Scene {
           const info = { avatar, isPlay, isDead, nickname, isSelfInitiated };
           this.player = new Player(this, x, y, `player${avatar}`, info);
           this.players[SocketManager.socket.id] = this.player;
-          this.cameras.main.startFollow(this.player);
-          this.cameras.main.setZoom(1);
+          this.smoothCameraFollow(this.player);
 
           // 충돌 설정
           this.physics.add.collider(this.player, this.blocklayer);
@@ -120,6 +119,7 @@ class GameScene extends Phaser.Scene {
         Object.values(this.players).forEach((player) => {
           player.setReadyStatus();
         });
+        this.smoothCameraFollow(this.player);
       }
     });
 
@@ -147,11 +147,11 @@ class GameScene extends Phaser.Scene {
       player.setWinner();
       this.WinnerText = new WinnerText(this);
       this.WinnerText.showWinner(player.name);
-      if (this.player !== player){
+      if (this.player !== player) {
         this.player.stopMove();
+        this.smoothCameraFollow(player);
       }
     });
-
     this.startWaitingBGM();
   }
 
@@ -200,6 +200,14 @@ class GameScene extends Phaser.Scene {
   updatePlayerCountText() {
     const playerCount = Object.keys(this.players).length;
     this.playerCountText.update(playerCount);
+  }
+
+  smoothCameraFollow(target) {
+    this.cameras.main.stopFollow();
+    this.cameras.main.pan(target.x, target.y, 2000, "Sine.easeInOut");
+    this.cameras.main.once("camerapancomplete", () => {
+      this.cameras.main.startFollow(target);
+    });
   }
 
   update() {
