@@ -11,20 +11,22 @@ class GameScene extends Phaser.Scene {
     this.player = null;
     this.players = {};
     this.playerCountText = null;
-    this.playingbgm1 = null;
-    this.waitingbgm1 = null;
+    this.playingBGMs = [];
+    this.waitingBGMs = [];
+    this.currentPlayingBGM = null;
+    this.currentWaitingBGM = null;
   }
 
   create() {
     this.setBackground();
-    this.playingbgm1 = this.sound.add("playingBGM1", {
-      loop: true,
-      volume: 0.2,
-    });
-    this.waitingbgm1 = this.sound.add("waitingBGM1", {
-      loop: true,
-      volume: 0.2,
-    });
+    this.playingBGMs = [
+      this.sound.add("playingBGM1", { loop: true, volume: 0.2 }),
+      this.sound.add("playingBGM2", { loop: true, volume: 0.2 }),
+    ];
+    this.waitingBGMs = [
+      this.sound.add("waitingBGM1", { loop: true, volume: 0.2 }),
+      this.sound.add("waitingBGM2", { loop: true, volume: 0.2 }),
+    ];
 
     this.playerCountText = new PlayerCountText(this, 16, 16, 0);
 
@@ -160,21 +162,29 @@ class GameScene extends Phaser.Scene {
   }
 
   startPlayingBGM() {
-    if (this.waitingbgm1.isPlaying) {
-      this.waitingbgm1.stop();
+    if (this.currentWaitingBGM && this.currentWaitingBGM.isPlaying) {
+      this.currentWaitingBGM.stop();
     }
-    if (!this.playingbgm1.isPlaying) {
-      this.playingbgm1.play();
+    if (this.currentPlayingBGM && this.currentPlayingBGM.isPlaying) {
+      this.currentPlayingBGM.stop();
     }
+
+    const randomIndex = Phaser.Math.Between(0, this.playingBGMs.length - 1);
+    this.currentPlayingBGM = this.playingBGMs[randomIndex];
+    this.currentPlayingBGM.play();
   }
 
   startWaitingBGM() {
-    if (this.playingbgm1.isPlaying) {
-      this.playingbgm1.stop();
+    if (this.currentPlayingBGM && this.currentPlayingBGM.isPlaying) {
+      this.currentPlayingBGM.stop();
     }
-    if (!this.waitingbgm1.isPlaying) {
-      this.waitingbgm1.play();
+    if (this.currentWaitingBGM && this.currentWaitingBGM.isPlaying) {
+      this.currentWaitingBGM.stop();
     }
+
+    const randomIndex = Phaser.Math.Between(0, this.waitingBGMs.length - 1);
+    this.currentWaitingBGM = this.waitingBGMs[randomIndex];
+    this.currentWaitingBGM.play();
   }
 
   setBackground() {
