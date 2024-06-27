@@ -10,6 +10,10 @@ class GameScene extends Phaser.Scene {
     super("GameScene");
     this.player = null;
     this.players = {};
+    this.activePlayers = {};
+    this.deadPlayers = {};
+    this.waitingPlayers = {};
+
     this.playerCountText = null;
     this.playingBGMs = [];
     this.waitingBGMs = [];
@@ -37,19 +41,21 @@ class GameScene extends Phaser.Scene {
     SocketManager.onCurrentPlayers((players) => {
       Object.keys(players).forEach((id) => {
         const { x, y, avatar, isPlay, isDead, nickname } = players[id];
-        if (id !== SocketManager.socket.id) {
-          const isSelfInitiated = false;
-          const info = { avatar, isPlay, isDead, nickname, isSelfInitiated };
-          this.players[id] = new Player(this, x, y, `player${avatar}`, info);
-        } else {
-          const isSelfInitiated = true;
-          const info = { avatar, isPlay, isDead, nickname, isSelfInitiated };
-          this.player = new Player(this, x, y, `player${avatar}`, info);
-          this.players[SocketManager.socket.id] = this.player;
+        const isSelfInitiated = id === SocketManager.socket.id;
+        const info = { avatar, isPlay, isDead, nickname, isSelfInitiated };
+        const player = new Player(this, x, y, `player${avatar}`, info);
+        this.players[id] = player;
+        if (isSelfInitiated) {
+          this.player = player;
           this.smoothCameraFollow(this.player);
-
-          // 충돌 설정
           this.physics.add.collider(this.player, this.blocklayer);
+        }
+        if (isPlay) {
+          this.activePlayers[id] = player;
+        } else if (isDead) {
+          this.deadPlayers[id] = player;
+        } else {
+          this.waitingPlayers[id] = player;
         }
       });
       this.updatePlayerCountText();
