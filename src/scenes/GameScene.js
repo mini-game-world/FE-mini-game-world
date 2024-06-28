@@ -8,7 +8,9 @@ import GameStatusText from "../components/GameStatusText";
 class GameScene extends Phaser.Scene {
   constructor() {
     super("GameScene");
+
     this.player = null;
+
     this.players = {};
     this.activePlayers = {};
     this.deadPlayers = {};
@@ -124,11 +126,20 @@ class GameScene extends Phaser.Scene {
       if (this.players[id]) {
         this.players[id].destroy();
         delete this.players[id];
-        delete this.activePlayers[id];
-        delete this.deadPlayers[id];
-        delete this.waitingPlayers[id];
-        this.updatePlayerCountText();
       }
+      if (this.activePlayers[id]) {
+        this.activePlayers[id].destroy();
+        delete this.activePlayers[id];
+      }
+      if (this.deadPlayers[id]) {
+        this.deadPlayers[id].destroy();
+        delete this.deadPlayers[id];
+      }
+      if (this.waitingPlayers[id]) {
+        this.waitingPlayers[id].destroy();
+        delete this.waitingPlayers[id];
+      }
+      this.updatePlayerCountText();
     });
 
     SocketManager.onPlayingGame((isPlaying) => {
