@@ -4,6 +4,7 @@ import backgroundImg from "../assets/background.png";
 import playerDeadSprite from "../assets/playerDead.png";
 import clawSprite from "../assets/claw_white.png";
 import bombSprite from "../assets/bomb.png";
+import explosionSprite from "../assets/explosion.png";
 
 // Import map
 import first_tileset from "../assets/tiles/first_tileset.png";
@@ -19,10 +20,12 @@ import tree_2 from "../assets/tiles/tree_2.png";
 
 // Import Sound
 import scratchSound from "../assets/sounds/scratch.ogg";
+import timerSound from "../assets/sounds/timer.ogg";
+import explosionSound from "../assets/sounds/explosion.ogg";
 import playingBGM1 from "../assets/bgm/playingBGM1.mp3";
 import playingBGM2 from "../assets/bgm/playingBGM2.mp3";
 import waitingBGM1 from "../assets/bgm/waitingBGM1.mp3";
-import waitingBGM2 from "../assets/bgm/waitingBGM1.mp3";
+import waitingBGM2 from "../assets/bgm/waitingBGM2.mp3";
 
 // Import player assets from player0 to player30
 import player0 from "../assets/players/player0.png";
@@ -170,6 +173,8 @@ class BootScene extends Phaser.Scene {
 
     //audio
     this.load.audio("scratch_sound", scratchSound);
+    this.load.audio("timer_sound", timerSound);
+    this.load.audio("explosion_sound", explosionSound);
     this.load.audio("playingBGM1", playingBGM1);
     this.load.audio("playingBGM2", playingBGM2);
     this.load.audio("waitingBGM1", waitingBGM1);
@@ -189,6 +194,11 @@ class BootScene extends Phaser.Scene {
       frameWidth: 303,
       frameHeight: 142,
     });
+
+    this.load.spritesheet("explosion", explosionSprite, {
+      frameWidth: 32,
+      frameHeight: 32,
+    })
 
     const players = [
       player0,

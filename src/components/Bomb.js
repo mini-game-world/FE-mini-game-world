@@ -3,7 +3,7 @@ import Explosion from "./Explosion";
 
 class Bomb extends Phaser.GameObjects.Sprite {
   constructor(scene, player) {
-    super(scene, player.x, player.y - 10, "bomb");
+    super(scene, player.x, player.y, "bomb");
     this.scene = scene;
     this.player = player;
     this.isSelfInitiated = this.player.isSelfInitiated;
@@ -15,8 +15,8 @@ class Bomb extends Phaser.GameObjects.Sprite {
       this.timerSound.play();
     }
 
-    this.scale = 0.5;
-    //this.setOrigin(0.5, 1); // Adjust the origin to be above the player's head
+    this.scale = 1.2;
+    this.setOrigin(0.5, 0.8); // Adjust the origin to be above the player's head
     this.setDepth(31); // Ensure the bomb is above the player sprite
 
     this.createAnimations();
