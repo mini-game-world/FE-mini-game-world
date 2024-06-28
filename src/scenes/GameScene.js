@@ -62,10 +62,12 @@ class GameScene extends Phaser.Scene {
     });
 
     SocketManager.onNewPlayer((player) => {
-      const { playerId, x, y, avatar, isPlay, nickname } = player;
+      const { playerId, x, y, avatar, nickname } = player;
       const isSelfInitiated = false;
-      const info = { avatar, isPlay, nickname, isSelfInitiated };
-      this.players[playerId] = new Player(this, x, y, `player${avatar}`, info);
+      const info = { avatar, nickname, isSelfInitiated };
+      const newPlayer = new Player(this, x, y, `player${avatar}`, info);
+      this.players[playerId] = newPlayer;
+      this.waitingPlayers[playerId] = newPlayer;
       this.updatePlayerCountText();
     });
 
