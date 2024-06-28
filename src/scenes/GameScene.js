@@ -124,6 +124,9 @@ class GameScene extends Phaser.Scene {
       if (this.players[id]) {
         this.players[id].destroy();
         delete this.players[id];
+        delete this.activePlayers[id];
+        delete this.deadPlayers[id];
+        delete this.waitingPlayers[id];
         this.updatePlayerCountText();
       }
     });
