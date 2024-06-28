@@ -15,6 +15,7 @@ class GameScene extends Phaser.Scene {
     this.waitingBGMs = [];
     this.currentPlayingBGM = null;
     this.currentWaitingBGM = null;
+    this.uiCamera = null;
   }
 
   create() {
@@ -28,9 +29,22 @@ class GameScene extends Phaser.Scene {
       this.sound.add("waitingBGM2", { loop: true, volume: 0.2 }),
     ];
 
-    this.playerCountText = new PlayerCountText(this, 16, 16, 0);
+    // UI 카메라 생성
+    this.uiCamera = this.cameras.add(0, 0, 3840, 2560).setScroll(0, 0);
+    this.uiCamera.setName("UICamera");
 
+    this.playerCountText = new PlayerCountText(this, 16, 16, 0);
     this.gameStatusText = new GameStatusText(this);
+
+    this.playerCountText.text.setScrollFactor(0); // UI 카메라는 스크롤을 따라가지 않음
+    this.uiCamera.ignore(this.backGround);
+    this.uiCamera.ignore(this.house);
+    this.uiCamera.ignore(this.object);
+    this.cameras.main.ignore(this.playerCountText.text);
+    this.cameras.main.ignore(this.gameStatusText);
+
+
+    
 
     SocketManager.connect();
 
@@ -53,6 +67,12 @@ class GameScene extends Phaser.Scene {
           this.physics.add.collider(this.player, this.backGround);
           this.physics.add.collider(this.player, this.house);
           this.physics.add.collider(this.player, this.object);
+
+          this.uiCamera.ignore(this.player);
+          Object.keys(this.players).forEach((id) => {
+            this.uiCamera.ignore(this.players[id]);
+          });
+          console.log("새플레이어 지금 무시~~");
         }
       });
       this.updatePlayerCountText();
@@ -63,7 +83,15 @@ class GameScene extends Phaser.Scene {
       const isSelfInitiated = false;
       const info = { avatar, isPlay, nickname, isSelfInitiated };
       this.players[playerId] = new Player(this, x, y, `player${avatar}`, info);
-      this.updatePlayerCountText();
+      console.log(player);
+
+      this.uiCamera.ignore(this.players[playerId]);
+      console.log("기존 캐릭터들 지금 무시!!");
+
+      // Object.keys(this.players).forEach((id) => {
+      //   this.uiCamera.ignore(this.players[id]);
+      // });
+      // this.updatePlayerCountText();
     });
 
     SocketManager.onPlayerMoved((player) => {
@@ -232,22 +260,22 @@ class GameScene extends Phaser.Scene {
 
 
     // 충돌 디버그 그래픽 추가
-    this.debugGraphics = this.add.graphics();
-    this.backGround.renderDebug(this.debugGraphics, {
-      tileColor: null, // 충돌하지 않는 타일은 표시하지 않음
-      collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
-      faceColor: new Phaser.Display.Color(0, 255, 0, 128), // 충돌하는 면은 반투명 녹색으로 표시
-    });
-    this.house.renderDebug(this.debugGraphics, {
-      tileColor: null, // 충돌하지 않는 타일은 표시하지 않음
-      collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
-      faceColor: new Phaser.Display.Color(0, 255, 0, 128), // 충돌하는 면은 반투명 녹색으로 표시
-    });
-    this.object.renderDebug(this.debugGraphics, {
-      tileColor: null, // 충돌하지 않는 타일은 표시하지 않음
-      collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
-      faceColor: new Phaser.Display.Color(0, 255, 0, 128), // 충돌하는 면은 반투명 녹색으로 표시
-    });
+    // this.debugGraphics = this.add.graphics();
+    // this.backGround.renderDebug(this.debugGraphics, {
+    //   tileColor: null, // 충돌하지 않는 타일은 표시하지 않음
+    //   collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
+    //   faceColor: new Phaser.Display.Color(0, 255, 0, 128), // 충돌하는 면은 반투명 녹색으로 표시
+    // });
+    // this.house.renderDebug(this.debugGraphics, {
+    //   tileColor: null, // 충돌하지 않는 타일은 표시하지 않음
+    //   collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
+    //   faceColor: new Phaser.Display.Color(0, 255, 0, 128), // 충돌하는 면은 반투명 녹색으로 표시
+    // });
+    // this.object.renderDebug(this.debugGraphics, {
+    //   tileColor: null, // 충돌하지 않는 타일은 표시하지 않음
+    //   collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
+    //   faceColor: new Phaser.Display.Color(0, 255, 0, 128), // 충돌하는 면은 반투명 녹색으로 표시
+    // });
   }
 
   updatePlayerCountText() {

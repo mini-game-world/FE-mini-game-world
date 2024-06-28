@@ -2,8 +2,8 @@ class GameStatusText {
   constructor(scene) {
     this.scene = scene;
     this.text = this.scene.add
-      .text(this.scene.cameras.main.width / 2, 50, "", {
-        fontSize: "32px",
+      .text(this.scene.cameras.main.width / 2, 150, "", {
+        fontSize: "80px",
         color: "#ffffff",
         padding: { x: 10, y: 5 },
         align: "center",
