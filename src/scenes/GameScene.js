@@ -91,7 +91,7 @@ class GameScene extends Phaser.Scene {
       // Object.keys(this.players).forEach((id) => {
       //   this.uiCamera.ignore(this.players[id]);
       // });
-      // this.updatePlayerCountText();
+      this.updatePlayerCountText();
     });
 
     SocketManager.onPlayerMoved((player) => {
