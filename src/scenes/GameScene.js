@@ -137,12 +137,16 @@ class GameScene extends Phaser.Scene {
         this.gameStatusText.showText("게임시작");
         Object.values(this.players).forEach((player) => {
           player.setPlayStatus();
+          this.activePlayers[player.id] = player;
+          delete this.waitingPlayers[player.id];
         });
       } else {
         this.startWaitingBGM();
         this.gameStatusText.showText("게임종료");
         Object.values(this.players).forEach((player) => {
           player.setReadyStatus();
+          this.waitingPlayers[player.id] = player;
+          delete this.activePlayers[player.id];
         });
         this.smoothCameraFollow(this.player);
       }
