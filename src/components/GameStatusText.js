@@ -3,7 +3,7 @@ class GameStatusText {
     this.scene = scene;
     this.text = this.scene.add
       .text(this.scene.cameras.main.width / 2, 150, "", {
-        fontSize: "80px",
+        fontSize: "100px",
         color: "#ffffff",
         padding: { x: 10, y: 5 },
         align: "center",

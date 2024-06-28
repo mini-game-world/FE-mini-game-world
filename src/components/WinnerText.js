@@ -2,6 +2,7 @@ class WinnerText {
   constructor(scene) {
     this.scene = scene;
     this.winnerText = null;
+
   }
 
   showWinner(name) {
@@ -15,12 +16,12 @@ class WinnerText {
     this.winnerSound.play();
 
     const centerX = this.scene.cameras.main.width / 2;
-    const centerY = this.scene.cameras.main.height / 2 - 200;
+    const centerY = this.scene.cameras.main.height / 2 - 400;
 
     this.winnerText = this.scene.add
       .text(centerX, centerY, `최종 우승자!! ${name}`, {
         fontFamily: "Arial Black",
-        fontSize: 38,
+        fontSize: 100,
         color: "#ffffff",
         stroke: "#000000",
         strokeThickness: 8,
@@ -28,6 +29,8 @@ class WinnerText {
         fontFamily: "BMJUA",
       })
       .setDepth(100);
+
+    this.scene.cameras.main.ignore(this.winnerText);
 
     this.winnerText.setScrollFactor(0);
     this.winnerText.setOrigin(0.5, 0);

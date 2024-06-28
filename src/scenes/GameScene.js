@@ -193,6 +193,9 @@ class GameScene extends Phaser.Scene {
         player.setWinner();
         this.WinnerText = new WinnerText(this);
         this.WinnerText.showWinner(player.name);
+        // // UI 카메라에서 닉네임 무시
+      
+        // this.cameras.main.ignore(this.WinnerText);
         if (this.player !== player) {
           this.player.stopMove();
           this.smoothCameraFollow(player);
