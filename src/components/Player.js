@@ -22,7 +22,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.name = info.nickname;
     this.nickname = new Nickname(scene, this, this.name);
 
-    this.scale = 0.4;
+    this.scale = 1;
     this.setDepth(30);
 
     this.createInputKeyBoard();
@@ -155,7 +155,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   getVelocity() {
-    const speed = this.bomb ? 400 : 300;
+    const speed = this.bomb ? 700 : 600;
     let velocityX = 0;
     let velocityY = 0;
 
