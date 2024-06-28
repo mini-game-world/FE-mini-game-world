@@ -4,8 +4,8 @@ import GameScene from "./scenes/GameScene";
 
 const Config = {
   type: Phaser.AUTO,
-  width: 930,
-  height: 600,
+  width: 3840,
+  height: 2560,
   scene: [BootScene, GameScene],
   pixelArt: true,
   scale: {

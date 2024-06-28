@@ -49,7 +49,10 @@ class GameScene extends Phaser.Scene {
           this.smoothCameraFollow(this.player);
 
           // 충돌 설정
-          this.physics.add.collider(this.player, this.blocklayer);
+          // this.physics.add.collider(this.player, this.blocklayer);
+          this.physics.add.collider(this.player, this.backGround);
+          this.physics.add.collider(this.player, this.house);
+          this.physics.add.collider(this.player, this.object);
         }
       });
       this.updatePlayerCountText();
@@ -207,20 +210,44 @@ class GameScene extends Phaser.Scene {
   setBackground() {
     // 타일맵 설정
     const map = this.make.tilemap({ key: "map" });
-    const tileset = map.addTilesetImage("first_tileset", "tiles");
+    const tileset = map.addTilesetImage("first_tileset", "first_tileset");
+    const chest_2 = map.addTilesetImage("chest_2", "chest_2");
+    const house_1 = map.addTilesetImage("house_1", "house_1");
+    const logs = map.addTilesetImage("logs", "logs");
+    const stump_2 = map.addTilesetImage("stump_2", "stump_2");
+    const Tileset_1 = map.addTilesetImage("Tileset_1", "Tileset_1");
+    const tree_1 = map.addTilesetImage("tree_1", "tree_1");
+    const tree_2 = map.addTilesetImage("tree_2", "tree_2");
 
     // 레이어 생성 (Tiled에서 설정한 레이어 이름 사용)
-    map.createLayer("Tile Layer 1", tileset, 0, 0);
-    this.blocklayer = map.createLayer("block", tileset, 0, 0);
-    this.blocklayer.setCollisionByProperty({ collides: true });
+    // map.createLayer("Tile Layer 1", tileset, 0, 0);
+    // this.blocklayer = map.createLayer("block", tileset, 0, 0);
+    // this.blocklayer.setCollisionByProperty({ collides: true });
+    this.backGround = map.createLayer("BackGround", Tileset_1, 0, 0);
+    this.backGround.setCollisionByProperty({ collides: true });
+    this.house = map.createLayer("House", house_1, 0, 0);
+    this.house.setCollisionByProperty({ collides: true });
+    this.object = map.createLayer("Object", [Tileset_1, chest_2, logs, stump_2, tree_1, tree_2], 0, 0);
+    this.object.setCollisionByProperty({ collides: true });
+
 
     // 충돌 디버그 그래픽 추가
-    // this.debugGraphics = this.add.graphics();
-    // this.blocklayer.renderDebug(this.debugGraphics, {
-    //   tileColor: null, // 충돌하지 않는 타일은 표시하지 않음
-    //   collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
-    //   faceColor: new Phaser.Display.Color(0, 255, 0, 128), // 충돌하는 면은 반투명 녹색으로 표시
-    // });
+    this.debugGraphics = this.add.graphics();
+    this.backGround.renderDebug(this.debugGraphics, {
+      tileColor: null, // 충돌하지 않는 타일은 표시하지 않음
+      collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
+      faceColor: new Phaser.Display.Color(0, 255, 0, 128), // 충돌하는 면은 반투명 녹색으로 표시
+    });
+    this.house.renderDebug(this.debugGraphics, {
+      tileColor: null, // 충돌하지 않는 타일은 표시하지 않음
+      collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
+      faceColor: new Phaser.Display.Color(0, 255, 0, 128), // 충돌하는 면은 반투명 녹색으로 표시
+    });
+    this.object.renderDebug(this.debugGraphics, {
+      tileColor: null, // 충돌하지 않는 타일은 표시하지 않음
+      collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
+      faceColor: new Phaser.Display.Color(0, 255, 0, 128), // 충돌하는 면은 반투명 녹색으로 표시
+    });
   }
 
   updatePlayerCountText() {
@@ -233,6 +260,7 @@ class GameScene extends Phaser.Scene {
     this.cameras.main.pan(target.x, target.y, 2000, "Sine.easeInOut");
     this.cameras.main.once("camerapancomplete", () => {
       this.cameras.main.startFollow(target);
+      this.cameras.main.setZoom(1.5);
     });
   }
 
