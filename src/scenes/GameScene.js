@@ -145,7 +145,7 @@ class GameScene extends Phaser.Scene {
     SocketManager.onPlayingGame((isPlaying) => {
       if (isPlaying == 1) {
         this.startPlayingBGM();
-        this.gameStatusText.showText("게임시작");
+        this.gameStatusText.showStart();
         Object.values(this.players).forEach((player) => {
           player.setPlayStatus();
           this.activePlayers[player.id] = player;
@@ -153,7 +153,7 @@ class GameScene extends Phaser.Scene {
         });
       } else {
         this.startWaitingBGM();
-        this.gameStatusText.showText("게임종료");
+        this.gameStatusText.showEnd();
         Object.values(this.players).forEach((player) => {
           player.setReadyStatus();
           this.waitingPlayers[player.id] = player;
@@ -205,7 +205,20 @@ class GameScene extends Phaser.Scene {
 
     SocketManager.onBombGameReady((count) => {
       if (this.gameStatusText) {
-        this.gameStatusText.showReadyCount(count);
+        if (count === -1) {
+          this.gameStatusText.showWait();
+        } else {
+          this.gameStatusText.showReadyCount(count);
+        }
+      }
+    });
+
+    // 게임 접속 시 현재 상태 확인
+    SocketManager.onGameStatus((status) => {
+      if (status === 1) {
+        this.gameStatusText.showProceeding();
+      } else {
+        this.gameStatusText.showWait();
       }
     });
 

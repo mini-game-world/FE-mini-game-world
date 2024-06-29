@@ -65,6 +65,10 @@ class SocketManager {
     this.socket.on("bombGameReady", callback);
   }
 
+  onGameStatus(callback) {
+    this.socket.on("gamestatus", callback);
+  }
+
   emitPlayerMovement(data) {
     this.socket.emit("playerMovement", data);
   }

@@ -15,7 +15,7 @@ class WinnerText {
     this.winnerSound.play();
 
     const centerX = this.scene.cameras.main.width / 2;
-    const centerY = this.scene.cameras.main.height / 2 - 200;
+    const centerY = this.scene.cameras.main.height / 2 - 150;
 
     this.winnerText = this.scene.add
       .text(centerX, centerY, `최종 우승자!! ${name}`, {
