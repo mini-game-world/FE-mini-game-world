@@ -1,26 +1,32 @@
 import Phaser from "phaser";
 
+import backgroundImg from "../assets/background.png";
 import playerDeadSprite from "../assets/playerDead.png";
 import clawSprite from "../assets/claw_white.png";
 import bombSprite from "../assets/bomb.png";
+import explosionSprite from "../assets/explosion.png";
 
-import testMap1 from "../assets/maps/testMap1.tmj";
+// Import map
 import first_tileset from "../assets/tiles/first_tileset.png";
+import map from "../assets/maps/testMap1.tmj";
+import chest_2 from "../assets/tiles/chest_2.png";
+import house_1 from "../assets/tiles/house_1.png";
+import logs from "../assets/tiles/logs.png";
+import stump_2 from "../assets/tiles/stump_2.png";
+import Tileset_1 from "../assets/tiles/Tileset_1.png";
+import tree_1 from "../assets/tiles/tree_1.png";
+import tree_2 from "../assets/tiles/tree_2.png";
 
+
+// Import Sound
 import scratchSound from "../assets/sounds/scratch.ogg";
-import explosionSound from "../assets/sounds/explosion.ogg";
 import timerSound from "../assets/sounds/timer.ogg";
+import explosionSound from "../assets/sounds/explosion.ogg";
 import winnerSound from "../assets/sounds/winner.ogg";
-
 import playingBGM1 from "../assets/bgm/playingBGM1.mp3";
 import playingBGM2 from "../assets/bgm/playingBGM2.mp3";
 import waitingBGM1 from "../assets/bgm/waitingBGM1.mp3";
 import waitingBGM2 from "../assets/bgm/waitingBGM2.mp3";
-
-import playerDead from "../assets/playerDead.png";
-import claw_white from "../assets/claw_white.png";
-import explosion from "../assets/explosion.png";
-import bomb from "../assets/bomb.png";
 
 // Import player assets from player0 to player30
 import player0 from "../assets/players/player0.png";
@@ -154,18 +160,27 @@ class BootScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.audio("scratch_sound", scratchSound);
-    this.load.audio("explosion_sound", explosionSound);
-    this.load.audio("timer_sound", timerSound);
-    this.load.audio("winner_sound", winnerSound);
+    this.load.image("background", backgroundImg);
+    // this.load.tilemapTiledJSON('map', 'map');
+    this.load.tilemapTiledJSON('map', 'src/assets/maps/village2.tmj');
+    this.load.image("first_tileset", first_tileset);
+    this.load.image("chest_2", chest_2);
+    this.load.image("house_1", house_1);
+    this.load.image("logs", logs);
+    this.load.image("stump_2", stump_2);
+    this.load.image("Tileset_1", Tileset_1);
+    this.load.image("tree_1", tree_1);
+    this.load.image("tree_2", tree_2);
 
+    //audio
+    this.load.audio("scratch_sound", scratchSound);
+    this.load.audio("timer_sound", timerSound);
+    this.load.audio("explosion_sound", explosionSound);
+    this.load.audio("winner_sound", winnerSound);
     this.load.audio("playingBGM1", playingBGM1);
     this.load.audio("playingBGM2", playingBGM2);
     this.load.audio("waitingBGM1", waitingBGM1);
     this.load.audio("waitingBGM2", waitingBGM2);
-
-    this.load.tilemapTiledJSON("map", testMap1);
-    this.load.image("tiles", first_tileset);
 
     this.load.spritesheet("playerDead", playerDeadSprite, {
       frameWidth: 150,
@@ -181,6 +196,11 @@ class BootScene extends Phaser.Scene {
       frameWidth: 303,
       frameHeight: 142,
     });
+
+    this.load.spritesheet("explosion", explosionSprite, {
+      frameWidth: 32,
+      frameHeight: 32,
+    })
 
     const players = [
       player0,
@@ -334,26 +354,6 @@ class BootScene extends Phaser.Scene {
         frameHeight: 220,
       });
     }
-
-    this.load.spritesheet("playerDead", playerDead, {
-      frameWidth: 150,
-      frameHeight: 150,
-    });
-
-    this.load.spritesheet("claw_white", claw_white, {
-      frameWidth: 32,
-      frameHeight: 32,
-    });
-
-    this.load.spritesheet("explosion", explosion, {
-      frameWidth: 32,
-      frameHeight: 32,
-    });
-
-    this.load.spritesheet("bomb", bomb, {
-      frameWidth: 303,
-      frameHeight: 142,
-    });
   }
 
   create() {

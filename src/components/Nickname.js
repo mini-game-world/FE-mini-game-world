@@ -2,8 +2,8 @@ import Phaser from "phaser";
 
 class Nickname extends Phaser.GameObjects.Text {
   constructor(scene, player, text) {
-    super(scene, player.x, player.y + 50, text, {
-      fontSize: '16px',
+    super(scene, player.x, player.y, text, {
+      fontSize: '28px',
       fill: '#ffffff',
       align: 'center',
       fontFamily: 'Bazzi',
@@ -14,10 +14,16 @@ class Nickname extends Phaser.GameObjects.Text {
     this.player = player;
     this.scene.add.existing(this);
 
-    this.setOrigin(0.5, 0.5);
+    this.setOrigin(0.5, -0.7);
     this.setDepth(40);
 
     this.scene.events.on('update', this.updatePosition, this);
+
+    // // UI 카메라에서 닉네임 무시
+    const uiCamera = this.scene.cameras.getCamera("UICamera");
+    if (uiCamera) {
+      uiCamera.ignore(this);
+    }
   }
 
   updatePosition() {

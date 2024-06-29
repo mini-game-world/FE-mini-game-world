@@ -2,7 +2,7 @@ class PlayerCountText {
   constructor(scene, x, y, initialCount) {
     this.scene = scene;
     this.text = this.scene.add.text(x, y, `접속자 수 : ${initialCount}`, {
-      fontSize: "24px",
+      fontSize: "80px",
       fill: "#ffffff",
       padding: { x: 10, y: 5 },
       fontFamily: 'BMJUA',

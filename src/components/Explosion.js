@@ -14,11 +14,18 @@ class Explosion extends Phaser.GameObjects.Sprite {
       this.explosion_sound.play();
     }
 
-    this.setScale(1.5);
+    this.setScale(2.5);
+    this.setOrigin(0.5, 1);
     this.setDepth(32);
 
     this.createAnimations();
     this.play("explode");
+
+    // UI 카메라에서 폭발 무시
+    const uiCamera = this.scene.cameras.getCamera("UICamera");
+    if (uiCamera) {
+      uiCamera.ignore(this);
+    }
 
     this.on("animationcomplete", () => {
       this.destroy();

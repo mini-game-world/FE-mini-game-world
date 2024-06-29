@@ -22,7 +22,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.name = info.nickname;
     this.nickname = new Nickname(scene, this, this.name);
 
-    this.scale = 0.4;
+    this.scale = 1;
     this.setDepth(30);
 
     this.createInputKeyBoard();
@@ -72,7 +72,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.anims.play(`dead`, true);
     // this.isAttacking = false;
     this.isDead = true;
-    this.setAlpha(0.5);
+    this.setAlpha(0.3);
     this.nickname.setColor("#F78181");
 
     // 히트박스 충돌 비활성화
@@ -155,7 +155,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   getVelocity() {
-    const speed = this.bomb ? 400 : 300;
+    const speed = this.bomb ? 700 : 600;
     let velocityX = 0;
     let velocityY = 0;
 
