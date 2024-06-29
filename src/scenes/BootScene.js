@@ -162,7 +162,7 @@ class BootScene extends Phaser.Scene {
   preload() {
     this.load.image("background", backgroundImg);
     // this.load.tilemapTiledJSON('map', 'map');
-    this.load.tilemapTiledJSON('map', 'src/assets/maps/village.tmj');
+    this.load.tilemapTiledJSON('map', 'src/assets/maps/village2.tmj');
     this.load.image("first_tileset", first_tileset);
     this.load.image("chest_2", chest_2);
     this.load.image("house_1", house_1);

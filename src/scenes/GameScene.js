@@ -4,6 +4,7 @@ import SocketManager from "../utils/SocketManager";
 import PlayerCountText from "../components/PlayerCountText";
 import WinnerText from "../components/WinnerText";
 import GameStatusText from "../components/GameStatusText";
+import MapShrinker from "../utils/MapShrinker";
 
 class GameScene extends Phaser.Scene {
   constructor() {
@@ -16,6 +17,7 @@ class GameScene extends Phaser.Scene {
     this.currentPlayingBGM = null;
     this.currentWaitingBGM = null;
     this.uiCamera = null;
+    this.mapShrinker = null;
   }
 
   create() {
@@ -43,8 +45,10 @@ class GameScene extends Phaser.Scene {
     this.cameras.main.ignore(this.playerCountText.text);
     this.cameras.main.ignore(this.gameStatusText);
 
-
-    
+    // MapShrinker 인스턴스 생성 및 시작
+    console.log("Creating MapShrinker instance");
+    this.mapShrinker = new MapShrinker(this, 3840, 2560, 1300, 1300, 3840, 2560, 32, 24);
+    this.mapShrinker.start();
 
     SocketManager.connect();
 
@@ -262,6 +266,9 @@ class GameScene extends Phaser.Scene {
     this.object.setCollisionByProperty({ collides: true });
 
 
+    this.mapShrink = map.createLayer("MapShrink", Tileset_1, 0, 0);
+    this.mapShrink.setCollisionByProperty({ collides: true });
+
     // 충돌 디버그 그래픽 추가
     // this.debugGraphics = this.add.graphics();
     // this.backGround.renderDebug(this.debugGraphics, {
@@ -279,6 +286,16 @@ class GameScene extends Phaser.Scene {
     //   collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
     //   faceColor: new Phaser.Display.Color(0, 255, 0, 128), // 충돌하는 면은 반투명 녹색으로 표시
     // });
+    // this.mapShrink.renderDebug(this.debugGraphics, {
+    //   tileColor: null, // 충돌하지 않는 타일은 표시하지 않음
+    //   collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
+    //   faceColor: new Phaser.Display.Color(0, 255, 0, 128), // 충돌하는 면은 반투명 녹색으로 표시
+    // });
+
+    // Set world bounds
+    console.log(this.backGround.widthInPixels);
+    console.log(this.backGround.heightInPixels);
+    this.physics.world.setBounds(0, 0, 3840, 2560);
   }
 
   updatePlayerCountText() {
