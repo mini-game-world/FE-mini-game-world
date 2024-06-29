@@ -9,8 +9,14 @@ import MapShrinker from "../utils/MapShrinker";
 class GameScene extends Phaser.Scene {
   constructor() {
     super("GameScene");
+
     this.player = null;
+
     this.players = {};
+    this.activePlayers = {};
+    this.deadPlayers = {};
+    this.waitingPlayers = {};
+
     this.playerCountText = null;
     this.playingBGMs = [];
     this.waitingBGMs = [];
@@ -55,15 +61,12 @@ class GameScene extends Phaser.Scene {
     SocketManager.onCurrentPlayers((players) => {
       Object.keys(players).forEach((id) => {
         const { x, y, avatar, isPlay, isDead, nickname } = players[id];
-        if (id !== SocketManager.socket.id) {
-          const isSelfInitiated = false;
-          const info = { avatar, isPlay, isDead, nickname, isSelfInitiated };
-          this.players[id] = new Player(this, x, y, `player${avatar}`, info);
-        } else {
-          const isSelfInitiated = true;
-          const info = { avatar, isPlay, isDead, nickname, isSelfInitiated };
-          this.player = new Player(this, x, y, `player${avatar}`, info);
-          this.players[SocketManager.socket.id] = this.player;
+        const isSelfInitiated = id === SocketManager.socket.id;
+        const info = { avatar, isPlay, isDead, nickname, isSelfInitiated };
+        const player = new Player(this, x, y, `player${avatar}`, info);
+        this.players[id] = player;
+        if (isSelfInitiated) {
+          this.player = player;
           this.smoothCameraFollow(this.player);
 
           // 충돌 설정
@@ -78,18 +81,26 @@ class GameScene extends Phaser.Scene {
           });
           console.log("새플레이어 지금 무시~~");
         }
+        if (isPlay) {
+          this.activePlayers[id] = player;
+        } else if (isDead) {
+          this.deadPlayers[id] = player;
+        } else {
+          this.waitingPlayers[id] = player;
+        }
       });
       this.updatePlayerCountText();
     });
 
     SocketManager.onNewPlayer((player) => {
-      const { playerId, x, y, avatar, isPlay, nickname } = player;
+      const { playerId, x, y, avatar, nickname } = player;
       const isSelfInitiated = false;
-      const info = { avatar, isPlay, nickname, isSelfInitiated };
-      this.players[playerId] = new Player(this, x, y, `player${avatar}`, info);
-      console.log(player);
+      const info = { avatar, nickname, isSelfInitiated };
+      const newPlayer = new Player(this, x, y, `player${avatar}`, info);
+      this.players[playerId] = newPlayer;
+      this.waitingPlayers[playerId] = newPlayer;
 
-      this.uiCamera.ignore(this.players[playerId]);
+      this.uiCamera.ignore(newPlayer);
       console.log("기존 캐릭터들 지금 무시!!");
 
       // Object.keys(this.players).forEach((id) => {
@@ -151,22 +162,38 @@ class GameScene extends Phaser.Scene {
       if (this.players[id]) {
         this.players[id].destroy();
         delete this.players[id];
-        this.updatePlayerCountText();
       }
+      if (this.activePlayers[id]) {
+        this.activePlayers[id].destroy();
+        delete this.activePlayers[id];
+      }
+      if (this.deadPlayers[id]) {
+        this.deadPlayers[id].destroy();
+        delete this.deadPlayers[id];
+      }
+      if (this.waitingPlayers[id]) {
+        this.waitingPlayers[id].destroy();
+        delete this.waitingPlayers[id];
+      }
+      this.updatePlayerCountText();
     });
 
     SocketManager.onPlayingGame((isPlaying) => {
       if (isPlaying == 1) {
         this.startPlayingBGM();
-        this.gameStatusText.showText("게임시작");
+        this.gameStatusText.showStart();
         Object.values(this.players).forEach((player) => {
           player.setPlayStatus();
+          this.activePlayers[player.id] = player;
+          delete this.waitingPlayers[player.id];
         });
       } else {
         this.startWaitingBGM();
-        this.gameStatusText.showText("게임종료");
+        this.gameStatusText.showEnd();
         Object.values(this.players).forEach((player) => {
           player.setReadyStatus();
+          this.waitingPlayers[player.id] = player;
+          delete this.activePlayers[player.id];
         });
         this.smoothCameraFollow(this.player);
       }
@@ -180,15 +207,23 @@ class GameScene extends Phaser.Scene {
 
     SocketManager.onDeadUsers((players) => {
       players.forEach((id) => {
-        this.players[id].setDeadStatus();
+        if (this.players[id]) {
+          this.players[id].setDeadStatus();
+          this.deadPlayers[id] = this.players[id];
+          delete this.activePlayers[id];
+        }
       });
     });
 
     SocketManager.onChangeBombUser((players) => {
       const current = players[0];
       const previous = players[1];
-      this.players[current].receiveBomb();
-      this.players[previous].removeBomb();
+      if (this.players[current]) {
+        this.players[current].receiveBomb();
+      }
+      if (this.players[previous]) {
+        this.players[previous].removeBomb();
+      }
     });
 
     SocketManager.onWinnerPlayer((id) => {
@@ -209,7 +244,20 @@ class GameScene extends Phaser.Scene {
 
     SocketManager.onBombGameReady((count) => {
       if (this.gameStatusText) {
-        this.gameStatusText.showReadyCount(count);
+        if (count === -1) {
+          this.gameStatusText.showWait();
+        } else {
+          this.gameStatusText.showReadyCount(count);
+        }
+      }
+    });
+
+    // 게임 접속 시 현재 상태 확인
+    SocketManager.onGameStatus((status) => {
+      if (status === 1) {
+        this.gameStatusText.showProceeding();
+      } else {
+        this.gameStatusText.showWait();
       }
     });
 
