@@ -78,7 +78,7 @@ class SocketManager {
   }
 
   emitChatMessage(message) {
-    this.emit('chatMessage', message);
+    this.emit('message', message);
   }
 }
 
