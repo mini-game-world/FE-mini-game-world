@@ -63,7 +63,6 @@ class GameScene extends Phaser.Scene {
     );
     // this.mapShrinker.start();
 
-    this.chatBox = new ChatBox(this.player);
     this.setupKeyboard();
 
     SocketManager.connect();
@@ -90,6 +89,8 @@ class GameScene extends Phaser.Scene {
             this.uiCamera.ignore(this.players[id]);
           });
           console.log("새플레이어 지금 무시~~");
+
+          this.chatBox = new ChatBox(this.player);
         }
         if (isPlay) {
           this.activePlayers[id] = player;
@@ -357,6 +358,9 @@ class GameScene extends Phaser.Scene {
         this.chatBox.hideChatBox();
       }
     });
+
+    this.input.keyboard.removeCapture(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    this.input.keyboard.removeCapture(Phaser.Input.Keyboard.KeyCodes.ENTER);
   }
 
   update() {

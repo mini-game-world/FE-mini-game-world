@@ -6,7 +6,7 @@ export default class ChatBox {
       this.chatContainer = document.createElement('div');
       this.chatContainer.id = 'chat-container';
       this.chatContainer.style.position = 'fixed';
-      this.chatContainer.style.top = '80%';
+      this.chatContainer.style.top = '70%'; // 원하는 y축 위치 설정
       this.chatContainer.style.left = '50%';
       this.chatContainer.style.transform = 'translate(-50%, -50%)';
       this.chatContainer.style.height = 'auto';
@@ -40,6 +40,7 @@ export default class ChatBox {
   
     setupEvents() {
       this.chatInput.addEventListener('keydown', (event) => {
+        event.stopPropagation();
         if (event.key === 'Enter') {
           this.sendMessage();
         }
@@ -48,11 +49,15 @@ export default class ChatBox {
   
     toggleChatBox() {
       if (this.chatContainer.style.display === 'none') {
-        this.chatContainer.style.display = 'flex';
-        this.chatInput.focus();
+        this.showChatBox();
       } else {
         this.hideChatBox();
       }
+    }
+  
+    showChatBox() {
+      this.chatContainer.style.display = 'flex';
+      this.chatInput.focus();
     }
   
     hideChatBox() {
@@ -62,11 +67,13 @@ export default class ChatBox {
   
     sendMessage() {
       const message = this.chatInput.value.trim();
+      console.log(message);
+      console.log(this.player);
       if (message) {
         this.player.showChatMessage(message); // Show message above player
         this.chatInput.value = '';
       }
-      this.hideChatBox();
+      this.hideChatBox(); // Ensure the chat box is hidden after sending a message
     }
   }
   

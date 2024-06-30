@@ -46,6 +46,15 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
     this.prevX = x;
     this.prevY = y;
+
+    // Balloon text for chat messages
+    this.chatBalloon = this.scene.add.text(this.x, this.y - 50, '', {
+      fontSize: '48px',
+      fill: '#ffffff',
+      backgroundColor: '#000000',
+      padding: { x: 10, y: 5 },
+      align: 'center',
+    }).setOrigin(0.5).setDepth(31).setVisible(false);
   }
 
   processInfo(value) {
@@ -351,6 +360,17 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       this.nickname = null;
     }
     super.destroy();
+  }
+
+  showChatMessage(message) {
+    this.chatBalloon.setText(message);
+    this.chatBalloon.setPosition(this.x, this.y - 50);
+    this.chatBalloon.setVisible(true);
+
+    // Hide the chat balloon after 3 seconds
+    this.scene.time.delayedCall(3000, () => {
+      this.chatBalloon.setVisible(false);
+    });
   }
 }
 
