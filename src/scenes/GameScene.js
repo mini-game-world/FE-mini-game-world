@@ -6,6 +6,7 @@ import WinnerText from "../components/WinnerText";
 import GameStatusText from "../components/GameStatusText";
 import MapShrinker from "../utils/MapShrinker";
 import BGMManager from "../utils/BGMManager";
+import CameraManager from "../utils/CameraManager";
 
 class GameScene extends Phaser.Scene {
   constructor() {
@@ -18,33 +19,26 @@ class GameScene extends Phaser.Scene {
     this.deadPlayers = {};
     this.waitingPlayers = {};
 
+    this.WinnerText = null;
     this.playerCountText = null;
     this.gameStatusText = null;
 
     this.bgmManager = null;
-
-    this.uiCamera = null;
+    this.cameraManager = null;
     this.mapShrinker = null;
   }
 
   create() {
+    SocketManager.connect();
     this.setBackground();
 
-    this.playerCountText = new PlayerCountText(this);
-    this.gameStatusText = new GameStatusText(this);
 
     this.bgmManager = new BGMManager(this);
+    this.cameraManager = new CameraManager(this);
 
-    // UI 카메라 생성
-    this.uiCamera = this.cameras.add(0, 0, 3840, 2560).setScroll(0, 0);
-    this.uiCamera.setName("UICamera");
-
-    this.playerCountText.text.setScrollFactor(0); // UI 카메라는 스크롤을 따라가지 않음
-    this.uiCamera.ignore(this.backGround);
-    this.uiCamera.ignore(this.house);
-    this.uiCamera.ignore(this.object);
-    this.cameras.main.ignore(this.playerCountText.text);
-    this.cameras.main.ignore(this.gameStatusText);
+    this.WinnerText = new WinnerText(this);
+    this.playerCountText = new PlayerCountText(this);
+    this.gameStatusText = new GameStatusText(this);
 
     // MapShrinker 인스턴스 생성 및 시작
     console.log("Creating MapShrinker instance");
@@ -61,8 +55,6 @@ class GameScene extends Phaser.Scene {
     );
     this.mapShrinker.start();
 
-    SocketManager.connect();
-
     SocketManager.onCurrentPlayers((players) => {
       Object.keys(players).forEach((id) => {
         const { x, y, avatar, isPlay, isDead, nickname } = players[id];
@@ -70,22 +62,18 @@ class GameScene extends Phaser.Scene {
         const info = { avatar, isPlay, isDead, nickname, isSelfInitiated };
         const player = new Player(this, x, y, `player${avatar}`, info);
         this.players[id] = player;
+
         if (isSelfInitiated) {
           this.player = player;
-          this.smoothCameraFollow(this.player);
+          this.cameraManager.smoothFollow(this.player);
 
           // 충돌 설정
           // this.physics.add.collider(this.player, this.blocklayer);
           this.physics.add.collider(this.player, this.backGround);
           this.physics.add.collider(this.player, this.house);
           this.physics.add.collider(this.player, this.object);
-
-          this.uiCamera.ignore(this.player);
-          Object.keys(this.players).forEach((id) => {
-            this.uiCamera.ignore(this.players[id]);
-          });
-          console.log("새플레이어 지금 무시~~");
         }
+
         if (isPlay) {
           this.activePlayers[id] = player;
         } else if (isDead) {
@@ -105,12 +93,6 @@ class GameScene extends Phaser.Scene {
       this.players[playerId] = newPlayer;
       this.waitingPlayers[playerId] = newPlayer;
 
-      this.uiCamera.ignore(newPlayer);
-      console.log("기존 캐릭터들 지금 무시!!");
-
-      // Object.keys(this.players).forEach((id) => {
-      //   this.uiCamera.ignore(this.players[id]);
-      // });
       this.updatePlayerCountText();
     });
 
@@ -201,7 +183,7 @@ class GameScene extends Phaser.Scene {
           this.waitingPlayers[player.id] = player;
           delete this.activePlayers[player.id];
         });
-        this.smoothCameraFollow(this.player);
+        this.cameraManager.smoothFollow(this.player);
         this.mapShrinker.reset();
       }
     });
@@ -237,14 +219,11 @@ class GameScene extends Phaser.Scene {
       if (this.players[id]) {
         const player = this.players[id];
         player.setWinner();
-        this.WinnerText = new WinnerText(this);
         this.WinnerText.showWinner(player.name);
-        // // UI 카메라에서 닉네임 무시
 
-        // this.cameras.main.ignore(this.WinnerText);
         if (this.player !== player) {
           this.player.stopMove();
-          this.smoothCameraFollow(player);
+          this.cameraManager.smoothFollow(player);
         }
       }
     });
@@ -333,15 +312,6 @@ class GameScene extends Phaser.Scene {
   updatePlayerCountText() {
     const playerCount = Object.keys(this.players).length;
     this.playerCountText.update(playerCount);
-  }
-
-  smoothCameraFollow(target) {
-    this.cameras.main.stopFollow();
-    this.cameras.main.pan(target.x, target.y, 2000, "Sine.easeInOut");
-    this.cameras.main.once("camerapancomplete", () => {
-      this.cameras.main.startFollow(target);
-      this.cameras.main.setZoom(1.5);
-    });
   }
 
   update() {

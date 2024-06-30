@@ -25,11 +25,6 @@ class Bomb extends Phaser.GameObjects.Sprite {
     // Update position on each frame
     this.scene.events.on("update", this.updatePosition, this);
 
-    // UI 카메라에서 폭탄 무시
-    const uiCamera = this.scene.cameras.getCamera("UICamera");
-    if (uiCamera) {
-      uiCamera.ignore(this);
-    }
   }
 
   createAnimations() {

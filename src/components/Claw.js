@@ -44,11 +44,5 @@ export default class Claw extends Phaser.Physics.Arcade.Sprite {
       },
       loop: false,
     });
-
-    // UI 카메라에서 claw 무시
-    const uiCamera = this.scene.cameras.getCamera("UICamera");
-    if (uiCamera) {
-      uiCamera.ignore(this);
-    }
   }
 }
