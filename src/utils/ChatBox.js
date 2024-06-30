@@ -11,7 +11,7 @@ export default class ChatBox {
       this.chatContainer.style.left = '50%';
       this.chatContainer.style.transform = 'translate(-50%, -50%)';
       this.chatContainer.style.height = 'auto';
-      this.chatContainer.style.width = '370px';
+      this.chatContainer.style.width = '1000px';
       this.chatContainer.style.backgroundColor = 'white';
       this.chatContainer.style.border = '1px solid black';
       this.chatContainer.style.display = 'none';
@@ -31,7 +31,8 @@ export default class ChatBox {
       this.chatInput.type = 'text';
       this.chatInput.placeholder = '대화를 입력해주세요';
       this.chatInput.style.flex = '1';
-      this.chatInput.style.padding = '10px';
+      this.chatInput.style.padding = '32px';
+      this.chatInput.style.fontSize = '32px';
       this.chatInput.style.border = 'none';
       this.chatInput.style.borderRadius = '10px';
       this.chatInputWrapper.appendChild(this.chatInput);
@@ -68,12 +69,12 @@ export default class ChatBox {
   
     sendMessage() {
       const message = this.chatInput.value.trim();
-      console.log(message);
-      console.log(this.player);
-      if (message) {
+      if (message && this.player) {
         this.player.showChatMessage(message); // Show message above player
         SocketManager.emitChatMessage(message); // Send message to server
         this.chatInput.value = '';
+      } else {
+        this.chatInput.value = ''; // Clear the input if empty
       }
       this.hideChatBox(); // Ensure the chat box is hidden after sending a message
     }
