@@ -21,12 +21,6 @@ class Explosion extends Phaser.GameObjects.Sprite {
     this.createAnimations();
     this.play("explode");
 
-    // UI 카메라에서 폭발 무시
-    const uiCamera = this.scene.cameras.getCamera("UICamera");
-    if (uiCamera) {
-      uiCamera.ignore(this);
-    }
-
     this.on("animationcomplete", () => {
       this.destroy();
     });

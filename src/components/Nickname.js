@@ -18,12 +18,6 @@ class Nickname extends Phaser.GameObjects.Text {
     this.setDepth(40);
 
     this.scene.events.on('update', this.updatePosition, this);
-
-    // // UI 카메라에서 닉네임 무시
-    const uiCamera = this.scene.cameras.getCamera("UICamera");
-    if (uiCamera) {
-      uiCamera.ignore(this);
-    }
   }
 
   updatePosition() {

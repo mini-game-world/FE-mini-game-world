@@ -17,9 +17,6 @@ export default class MapShrinker {
       this.redGraphics.fillStyle(0xff0000, 0.5);
       this.redGraphics.setDepth(10); // Ensure it is above other layers
   
-      // Ignore redGraphics for uiCamera
-      this.scene.uiCamera.ignore(this.redGraphics);
-  
     //   console.log("MapShrinker initialized");
     //   console.log(`Initial Width: ${this.currentWidth}, Initial Height: ${this.currentHeight}`);
     //   console.log(`Min Width: ${this.minWidth}, Min Height: ${this.minHeight}`);
