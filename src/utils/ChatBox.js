@@ -71,6 +71,7 @@ export default class ChatBox {
       console.log(this.player);
       if (message) {
         this.player.showChatMessage(message); // Show message above player
+        SocketManager.emitChatMessage(message); // Send message to server
         this.chatInput.value = '';
       }
       this.hideChatBox(); // Ensure the chat box is hidden after sending a message

@@ -76,6 +76,10 @@ class SocketManager {
   emitPlayerAttack(data) {
     this.socket.emit("attackPosition", data);
   }
+
+  emitChatMessage(message) {
+    this.emit('chatMessage', message);
+  }
 }
 
 export default new SocketManager();
