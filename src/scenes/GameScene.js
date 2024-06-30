@@ -187,6 +187,7 @@ class GameScene extends Phaser.Scene {
           this.activePlayers[player.id] = player;
           delete this.waitingPlayers[player.id];
         });
+        this.mapShrinker.start();
       } else {
         this.startWaitingBGM();
         this.gameStatusText.showEnd();
@@ -196,6 +197,7 @@ class GameScene extends Phaser.Scene {
           delete this.activePlayers[player.id];
         });
         this.smoothCameraFollow(this.player);
+        this.mapShrinker.reset();
       }
     });
 

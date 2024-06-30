@@ -56,14 +56,14 @@ export default class MapShrinker {
       const tileYMax = Math.ceil(this.currentHeight / this.tileHeight);
   
       // Shrink from top and bottom
-      for (let x = 0; x < tileXMax; x++) {
-        this.overlayTile(layer, x, 0); // Top row
+      for (let x = -1; x < tileXMax; x++) {
+        this.overlayTile(layer, x, -1); // Top row
         this.overlayTile(layer, x, tileYMax - 1); // Bottom row
       }
   
       // Shrink from left and right
-      for (let y = 0; y < tileYMax; y++) {
-        this.overlayTile(layer, 0, y); // Left column
+      for (let y = -1; y < tileYMax; y++) {
+        this.overlayTile(layer, -1, y); // Left column
         this.overlayTile(layer, tileXMax - 1, y); // Right column
       }
   
@@ -87,6 +87,19 @@ export default class MapShrinker {
       // Draw a red transparent rectangle at the calculated position
       this.redGraphics.fillRect(pixelX, pixelY, this.tileWidth, this.tileHeight);
     }
+
+    reset() {
+        console.log("MapShrinker reset called");
+        this.stop();
+        this.currentWidth = 3840;
+        this.currentHeight = 2560;
+        this.redGraphics.clear(); // Clear the red overlay
+        this.scene.physics.world.setBounds(0, 0, this.currentWidth, this.currentHeight);
+    
+        // Optionally, you can reset the map layer to its original state if needed
+        const layer = this.scene.mapShrink;
+        layer.setCollisionByExclusion([-1], true);
+      }
   
     stop() {
       console.log("MapShrinker stop called");
