@@ -1,11 +1,11 @@
 class PlayerCountText {
-  constructor(scene, x, y, initialCount) {
+  constructor(scene) {
     this.scene = scene;
-    this.text = this.scene.add.text(x, y, `접속자 수 : ${initialCount}`, {
+    this.text = this.scene.add.text(0, 0, "", {
       fontSize: "80px",
       fill: "#ffffff",
       padding: { x: 10, y: 5 },
-      fontFamily: 'BMJUA',
+      fontFamily: "BMJUA",
     });
 
     this.text.setDepth(100);

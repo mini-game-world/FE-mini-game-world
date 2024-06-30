@@ -18,6 +18,8 @@ class GameScene extends Phaser.Scene {
     this.waitingPlayers = {};
 
     this.playerCountText = null;
+    this.gameStatusText = null;
+    
     this.playingBGMs = [];
     this.waitingBGMs = [];
     this.currentPlayingBGM = null;
@@ -41,7 +43,7 @@ class GameScene extends Phaser.Scene {
     this.uiCamera = this.cameras.add(0, 0, 3840, 2560).setScroll(0, 0);
     this.uiCamera.setName("UICamera");
 
-    this.playerCountText = new PlayerCountText(this, 16, 16, 0);
+    this.playerCountText = new PlayerCountText(this);
     this.gameStatusText = new GameStatusText(this);
 
     this.playerCountText.text.setScrollFactor(0); // UI 카메라는 스크롤을 따라가지 않음
@@ -53,7 +55,17 @@ class GameScene extends Phaser.Scene {
 
     // MapShrinker 인스턴스 생성 및 시작
     console.log("Creating MapShrinker instance");
-    this.mapShrinker = new MapShrinker(this, 3840, 2560, 1300, 1300, 3840, 2560, 32, 24);
+    this.mapShrinker = new MapShrinker(
+      this,
+      3840,
+      2560,
+      1300,
+      1300,
+      3840,
+      2560,
+      32,
+      24
+    );
     this.mapShrinker.start();
 
     SocketManager.connect();
@@ -233,7 +245,7 @@ class GameScene extends Phaser.Scene {
         this.WinnerText = new WinnerText(this);
         this.WinnerText.showWinner(player.name);
         // // UI 카메라에서 닉네임 무시
-      
+
         // this.cameras.main.ignore(this.WinnerText);
         if (this.player !== player) {
           this.player.stopMove();
@@ -310,9 +322,13 @@ class GameScene extends Phaser.Scene {
     this.backGround.setCollisionByProperty({ collides: true });
     this.house = map.createLayer("House", house_1, 0, 0);
     this.house.setCollisionByProperty({ collides: true });
-    this.object = map.createLayer("Object", [Tileset_1, chest_2, logs, stump_2, tree_1, tree_2], 0, 0);
+    this.object = map.createLayer(
+      "Object",
+      [Tileset_1, chest_2, logs, stump_2, tree_1, tree_2],
+      0,
+      0
+    );
     this.object.setCollisionByProperty({ collides: true });
-
 
     this.mapShrink = map.createLayer("MapShrink", Tileset_1, 0, 0);
     this.mapShrink.setCollisionByProperty({ collides: true });
