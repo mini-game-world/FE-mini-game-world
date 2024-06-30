@@ -1,4 +1,5 @@
-// chatbox.js
+import SocketManager from "./SocketManager";
+
 export default class ChatBox {
     constructor(player) {
       this.player = player;
