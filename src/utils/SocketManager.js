@@ -78,7 +78,13 @@ class SocketManager {
   }
 
   emitChatMessage(message) {
-    this.emit('message', message);
+    this.socket.emit('message', message);
+  }
+
+  onChatMessage(callback) {
+    this.socket.on('broadcastMessage', ({ playerId, message }) => {
+      callback({ playerId, message });
+    });
   }
 }
 

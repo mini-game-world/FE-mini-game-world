@@ -20,20 +20,20 @@ export default class MapShrinker {
       // Ignore redGraphics for uiCamera
       this.scene.uiCamera.ignore(this.redGraphics);
   
-      console.log("MapShrinker initialized");
-      console.log(`Initial Width: ${this.currentWidth}, Initial Height: ${this.currentHeight}`);
-      console.log(`Min Width: ${this.minWidth}, Min Height: ${this.minHeight}`);
+    //   console.log("MapShrinker initialized");
+    //   console.log(`Initial Width: ${this.currentWidth}, Initial Height: ${this.currentHeight}`);
+    //   console.log(`Min Width: ${this.minWidth}, Min Height: ${this.minHeight}`);
     }
   
     start() {
       console.log("MapShrinker start called");
       setTimeout(() => {
         this.timer = setInterval(() => {
-          console.log("Map shrinking interval triggered");
+        //   console.log("Map shrinking interval triggered");
           const layer = this.scene.mapShrink; // Adjust the layer you want to shrink
   
-          console.log(`Current Width: ${this.currentWidth}, Min Width: ${this.minWidth}`);
-          console.log(`Current Height: ${this.currentHeight}, Min Height: ${this.minHeight}`);
+        //   console.log(`Current Width: ${this.currentWidth}, Min Width: ${this.minWidth}`);
+        //   console.log(`Current Height: ${this.currentHeight}, Min Height: ${this.minHeight}`);
   
           if (this.currentWidth > this.minWidth && this.currentHeight > this.minHeight) {
             this.shrinkLayer(layer);
@@ -41,9 +41,9 @@ export default class MapShrinker {
             // Recalculate world bounds
             this.scene.physics.world.setBounds(0, 0, this.currentWidth, this.currentHeight);
   
-            console.log(`Map shrunk to ${this.currentWidth}x${this.currentHeight}`);
+            // console.log(`Map shrunk to ${this.currentWidth}x${this.currentHeight}`);
           } else {
-            console.log("Stopping MapShrinker");
+            // console.log("Stopping MapShrinker");
             this.stop();
           }
         }, this.interval);

@@ -274,6 +274,14 @@ class GameScene extends Phaser.Scene {
       }
     });
     this.bgmManager.startWaitingBGM();
+
+    SocketManager.onChatMessage(({ playerId, message }) => {
+      console.log(playerId);
+      console.log(message);
+      if (this.players[playerId]) {
+        this.players[playerId].showChatMessage(message);
+      }
+    });
   }
 
   setBackground() {
