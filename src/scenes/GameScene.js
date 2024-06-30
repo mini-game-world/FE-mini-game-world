@@ -5,6 +5,7 @@ import PlayerCountText from "../components/PlayerCountText";
 import WinnerText from "../components/WinnerText";
 import GameStatusText from "../components/GameStatusText";
 import MapShrinker from "../utils/MapShrinker";
+import BGMManager from "../utils/BGMManager";
 
 class GameScene extends Phaser.Scene {
   constructor() {
@@ -18,31 +19,25 @@ class GameScene extends Phaser.Scene {
     this.waitingPlayers = {};
 
     this.playerCountText = null;
-    this.playingBGMs = [];
-    this.waitingBGMs = [];
-    this.currentPlayingBGM = null;
-    this.currentWaitingBGM = null;
+    this.gameStatusText = null;
+
+    this.bgmManager = null;
+
     this.uiCamera = null;
     this.mapShrinker = null;
   }
 
   create() {
     this.setBackground();
-    this.playingBGMs = [
-      this.sound.add("playingBGM1", { loop: true, volume: 0.2 }),
-      this.sound.add("playingBGM2", { loop: true, volume: 0.2 }),
-    ];
-    this.waitingBGMs = [
-      this.sound.add("waitingBGM1", { loop: true, volume: 0.2 }),
-      this.sound.add("waitingBGM2", { loop: true, volume: 0.2 }),
-    ];
+
+    this.playerCountText = new PlayerCountText(this);
+    this.gameStatusText = new GameStatusText(this);
+
+    this.bgmManager = new BGMManager(this);
 
     // UI 카메라 생성
     this.uiCamera = this.cameras.add(0, 0, 3840, 2560).setScroll(0, 0);
     this.uiCamera.setName("UICamera");
-
-    this.playerCountText = new PlayerCountText(this, 16, 16, 0);
-    this.gameStatusText = new GameStatusText(this);
 
     this.playerCountText.text.setScrollFactor(0); // UI 카메라는 스크롤을 따라가지 않음
     this.uiCamera.ignore(this.backGround);
@@ -53,7 +48,17 @@ class GameScene extends Phaser.Scene {
 
     // MapShrinker 인스턴스 생성 및 시작
     console.log("Creating MapShrinker instance");
-    this.mapShrinker = new MapShrinker(this, 3840, 2560, 1300, 1300, 3840, 2560, 32, 24);
+    this.mapShrinker = new MapShrinker(
+      this,
+      3840,
+      2560,
+      1300,
+      1300,
+      3840,
+      2560,
+      32,
+      24
+    );
     this.mapShrinker.start();
 
     SocketManager.connect();
@@ -180,7 +185,7 @@ class GameScene extends Phaser.Scene {
 
     SocketManager.onPlayingGame((isPlaying) => {
       if (isPlaying == 1) {
-        this.startPlayingBGM();
+        this.bgmManager.startPlayingBGM();
         this.gameStatusText.showStart();
         Object.values(this.players).forEach((player) => {
           player.setPlayStatus();
@@ -189,7 +194,7 @@ class GameScene extends Phaser.Scene {
         });
         this.mapShrinker.start();
       } else {
-        this.startWaitingBGM();
+        this.bgmManager.startWaitingBGM();
         this.gameStatusText.showEnd();
         Object.values(this.players).forEach((player) => {
           player.setReadyStatus();
@@ -235,7 +240,7 @@ class GameScene extends Phaser.Scene {
         this.WinnerText = new WinnerText(this);
         this.WinnerText.showWinner(player.name);
         // // UI 카메라에서 닉네임 무시
-      
+
         // this.cameras.main.ignore(this.WinnerText);
         if (this.player !== player) {
           this.player.stopMove();
@@ -262,34 +267,7 @@ class GameScene extends Phaser.Scene {
         this.gameStatusText.showWait();
       }
     });
-
-    this.startWaitingBGM();
-  }
-
-  startPlayingBGM() {
-    if (this.currentWaitingBGM && this.currentWaitingBGM.isPlaying) {
-      this.currentWaitingBGM.stop();
-    }
-    if (this.currentPlayingBGM && this.currentPlayingBGM.isPlaying) {
-      this.currentPlayingBGM.stop();
-    }
-
-    const randomIndex = Phaser.Math.Between(0, this.playingBGMs.length - 1);
-    this.currentPlayingBGM = this.playingBGMs[randomIndex];
-    this.currentPlayingBGM.play();
-  }
-
-  startWaitingBGM() {
-    if (this.currentPlayingBGM && this.currentPlayingBGM.isPlaying) {
-      this.currentPlayingBGM.stop();
-    }
-    if (this.currentWaitingBGM && this.currentWaitingBGM.isPlaying) {
-      this.currentWaitingBGM.stop();
-    }
-
-    const randomIndex = Phaser.Math.Between(0, this.waitingBGMs.length - 1);
-    this.currentWaitingBGM = this.waitingBGMs[randomIndex];
-    this.currentWaitingBGM.play();
+    this.bgmManager.startWaitingBGM();
   }
 
   setBackground() {
@@ -312,9 +290,13 @@ class GameScene extends Phaser.Scene {
     this.backGround.setCollisionByProperty({ collides: true });
     this.house = map.createLayer("House", house_1, 0, 0);
     this.house.setCollisionByProperty({ collides: true });
-    this.object = map.createLayer("Object", [Tileset_1, chest_2, logs, stump_2, tree_1, tree_2], 0, 0);
+    this.object = map.createLayer(
+      "Object",
+      [Tileset_1, chest_2, logs, stump_2, tree_1, tree_2],
+      0,
+      0
+    );
     this.object.setCollisionByProperty({ collides: true });
-
 
     this.mapShrink = map.createLayer("MapShrink", Tileset_1, 0, 0);
     this.mapShrink.setCollisionByProperty({ collides: true });
