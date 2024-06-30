@@ -76,6 +76,16 @@ class SocketManager {
   emitPlayerAttack(data) {
     this.socket.emit("attackPosition", data);
   }
+
+  emitChatMessage(message) {
+    this.socket.emit('message', message);
+  }
+
+  onChatMessage(callback) {
+    this.socket.on('broadcastMessage', ({ playerId, message }) => {
+      callback({ playerId, message });
+    });
+  }
 }
 
 export default new SocketManager();

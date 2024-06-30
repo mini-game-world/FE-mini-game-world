@@ -7,6 +7,7 @@ import GameStatusText from "../components/GameStatusText";
 import MapShrinker from "../utils/MapShrinker";
 import BGMManager from "../utils/BGMManager";
 import CameraManager from "../utils/CameraManager";
+import ChatBox from "../utils/ChatBox";
 
 class GameScene extends Phaser.Scene {
   constructor() {
@@ -26,6 +27,7 @@ class GameScene extends Phaser.Scene {
     this.bgmManager = null;
     this.cameraManager = null;
     this.mapShrinker = null;
+    this.chatBox = null;
   }
 
   create() {
@@ -44,16 +46,18 @@ class GameScene extends Phaser.Scene {
     console.log("Creating MapShrinker instance");
     this.mapShrinker = new MapShrinker(
       this,
-      3840,
-      2560,
-      1300,
-      1300,
-      3840,
-      2560,
-      32,
-      24
+      15000,    //delay
+      3000,    //interval
+      1300, //min Width
+      1300, //min Height
+      3840, //initial Width
+      2560, //initial Height
+      32,   //tile Width
+      24    //tile Height
     );
-    this.mapShrinker.start();
+    // this.mapShrinker.start();
+
+    this.setupKeyboard();
 
     SocketManager.onCurrentPlayers((players) => {
       Object.keys(players).forEach((id) => {
@@ -72,6 +76,8 @@ class GameScene extends Phaser.Scene {
           this.physics.add.collider(this.player, this.backGround);
           this.physics.add.collider(this.player, this.house);
           this.physics.add.collider(this.player, this.object);
+
+          this.chatBox = new ChatBox(this.player);
         }
 
         if (isPlay) {
@@ -247,6 +253,14 @@ class GameScene extends Phaser.Scene {
       }
     });
     this.bgmManager.startWaitingBGM();
+
+    SocketManager.onChatMessage(({ playerId, message }) => {
+      console.log(playerId);
+      console.log(message);
+      if (this.players[playerId]) {
+        this.players[playerId].showChatMessage(message);
+      }
+    });
   }
 
   setBackground() {
@@ -314,6 +328,19 @@ class GameScene extends Phaser.Scene {
     this.playerCountText.update(playerCount);
   }
 
+  setupKeyboard() {
+    this.input.keyboard.on('keydown', (event) => {
+      if (event.key === 'Enter') {
+        this.chatBox.toggleChatBox();
+      } else if (event.key === 'Escape') {
+        this.chatBox.hideChatBox();
+      }
+    });
+
+    this.input.keyboard.removeCapture(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    this.input.keyboard.removeCapture(Phaser.Input.Keyboard.KeyCodes.ENTER);
+  }
+  
   update() {
     if (this.player) {
       this.player.update();
