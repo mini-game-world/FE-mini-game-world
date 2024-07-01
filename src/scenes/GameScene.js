@@ -259,8 +259,9 @@ class GameScene extends Phaser.Scene {
     SocketManager.onChatMessage(({ playerId, message }) => {
       console.log(playerId);
       console.log(message);
+      
       if (this.players[playerId]) {
-        this.players[playerId].showChatMessage(message);
+        this.players[playerId].chatBox.showChatMessage(message);
       }
     });
   }
@@ -346,15 +347,9 @@ class GameScene extends Phaser.Scene {
   }
 
   update() {
-    Object.values(this.players).forEach(player => {
-      if (player.isSelfInitiated) {
-        player.update();
-      }
-      // Update chat balloon position for all players
-      if (player.chatBalloon.visible) {
-        player.chatBalloon.setPosition(player.x, player.y - 50);
-      }
-    });
+    if(this.player){
+      this.player.update();
+    }
   }
 }
 

@@ -8,6 +8,7 @@ import playerDeadSprite from "../assets/playerDead.png";
 import clawSprite from "../assets/claw_white.png";
 import bombSprite from "../assets/bomb.png";
 import explosionSprite from "../assets/explosion.png";
+import starSprite from "../assets/star.png";
 
 // Import map
 import first_tileset from "../assets/tiles/first_tileset.png";
@@ -211,6 +212,11 @@ class BootScene extends Phaser.Scene {
       frameHeight: 32,
     })
 
+    this.load.spritesheet("star", starSprite, {
+      frameWidth: 150,
+      frameHeight: 150,
+    })
+
     const players = [
       player0,
       player1,
@@ -373,6 +379,14 @@ class BootScene extends Phaser.Scene {
       repeat: 0,
       hideOnComplete: true,
     });
+
+    this.anims.create({
+      key: "stun_star",
+      frames: this.anims.generateFrameNumbers("star"),
+      frameRate: 20,
+      repeat: 0,
+      hideOnComplete: true,
+    })
 
     this.scene.start("GameScene");
   }

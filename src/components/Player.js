@@ -5,6 +5,7 @@ import Bomb from "./Bomb";
 import Nickname from "./Nickname";
 import Arrow from "./Arrow";
 import Crown from "./Crown";
+import ChatBox from "../utils/ChatBox";
 
 class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y, texture, info) {
@@ -49,24 +50,14 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.prevX = x;
     this.prevY = y;
 
-    this.chatBalloon = this.scene.add.container(this.x, this.y - 50).setDepth(31).setVisible(false);
-    this.balloonGraphics = this.scene.add.graphics();
-    this.chatText = this.scene.add.text(0, 0, "", {
-      fontSize: "24px", 
-      fill: "#000000", 
-      padding: { x: 10, y: 5 },
-      align: "center",
-      wordWrap: { width: 280, useAdvancedWrap: true } // 텍스트 줄바꿈
-    }).setOrigin(0.5);
-
-    this.chatBalloon.add(this.balloonGraphics);
-    this.chatBalloon.add(this.chatText);
-
     this.arrow = null;
     this.crown = null;
     if (this.isSelfInitiated) {
       this.arrow = new Arrow(this.scene, this);
     }
+
+    // ChatBox 인스턴스 생성
+    this.chatBox = new ChatBox(this);
   }
 
   processInfo(value) {
@@ -224,11 +215,12 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       }
     }
 
-    if (this.chatBalloon.visible) {
-      this.chatBalloon.setPosition(this.x, this.y - 50);
+    // chatBalloon의 위치 업데이트
+    if (this.chatBox) {
+      this.chatBox.updateChatBalloonPosition();
     }
   }
-  
+
   createClawAttack() {
     const offset = -50;
     const clawX = this.x + (this.flipX ? -offset : offset);
@@ -382,42 +374,12 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       this.crown.destroy();
       this.crown = null;
     }
+
+    if (this.chatBox) {
+      this.chatBox.chatBalloon.destroy();
+      this.chatBox = null;
+    }
     super.destroy();
-  }
-
-  showChatMessage(message) {
-    this.chatText.setText(message);
-
-    const padding = 20;
-    const balloonWidth = this.chatText.width + padding;
-    const balloonHeight = this.chatText.height + padding + 10; 
-
-    this.balloonGraphics.clear();
-    this.balloonGraphics.fillStyle(0xffffff, 1);
-    this.balloonGraphics.fillRoundedRect(
-      -balloonWidth / 2,
-      -balloonHeight / 2,
-      balloonWidth,
-      balloonHeight - 10,
-      15
-    );
-    this.balloonGraphics.fillTriangle(
-      -10,
-      balloonHeight / 2 - 10,
-      10,
-      balloonHeight / 2 - 10,
-      0,
-      balloonHeight / 2
-    );
-
-    this.chatBalloon.setVisible(true);
-    this.scene.time.addEvent({
-      delay: 3000,
-      callback: () => {
-        this.chatBalloon.setVisible(false);
-      },
-      callbackScope: this
-    });
   }
 }
 
