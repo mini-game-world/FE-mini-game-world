@@ -4,6 +4,7 @@ import Claw from "./Claw";
 import Bomb from "./Bomb";
 import Nickname from "./Nickname";
 import Arrow from "./Arrow";
+import Crown from "./Crown";
 
 class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y, texture, info) {
@@ -49,15 +50,20 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.prevY = y;
 
     // Balloon text for chat messages
-    this.chatBalloon = this.scene.add.text(this.x, this.y - 50, '', {
-      fontSize: '48px',
-      fill: '#ffffff',
-      backgroundColor: '#000000',
-      padding: { x: 10, y: 5 },
-      align: 'center',
-    }).setOrigin(0.5).setDepth(31).setVisible(false);
+    this.chatBalloon = this.scene.add
+      .text(this.x, this.y - 50, "", {
+        fontSize: "48px",
+        fill: "#ffffff",
+        backgroundColor: "#000000",
+        padding: { x: 10, y: 5 },
+        align: "center",
+      })
+      .setOrigin(0.5)
+      .setDepth(31)
+      .setVisible(false);
 
     this.arrow = null;
+    this.crown = null;
     if (this.isSelfInitiated) {
       this.arrow = new Arrow(this.scene, this);
     }
@@ -326,7 +332,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     if (!this.scene) return;
     this.nickname.setColor("#FFD700");
     const originalScale = this.scale;
-
+    this.crown = new Crown(this.scene, this);
     this.scene.tweens.add({
       targets: this,
       scale: originalScale * 3,
@@ -349,6 +355,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
               if (!this.nickname) return;
               this.nickname.updatePosition();
             },
+            onComplete: () => {
+              this.crown.destroy();
+            },
           });
         });
       },
@@ -361,15 +370,21 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
   destroy() {
     this.removeBomb();
+
     if (this.nickname) {
       this.nickname.destroy();
       this.nickname = null;
     }
 
-    if (this.arrow){
+    if (this.arrow) {
       this.arrow.destroy();
       this.arrow = null;
-    } 
+    }
+
+    if (this.crown) {
+      this.crown.destroy();
+      this.crown = null;
+    }
     super.destroy();
   }
 
