@@ -276,6 +276,8 @@ class GameScene extends Phaser.Scene {
     const Tileset_1 = map.addTilesetImage("Tileset_1", "Tileset_1");
     const tree_1 = map.addTilesetImage("tree_1", "tree_1");
     const tree_2 = map.addTilesetImage("tree_2", "tree_2");
+    const stone_1 = map.addTilesetImage("stone_1", "stone_1");
+    const stone_3 = map.addTilesetImage("stone_3", "stone_3");
 
     // 레이어 생성 (Tiled에서 설정한 레이어 이름 사용)
     // map.createLayer("Tile Layer 1", tileset, 0, 0);
@@ -287,7 +289,7 @@ class GameScene extends Phaser.Scene {
     this.house.setCollisionByProperty({ collides: true });
     this.object = map.createLayer(
       "Object",
-      [Tileset_1, chest_2, logs, stump_2, tree_1, tree_2],
+      [Tileset_1, chest_2, logs, stump_2, tree_1, tree_2, stone_1, stone_3],
       0,
       0
     );

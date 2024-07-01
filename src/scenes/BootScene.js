@@ -19,6 +19,8 @@ import stump_2 from "../assets/tiles/stump_2.png";
 import Tileset_1 from "../assets/tiles/Tileset_1.png";
 import tree_1 from "../assets/tiles/tree_1.png";
 import tree_2 from "../assets/tiles/tree_2.png";
+import stone_1 from "../assets/tiles/stone_1.png";
+import stone_3 from "../assets/tiles/stone_3.png";
 
 
 // Import Sound
@@ -167,7 +169,7 @@ class BootScene extends Phaser.Scene {
     this.load.image("arrow", arrowImg);
     this.load.image("crown", crownImg);
     // this.load.tilemapTiledJSON('map', 'map');
-    this.load.tilemapTiledJSON('map', 'src/assets/maps/village2.tmj');
+    this.load.tilemapTiledJSON('map', 'src/assets/maps/village3.tmj');
     this.load.image("first_tileset", first_tileset);
     this.load.image("chest_2", chest_2);
     this.load.image("house_1", house_1);
@@ -176,6 +178,8 @@ class BootScene extends Phaser.Scene {
     this.load.image("Tileset_1", Tileset_1);
     this.load.image("tree_1", tree_1);
     this.load.image("tree_2", tree_2);
+    this.load.image("stone_3", stone_3);
+    this.load.image("stone_1", stone_1);
 
     //audio
     this.load.audio("scratch_sound", scratchSound);
