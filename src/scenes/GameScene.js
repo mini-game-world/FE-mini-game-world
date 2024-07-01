@@ -34,7 +34,6 @@ class GameScene extends Phaser.Scene {
     SocketManager.connect();
     this.setBackground();
 
-
     this.bgmManager = new BGMManager(this);
     this.cameraManager = new CameraManager(this);
 
@@ -46,14 +45,14 @@ class GameScene extends Phaser.Scene {
     console.log("Creating MapShrinker instance");
     this.mapShrinker = new MapShrinker(
       this,
-      15000,    //delay
-      3000,    //interval
+      15000, //delay
+      3000, //interval
       1300, //min Width
       1300, //min Height
       3840, //initial Width
       2560, //initial Height
-      32,   //tile Width
-      24    //tile Height
+      32, //tile Width
+      24 //tile Height
     );
     // this.mapShrinker.start();
 
@@ -119,6 +118,7 @@ class GameScene extends Phaser.Scene {
             if (this.players[playerId]) {
               if (playerSprite.isDead) {
                 playerSprite.anims.play("dead", true);
+                playerSprite.setFlipX(prevX < x); // 방향 설정
               } else {
                 playerSprite.anims.play(`move${playerSprite.avatar}`, true);
                 playerSprite.setFlipX(prevX < x); // 방향 설정
@@ -224,13 +224,15 @@ class GameScene extends Phaser.Scene {
     SocketManager.onWinnerPlayer((id) => {
       if (this.players[id]) {
         const player = this.players[id];
-        player.setWinner();
-        this.WinnerText.showWinner(player.name);
 
         if (this.player !== player) {
           this.player.stopMove();
-          this.cameraManager.smoothFollow(player);
         }
+
+        player.setWinner();
+        this.cameraManager.smoothFollow(player);
+
+        this.WinnerText.showWinner(player.name);
       }
     });
 
@@ -329,10 +331,10 @@ class GameScene extends Phaser.Scene {
   }
 
   setupKeyboard() {
-    this.input.keyboard.on('keydown', (event) => {
-      if (event.key === 'Enter') {
+    this.input.keyboard.on("keydown", (event) => {
+      if (event.key === "Enter") {
         this.chatBox.toggleChatBox();
-      } else if (event.key === 'Escape') {
+      } else if (event.key === "Escape") {
         this.chatBox.hideChatBox();
       }
     });
@@ -340,7 +342,7 @@ class GameScene extends Phaser.Scene {
     this.input.keyboard.removeCapture(Phaser.Input.Keyboard.KeyCodes.SPACE);
     this.input.keyboard.removeCapture(Phaser.Input.Keyboard.KeyCodes.ENTER);
   }
-  
+
   update() {
     Object.values(this.players).forEach(player => {
       if (player.isSelfInitiated) {
