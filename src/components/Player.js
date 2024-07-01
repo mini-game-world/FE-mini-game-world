@@ -49,18 +49,42 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.prevX = x;
     this.prevY = y;
 
-    // Balloon text for chat messages
-    this.chatBalloon = this.scene.add
-      .text(this.x, this.y - 50, "", {
-        fontSize: "48px",
-        fill: "#ffffff",
-        backgroundColor: "#000000",
-        padding: { x: 10, y: 5 },
-        align: "center",
-      })
-      .setOrigin(0.5)
-      .setDepth(31)
-      .setVisible(false);
+    this.chatBalloon = this.scene.add.container(this.x, this.y - 50).setDepth(31).setVisible(false);
+
+    const balloonGraphics = this.scene.add.graphics();
+    const balloonWidth = 200;
+    const balloonHeight = 80;
+    const balloonPointerSize = 10;
+
+    balloonGraphics.fillStyle(0xffffff, 1);
+    balloonGraphics.fillRoundedRect(
+      -balloonWidth / 2,
+      -balloonHeight / 2,
+      balloonWidth,
+      balloonHeight,
+      15
+    );
+    balloonGraphics.fillTriangle(
+      -balloonPointerSize,
+      balloonHeight / 2,
+      balloonPointerSize,
+      balloonHeight / 2,
+      0,
+      balloonHeight / 2 + balloonPointerSize
+    );
+
+    this.chatBalloon.add(balloonGraphics);
+
+    this.chatText = this.scene.add.text(0, 0, "", {
+      fontSize: "24px", // 폰트 크기 조절
+      fill: "#000000", // 글자 색상을 검정색으로 설정
+      padding: { x: 10, y: 5 },
+      align: "center",
+      wordWrap: { width: balloonWidth - 20, useAdvancedWrap: true } // 텍스트 줄바꿈
+    }).setOrigin(0.5);
+
+    this.chatBalloon.add(this.chatText);
+
 
     this.arrow = null;
     this.crown = null;
@@ -392,13 +416,14 @@ class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   showChatMessage(message) {
-    this.chatBalloon.setText(message);
-    this.chatBalloon.setPosition(this.x, this.y - 50);
+    this.chatText.setText(message);
     this.chatBalloon.setVisible(true);
-
-    // Hide the chat balloon after 3 seconds
-    this.scene.time.delayedCall(3000, () => {
-      this.chatBalloon.setVisible(false);
+    this.scene.time.addEvent({
+      delay: 3000,
+      callback: () => {
+        this.chatBalloon.setVisible(false);
+      },
+      callbackScope: this
     });
   }
 }
