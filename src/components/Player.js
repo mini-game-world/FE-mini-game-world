@@ -34,7 +34,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.isStunned = false;
     this.isPlay = this.processInfo(info.isPlay);
     this.isDead = this.processInfo(info.isDead);
-    this.isWinner = true;
+    this.isWinner = false;
 
     if (this.isDead) {
       this.setDeadStatus(); // 죽은 상태
@@ -110,7 +110,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.removeBomb();
     this.isDead = false;
     this.isPlay = false;
-    this.isWinner = true;
+    this.isWinner = false;
     // 히트박스 충돌 활성화
     this.body.checkCollision.none = false;
   }
@@ -193,11 +193,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       this.setVelocity(0, 0);
       return;
     }
-
-    // if (this.isAttacking || this.isStunned) {
-    //   this.setVelocity(0, 0);
-    //   return;
-    // }
 
     if (this.isStunned) {
       this.setVelocity(0, 0);
@@ -326,10 +321,14 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
   stopMove() {
     this.isWinner = false;
+    if(!this.isDead){
+      this.anims.play(`idle${this.avatar}`, true);
+    }
   }
 
   setWinner() {
     if (!this.scene) return;
+    this.stopMove();
     this.nickname.setColor("#FFD700");
     const originalScale = this.scale;
     this.crown = new Crown(this.scene, this);
