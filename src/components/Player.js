@@ -3,6 +3,7 @@ import SocketManager from "../utils/SocketManager";
 import Claw from "./Claw";
 import Bomb from "./Bomb";
 import Nickname from "./Nickname";
+import Arrow from "./Arrow";
 
 class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y, texture, info) {
@@ -55,6 +56,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       padding: { x: 10, y: 5 },
       align: 'center',
     }).setOrigin(0.5).setDepth(31).setVisible(false);
+
+    this.arrow = null;
+    if (this.isSelfInitiated) {
+      this.arrow = new Arrow(this.scene, this);
+    }
   }
 
   processInfo(value) {
@@ -359,6 +365,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       this.nickname.destroy();
       this.nickname = null;
     }
+
+    if (this.arrow){
+      this.arrow.destroy();
+      this.arrow = null;
+    } 
     super.destroy();
   }
 
