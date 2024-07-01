@@ -118,6 +118,7 @@ class GameScene extends Phaser.Scene {
             if (this.players[playerId]) {
               if (playerSprite.isDead) {
                 playerSprite.anims.play("dead", true);
+                playerSprite.setFlipX(prevX < x); // 방향 설정
               } else {
                 playerSprite.anims.play(`move${playerSprite.avatar}`, true);
                 playerSprite.setFlipX(prevX < x); // 방향 설정
@@ -230,7 +231,7 @@ class GameScene extends Phaser.Scene {
 
         player.setWinner();
         this.cameraManager.smoothFollow(player);
-        
+
         this.WinnerText.showWinner(player.name);
       }
     });
