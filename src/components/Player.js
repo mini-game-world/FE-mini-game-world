@@ -50,41 +50,17 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.prevY = y;
 
     this.chatBalloon = this.scene.add.container(this.x, this.y - 50).setDepth(31).setVisible(false);
-
-    const balloonGraphics = this.scene.add.graphics();
-    const balloonWidth = 200;
-    const balloonHeight = 80;
-    const balloonPointerSize = 10;
-
-    balloonGraphics.fillStyle(0xffffff, 1);
-    balloonGraphics.fillRoundedRect(
-      -balloonWidth / 2,
-      -balloonHeight / 2,
-      balloonWidth,
-      balloonHeight,
-      15
-    );
-    balloonGraphics.fillTriangle(
-      -balloonPointerSize,
-      balloonHeight / 2,
-      balloonPointerSize,
-      balloonHeight / 2,
-      0,
-      balloonHeight / 2 + balloonPointerSize
-    );
-
-    this.chatBalloon.add(balloonGraphics);
-
+    this.balloonGraphics = this.scene.add.graphics();
     this.chatText = this.scene.add.text(0, 0, "", {
-      fontSize: "24px", // 폰트 크기 조절
-      fill: "#000000", // 글자 색상을 검정색으로 설정
+      fontSize: "24px", 
+      fill: "#000000", 
       padding: { x: 10, y: 5 },
       align: "center",
-      wordWrap: { width: balloonWidth - 20, useAdvancedWrap: true } // 텍스트 줄바꿈
+      wordWrap: { width: 280, useAdvancedWrap: true } // 텍스트 줄바꿈
     }).setOrigin(0.5);
 
+    this.chatBalloon.add(this.balloonGraphics);
     this.chatBalloon.add(this.chatText);
-
 
     this.arrow = null;
     this.crown = null;
@@ -120,7 +96,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.setAlpha(0.3);
     this.nickname.setColor("#F78181");
 
-    // 히트박스 충돌 비활성화
     this.body.checkCollision.none = true;
   }
 
@@ -135,7 +110,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.isDead = false;
     this.isPlay = false;
     this.isWinner = false;
-    // 히트박스 충돌 활성화
     this.body.checkCollision.none = false;
   }
 
@@ -144,7 +118,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.isPlay = true;
     this.isDead = false;
     this.nickname.setColor("#ffffff");
-    // 히트박스 충돌 활성화
     this.body.checkCollision.none = false;
   }
 
@@ -190,7 +163,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       repeat: -1,
     });
 
-    // 공격 애니메이션이 완료될 때 콜백
     this.on("animationcomplete", (anim, frame) => {
       if (anim.key === `attack${this.avatar}`) {
         // this.isAttacking = false;
@@ -226,11 +198,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     const { velocityX, velocityY } = this.getVelocity();
     this.setVelocity(velocityX, velocityY);
 
-    // Check if position has changed
     if (this.prevX !== this.x || this.prevY !== this.y) {
       this.prevX = this.x;
       this.prevY = this.y;
-      // Emit position only when it has changed
       SocketManager.emitPlayerMovement({ x: this.x, y: this.y });
     }
 
@@ -417,6 +387,29 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
   showChatMessage(message) {
     this.chatText.setText(message);
+
+    const padding = 20;
+    const balloonWidth = this.chatText.width + padding;
+    const balloonHeight = this.chatText.height + padding + 10; 
+
+    this.balloonGraphics.clear();
+    this.balloonGraphics.fillStyle(0xffffff, 1);
+    this.balloonGraphics.fillRoundedRect(
+      -balloonWidth / 2,
+      -balloonHeight / 2,
+      balloonWidth,
+      balloonHeight - 10,
+      15
+    );
+    this.balloonGraphics.fillTriangle(
+      -10,
+      balloonHeight / 2 - 10,
+      10,
+      balloonHeight / 2 - 10,
+      0,
+      balloonHeight / 2
+    );
+
     this.chatBalloon.setVisible(true);
     this.scene.time.addEvent({
       delay: 3000,
