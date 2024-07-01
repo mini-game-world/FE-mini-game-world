@@ -342,9 +342,15 @@ class GameScene extends Phaser.Scene {
   }
   
   update() {
-    if (this.player) {
-      this.player.update();
-    }
+    Object.values(this.players).forEach(player => {
+      if (player.isSelfInitiated) {
+        player.update();
+      }
+      // Update chat balloon position for all players
+      if (player.chatBalloon.visible) {
+        player.chatBalloon.setPosition(player.x, player.y - 50);
+      }
+    });
   }
 }
 

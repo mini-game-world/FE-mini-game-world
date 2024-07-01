@@ -222,8 +222,12 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.anims.play(`idle${this.avatar}`, true);
       }
     }
-  }
 
+    if (this.chatBalloon.visible) {
+      this.chatBalloon.setPosition(this.x, this.y - 50);
+    }
+  }
+  
   createClawAttack() {
     const offset = -50;
     const clawX = this.x + (this.flipX ? -offset : offset);
