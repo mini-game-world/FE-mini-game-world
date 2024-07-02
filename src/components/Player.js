@@ -5,7 +5,6 @@ import Bomb from "./Bomb";
 import Nickname from "./Nickname";
 import Arrow from "./Arrow";
 import Crown from "./Crown";
-import ChatBox from "../utils/ChatBox";
 import ChatBalloon from "../utils/ChatBalloon";
 
 class Player extends Phaser.Physics.Arcade.Sprite {
@@ -57,7 +56,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       this.arrow = new Arrow(this.scene, this);
     }
 
-    this.chatBalloon = new ChatBalloon(this); // Create chat balloon for all players
+    this.chatBalloon = new ChatBalloon(this.scene, this);; // Create chat balloon for all players
   }
 
   processInfo(value) {
@@ -213,11 +212,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       } else {
         this.anims.play(`idle${this.avatar}`, true);
       }
-    }
-
-    // chatBalloon의 위치 업데이트
-    if (this.chatBalloon) {
-      this.chatBalloon.updateChatBalloonPosition();
     }
   }
 
