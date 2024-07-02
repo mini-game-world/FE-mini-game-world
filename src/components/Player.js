@@ -263,8 +263,10 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     });
     this.scene.time.delayedCall(500, () => {
       this.isStunned = false;
-      this.star.destroy();
-      this.star = null;
+      if(this.star) {
+        this.star.destroy();
+        this.star = null;
+      }
     });
   }
 
@@ -298,8 +300,10 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     });
     this.scene.time.delayedCall(500, () => {
       this.isStunned = false;
-      this.star.destroy();
-      this.star = null;
+      if(this.star) {
+        this.star.destroy();
+        this.star = null;
+      }
     });
   }
 
