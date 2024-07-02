@@ -12,7 +12,7 @@ export default class MapShrinker {
       this.timer = null;
   
       this.whiteGraphics = this.scene.add.graphics();
-      this.whiteGraphics.fillStyle(0xffffff, 0.5);
+      this.whiteGraphics.fillStyle(0xffffff);
       this.whiteGraphics.setDepth(10); 
   
     }
