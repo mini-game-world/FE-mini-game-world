@@ -6,7 +6,7 @@ class SocketManager {
   }
 
   connect() {
-    this.socket = io("https://www.jungleptest.xyz");
+    this.socket = io("https://www.jungleptest.xyz:3000");
 
     this.socket.on("connect", () => {
       console.log("Connected to server");
@@ -65,12 +65,26 @@ class SocketManager {
     this.socket.on("bombGameReady", callback);
   }
 
+  onGameStatus(callback) {
+    this.socket.on("gamestatus", callback);
+  }
+
   emitPlayerMovement(data) {
     this.socket.emit("playerMovement", data);
   }
 
   emitPlayerAttack(data) {
     this.socket.emit("attackPosition", data);
+  }
+
+  emitChatMessage(message) {
+    this.socket.emit('message', message);
+  }
+
+  onChatMessage(callback) {
+    this.socket.on('broadcastMessage', ({ playerId, message }) => {
+      callback({ playerId, message });
+    });
   }
 }
 

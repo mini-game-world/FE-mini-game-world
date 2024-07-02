@@ -14,7 +14,8 @@ class Explosion extends Phaser.GameObjects.Sprite {
       this.explosion_sound.play();
     }
 
-    this.setScale(1.5);
+    this.setScale(2.5);
+    this.setOrigin(0.5, 1);
     this.setDepth(32);
 
     this.createAnimations();
