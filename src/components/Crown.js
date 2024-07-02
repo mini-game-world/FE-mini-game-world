@@ -12,7 +12,7 @@ class Crown extends Phaser.GameObjects.Image {
     this.setScale(0.5);
 
     // Update the position of the arrow to follow the player
-    scene.events.on("update", this.updatePosition, this);
+    this.scene.events.on("update", this.updatePosition, this);
   }
 
   updatePosition() {
