@@ -259,7 +259,7 @@ class GameScene extends Phaser.Scene {
               this.player.stopMove();
             }
 
-            bagPlayer.isDead = false;
+            bagPlayer.setPlayStatus();
             bagPlayer.setWinner(false);
             this.cameraManager.smoothFollow(bagPlayer);
             console.log(bagPlayer.name);
@@ -279,7 +279,7 @@ class GameScene extends Phaser.Scene {
             if (this.player !== bombMasterPlayer) {
               this.player.stopMove();
             }
-            bombMasterPlayer.isDead = false;
+            bombMasterPlayer.setPlayStatus();
             bombMasterPlayer.setWinner(false);
             this.cameraManager.smoothFollow(bombMasterPlayer);
             console.log(bombMasterPlayer.name);
