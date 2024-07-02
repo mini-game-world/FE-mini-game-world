@@ -11,9 +11,9 @@ export default class MapShrinker {
       this.tileHeight = tileHeight;
       this.timer = null;
   
-      this.redGraphics = this.scene.add.graphics();
-      this.redGraphics.fillStyle(0xff0000, 0.5);
-      this.redGraphics.setDepth(10); 
+      this.whiteGraphics = this.scene.add.graphics();
+      this.whiteGraphics.fillStyle(0xffffff, 0.5);
+      this.whiteGraphics.setDepth(10); 
   
     }
   
@@ -61,7 +61,7 @@ export default class MapShrinker {
       const pixelX = tileX * this.tileWidth;
       const pixelY = tileY * this.tileHeight;
   
-      this.redGraphics.fillRect(pixelX, pixelY, this.tileWidth, this.tileHeight);
+      this.whiteGraphics.fillRect(pixelX, pixelY, this.tileWidth, this.tileHeight);
     }
 
     reset() {
@@ -69,7 +69,7 @@ export default class MapShrinker {
         this.stop();
         this.currentWidth = 3840;
         this.currentHeight = 2560;
-        this.redGraphics.clear(); 
+        this.whiteGraphics.clear(); 
         this.scene.physics.world.setBounds(0, 0, this.currentWidth, this.currentHeight);
     
         const layer = this.scene.mapShrink;
