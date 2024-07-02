@@ -12,7 +12,7 @@ import starSprite from "../assets/star.png";
 
 // Import map
 import first_tileset from "../assets/tiles/first_tileset.png";
-import map from "../assets/maps/testMap1.tmj";
+import map from "../assets/maps/village3.tmj";
 import chest_2 from "../assets/tiles/chest_2.png";
 import house_1 from "../assets/tiles/house_1.png";
 import logs from "../assets/tiles/logs.png";
@@ -22,7 +22,6 @@ import tree_1 from "../assets/tiles/tree_1.png";
 import tree_2 from "../assets/tiles/tree_2.png";
 import stone_1 from "../assets/tiles/stone_1.png";
 import stone_3 from "../assets/tiles/stone_3.png";
-
 
 // Import Sound
 import scratchSound from "../assets/sounds/scratch.ogg";
@@ -169,8 +168,7 @@ class BootScene extends Phaser.Scene {
     this.load.image("background", backgroundImg);
     this.load.image("arrow", arrowImg);
     this.load.image("crown", crownImg);
-    // this.load.tilemapTiledJSON('map', 'map');
-    this.load.tilemapTiledJSON('map', 'src/assets/maps/village3.tmj');
+    this.load.tilemapTiledJSON("map", map);
     this.load.image("first_tileset", first_tileset);
     this.load.image("chest_2", chest_2);
     this.load.image("house_1", house_1);
@@ -210,12 +208,12 @@ class BootScene extends Phaser.Scene {
     this.load.spritesheet("explosion", explosionSprite, {
       frameWidth: 32,
       frameHeight: 32,
-    })
+    });
 
     this.load.spritesheet("star", starSprite, {
       frameWidth: 150,
       frameHeight: 150,
-    })
+    });
 
     const players = [
       player0,
