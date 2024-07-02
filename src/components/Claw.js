@@ -27,7 +27,7 @@ export default class Claw extends Phaser.Physics.Arcade.Sprite {
     // 데미지를 설정합니다.
     this.m_damage = damage;
     // 크기, depth를 설정합니다.
-    this.scale = scale;
+    this.scale = 3;
     this.setDepth(30);
     // 애니메이션을 재생합니다.
     this.anims.play("claw_white", true);
