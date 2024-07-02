@@ -27,7 +27,6 @@ class GameScene extends Phaser.Scene {
     this.bgmManager = null;
     this.cameraManager = null;
     this.mapShrinker = null;
-    this.chatBox = null;
   }
 
   create() {
@@ -56,8 +55,6 @@ class GameScene extends Phaser.Scene {
     );
     // this.mapShrinker.start();
 
-    this.setupKeyboard();
-
     SocketManager.onCurrentPlayers((players) => {
       Object.keys(players).forEach((id) => {
         const { x, y, avatar, isPlay, isDead, nickname } = players[id];
@@ -75,8 +72,6 @@ class GameScene extends Phaser.Scene {
           this.physics.add.collider(this.player, this.backGround);
           this.physics.add.collider(this.player, this.house);
           this.physics.add.collider(this.player, this.object);
-
-          this.chatBox = new ChatBox(this.player);
         }
 
         if (isPlay) {
@@ -256,12 +251,9 @@ class GameScene extends Phaser.Scene {
     });
     this.bgmManager.startWaitingBGM();
 
-    SocketManager.onChatMessage(({ playerId, message }) => {
-      console.log(playerId);
-      console.log(message);
-      
+    SocketManager.onChatMessage(({ playerId, message }) => {      
       if (this.players[playerId]) {
-        this.players[playerId].chatBox.showChatMessage(message);
+        this.players[playerId].chatBalloon.showChatMessage(message);
       }
     });
   }
@@ -331,19 +323,6 @@ class GameScene extends Phaser.Scene {
   updatePlayerCountText() {
     const playerCount = Object.keys(this.players).length;
     this.playerCountText.update(playerCount);
-  }
-
-  setupKeyboard() {
-    this.input.keyboard.on("keydown", (event) => {
-      if (event.key === "Enter") {
-        this.chatBox.toggleChatBox();
-      } else if (event.key === "Escape") {
-        this.chatBox.hideChatBox();
-      }
-    });
-
-    this.input.keyboard.removeCapture(Phaser.Input.Keyboard.KeyCodes.SPACE);
-    this.input.keyboard.removeCapture(Phaser.Input.Keyboard.KeyCodes.ENTER);
   }
 
   update() {
