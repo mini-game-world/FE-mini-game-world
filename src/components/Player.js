@@ -55,7 +55,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.crown = null;
     if (this.isSelfInitiated) {
       this.arrow = new Arrow(this.scene, this);
-      this.chatBox = new ChatBox(this); // Only create chatbox for self-initiated player
     }
 
     this.chatBalloon = new ChatBalloon(this); // Create chat balloon for all players
@@ -216,8 +215,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       }
     }
 
-     // chatBalloon의 위치 업데이트
-     if (this.chatBalloon) {
+    // chatBalloon의 위치 업데이트
+    if (this.chatBalloon) {
       this.chatBalloon.updateChatBalloonPosition();
     }
   }
@@ -312,7 +311,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
   stopMove() {
     this.isWinner = false;
-    if(!this.isDead){
+    if (!this.isDead) {
       this.anims.play(`idle${this.avatar}`, true);
     }
   }
@@ -374,11 +373,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     if (this.crown) {
       this.crown.destroy();
       this.crown = null;
-    }
-
-    if (this.chatBox) {
-      this.chatBox.destroy();
-      this.chatBox = null;
     }
 
     if (this.chatBalloon) {

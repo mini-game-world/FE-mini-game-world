@@ -27,6 +27,8 @@ class GameScene extends Phaser.Scene {
     this.bgmManager = null;
     this.cameraManager = null;
     this.mapShrinker = null;
+
+    this.ChatBox = null;
   }
 
   create() {
@@ -66,7 +68,7 @@ class GameScene extends Phaser.Scene {
         if (isSelfInitiated) {
           this.player = player;
           this.cameraManager.smoothFollow(this.player);
-
+          this.ChatBox = new ChatBox(this, this.player);
           // 충돌 설정
           // this.physics.add.collider(this.player, this.blocklayer);
           this.physics.add.collider(this.player, this.backGround);
@@ -251,7 +253,7 @@ class GameScene extends Phaser.Scene {
     });
     this.bgmManager.startWaitingBGM();
 
-    SocketManager.onChatMessage(({ playerId, message }) => {      
+    SocketManager.onChatMessage(({ playerId, message }) => {
       if (this.players[playerId]) {
         this.players[playerId].chatBalloon.showChatMessage(message);
       }
@@ -326,7 +328,7 @@ class GameScene extends Phaser.Scene {
   }
 
   update() {
-    if(this.player){
+    if (this.player) {
       this.player.update();
     }
   }
