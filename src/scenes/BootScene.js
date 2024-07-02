@@ -380,14 +380,6 @@ class BootScene extends Phaser.Scene {
       hideOnComplete: true,
     });
 
-    this.anims.create({
-      key: "stun_star",
-      frames: this.anims.generateFrameNumbers("star"),
-      frameRate: 20,
-      repeat: 0,
-      hideOnComplete: true,
-    })
-
     this.scene.start("GameScene");
   }
 }
