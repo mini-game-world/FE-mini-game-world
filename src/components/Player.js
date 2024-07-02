@@ -333,7 +333,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.stopMove();
     this.nickname.setColor("#FFD700");
     const originalScale = this.scale;
-    this.crown = new Crown(this.scene, this);
+    if (!this.crown) {
+      this.crown = new Crown(this.scene, this);
+    }
     this.scene.tweens.add({
       targets: this,
       scale: originalScale * 3,
@@ -358,7 +360,10 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             },
             onComplete: () => {
               if (!this.scene) return;
-              this.crown.destroy();
+              if (this.crown) {
+                this.crown.destroy();
+                this.crown = null;
+              }
             },
           });
         });
