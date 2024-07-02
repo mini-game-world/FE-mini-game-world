@@ -45,6 +45,10 @@ export default class ChatBox {
     this.chatInput.style.border = "none";
     this.chatInput.style.borderRadius = "10px";
     this.chatInputWrapper.appendChild(this.chatInput);
+
+    this.chatContainer.style.fontFamily = "'BMJUA', sans-serif";
+    this.chatInputWrapper.style.fontFamily = "'BMJUA', sans-serif";
+    this.chatInput.style.fontFamily = "'BMJUA', sans-serif";
   }
 
   setupKeyboard() {

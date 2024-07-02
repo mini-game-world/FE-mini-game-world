@@ -12,6 +12,7 @@ export default class ChatBalloon {
       .text(0, 0, "", {
         fontSize: "24px",
         fill: "#000000",
+        fontFamily: 'BMJUA',
         padding: { x: 10, y: 5 },
         align: "center",
         wordWrap: { width: 280, useAdvancedWrap: true },
