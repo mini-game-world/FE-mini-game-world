@@ -187,8 +187,6 @@ class GameScene extends Phaser.Scene {
         this.mapShrinker.start();
       } else {
         this.player.setScale(1);
-        console.log(this.player);
-        console.log(this.players);
         Object.values(this.players).forEach((player) => {
           player.setScale(1);
         });
@@ -232,10 +230,6 @@ class GameScene extends Phaser.Scene {
     });
 
     SocketManager.onWinnerPlayer((data) => {
-      console.log(data);
-      console.log(data.gameWinner);
-      console.log(data.PunchingBag.playerId);
-      console.log(data.BombMaster.playerId);
       if (this.players[data.gameWinner]) {
         const winnerPlayer = this.players[data.gameWinner];
 
@@ -254,7 +248,6 @@ class GameScene extends Phaser.Scene {
         () => {
           if (this.players[data.PunchingBag.playerId]) {
             const bagPlayer = this.players[data.PunchingBag.playerId];
-            console.log(bagPlayer);
             if (this.player !== bagPlayer) {
               this.player.stopMove();
             }
@@ -262,36 +255,30 @@ class GameScene extends Phaser.Scene {
             bagPlayer.setPlayStatus();
             bagPlayer.setWinner(false);
             this.cameraManager.smoothFollow(bagPlayer);
-            console.log(bagPlayer.name);
             this.PunchingBagText.showPunchingBag(bagPlayer.name);
           }
         },
         [],
         this.scene
       );
-      
+
       this.time.delayedCall(
         10000,
         () => {
           if (this.players[data.BombMaster.playerId]) {
             const bombMasterPlayer = this.players[data.BombMaster.playerId];
-            console.log(bombMasterPlayer);
             if (this.player !== bombMasterPlayer) {
               this.player.stopMove();
             }
             bombMasterPlayer.setPlayStatus();
             bombMasterPlayer.setWinner(false);
             this.cameraManager.smoothFollow(bombMasterPlayer);
-            console.log(bombMasterPlayer.name);
-    
             this.BombMasterText.showBombMaster(bombMasterPlayer.name);
           }
         },
         [],
         this.scene
       );
-      
-
     });
 
     SocketManager.onBombGameReady((count) => {

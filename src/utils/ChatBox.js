@@ -94,7 +94,8 @@ export default class ChatBox {
   }
 
   sendMessage() {
-    const message = this.chatInput.value.trim();
+    let message = this.chatInput.value.trim();
+    message = message.substring(0, 20);
     if (message && this.player) {
       SocketManager.emitChatMessage(message);
       this.chatInput.value = "";
