@@ -5,6 +5,7 @@ import Bomb from "./Bomb";
 import Nickname from "./Nickname";
 import Arrow from "./Arrow";
 import Crown from "./Crown";
+import Star from "./Star";
 import ChatBalloon from "../utils/ChatBalloon";
 
 class Player extends Phaser.Physics.Arcade.Sprite {
@@ -21,6 +22,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.body.setSize(50, 50); // 히트박스 크기 설정 (너비, 높이)
     this.body.setOffset(75, 150); // 히트박스 오프셋 설정 (x, y)
 
+    this.star = null;
     this.bomb = null;
     this.name = info.nickname;
     this.nickname = new Nickname(scene, this, this.name);
@@ -238,6 +240,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
   stunPlayer() {
     if (this.bomb) return;
+    if(!this.star) {
+      this.star = new Star(this.scene, this);
+    }
     this.isStunned = true;
     // this.isAttacking = false;
     this.setVelocity(0, 0);
@@ -258,6 +263,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     });
     this.scene.time.delayedCall(500, () => {
       this.isStunned = false;
+      this.star.destroy();
+      this.star = null;
     });
   }
 
@@ -273,6 +280,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     }
     this.isStunned = true;
     // this.isAttacking = false;
+
+    if(!this.star) {
+      this.star = new Star(this.scene, this);
+    }
+
     this.setVelocity(0, 0);
     this.scene.tweens.add({
       targets: this,
@@ -286,6 +298,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     });
     this.scene.time.delayedCall(500, () => {
       this.isStunned = false;
+      this.star.destroy();
+      this.star = null;
     });
   }
 
@@ -372,6 +386,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     if (this.chatBalloon) {
       this.chatBalloon.destroy();
       this.chatBalloon = null;
+    }
+
+    if (this.star) {
+      this.star.destroy();
+      this.star = null;
     }
     super.destroy();
   }
