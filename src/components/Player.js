@@ -328,16 +328,16 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  setWinner() {
+  setWinner(iswinner) {
     if (!this.scene) return;
     this.stopMove();
     this.nickname.setColor("#FFD700");
     const originalScale = this.scale;
-    this.crown = new Crown(this.scene, this);
+    if(iswinner) this.crown = new Crown(this.scene, this);
     this.scene.tweens.add({
       targets: this,
       scale: originalScale * 3,
-      duration: 2000,
+      duration: 1500,
       ease: "Power1",
       onUpdate: () => {
         if (!this.nickname) return;
@@ -345,12 +345,12 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       },
       onComplete: () => {
         if (!this.scene) return;
-        this.scene.time.delayedCall(2000, () => {
+        this.scene.time.delayedCall(1500, () => {
           if (!this.scene) return;
           this.scene.tweens.add({
             targets: this,
             scale: originalScale,
-            duration: 2000,
+            duration: 1500,
             ease: "Power1",
             onUpdate: () => {
               if (!this.nickname) return;
@@ -358,7 +358,10 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             },
             onComplete: () => {
               if (!this.scene) return;
-              this.crown.destroy();
+              if(this.crown) {
+                this.crown.destroy();
+                this.crown = null;
+              }
             },
           });
         });
