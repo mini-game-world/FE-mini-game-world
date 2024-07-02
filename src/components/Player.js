@@ -58,7 +58,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       this.arrow = new Arrow(this.scene, this);
     }
 
-    this.chatBalloon = new ChatBalloon(this.scene, this);; // Create chat balloon for all players
+    this.chatBalloon = new ChatBalloon(this.scene, this); // Create chat balloon for all players
   }
 
   processInfo(value) {
@@ -240,7 +240,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
   stunPlayer() {
     if (this.bomb) return;
-    if(!this.star) {
+    if (!this.star) {
       this.star = new Star(this.scene, this);
     }
     this.isStunned = true;
@@ -263,7 +263,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     });
     this.scene.time.delayedCall(500, () => {
       this.isStunned = false;
-      if(this.star) {
+      if (this.star) {
         this.star.destroy();
         this.star = null;
       }
@@ -283,7 +283,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.isStunned = true;
     // this.isAttacking = false;
 
-    if(!this.star) {
+    if (!this.star) {
       this.star = new Star(this.scene, this);
     }
 
@@ -300,7 +300,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     });
     this.scene.time.delayedCall(500, () => {
       this.isStunned = false;
-      if(this.star) {
+      if (this.star) {
         this.star.destroy();
         this.star = null;
       }
@@ -357,6 +357,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
               this.nickname.updatePosition();
             },
             onComplete: () => {
+              if (!this.scene) return;
               this.crown.destroy();
             },
           });
