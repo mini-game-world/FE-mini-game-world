@@ -33,11 +33,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.createInputKeyBoard();
     this.createAnimations();
 
-    // this.isAttacking = false;
     this.isStunned = false;
     this.isPlay = this.processInfo(info.isPlay);
     this.isDead = this.processInfo(info.isDead);
     this.isWinner = false;
+    this.isAttacking = false;
 
     if (this.isDead) {
       this.setDeadStatus(); // 죽은 상태
@@ -83,7 +83,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.explodeBomb();
     this.setTexture("playerDead");
     this.anims.play(`dead`, true);
-    // this.isAttacking = false;
     this.isDead = true;
     this.setAlpha(0.3);
     this.nickname.setColor("#F78181");
@@ -102,6 +101,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.isDead = false;
     this.isPlay = false;
     this.isWinner = false;
+    this.isAttacking = false;
+
     this.body.checkCollision.none = false;
   }
 
@@ -157,8 +158,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
     this.on("animationcomplete", (anim, frame) => {
       if (anim.key === `attack${this.avatar}`) {
-        // this.isAttacking = false;
         this.createClawAttack();
+        this.isAttacking = false; // 공격 애니메이션이 끝났을 때 공격 상태 해제
       }
     });
   }
@@ -196,14 +197,22 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       SocketManager.emitPlayerMovement({ x: this.x, y: this.y });
     }
 
+    if (this.isAttacking) {
+      return; // 공격 중일 때 다른 입력 무시
+    }
+
     if (this.isDead) {
       this.anims.play("dead", true);
       if (velocityX !== 0 || velocityY !== 0) {
         this.setFlipX(velocityX > 0);
       }
     } else {
-      if (this.keys.attack.isDown && this.isPlay && !this.isDead) {
-        // this.isAttacking = true;
+      if (
+        Phaser.Input.Keyboard.JustDown(this.keys.attack) &&
+        this.isPlay &&
+        !this.isDead
+      ) {
+        this.isAttacking = true; // 공격 시작
         this.anims.play(`attack${this.avatar}`, true);
         if (velocityX !== 0 || velocityY !== 0) {
           this.setFlipX(velocityX > 0);
@@ -218,7 +227,14 @@ class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   createClawAttack() {
-    const offset = -50;
+    if (!this.isSelfInitiated) {
+      this.anims
+        .play(`attack${this.avatar}`, true)
+        .on("animationcomplete", () => {
+          this.anims.play(`idle${this.avatar}`, true);
+        });
+    }
+    const offset = -110;
     const clawX = this.x + (this.flipX ? -offset : offset);
     const clawY = this.y;
     const isHeadingRight = this.flipX;
@@ -243,8 +259,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     if (!this.star) {
       this.star = new Star(this.scene, this);
     }
+    this.isAttacking = false;
     this.isStunned = true;
-    // this.isAttacking = false;
     this.setVelocity(0, 0);
     if (!this.isDead) {
       this.anims.play(`stun${this.avatar}`, true);
@@ -281,7 +297,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       this.bomb = new Bomb(this.scene, this);
     }
     this.isStunned = true;
-    // this.isAttacking = false;
+    this.isAttacking = false;
 
     if (!this.star) {
       this.star = new Star(this.scene, this);
@@ -333,7 +349,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.stopMove();
     this.nickname.setColor("#FFD700");
     const originalScale = this.scale;
+
     if(iswinner) this.crown = new Crown(this.scene, this);
+
     this.scene.tweens.add({
       targets: this,
       scale: originalScale * 3,
@@ -358,7 +376,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             },
             onComplete: () => {
               if (!this.scene) return;
-              if(this.crown) {
+              if (this.crown) {
                 this.crown.destroy();
                 this.crown = null;
               }
