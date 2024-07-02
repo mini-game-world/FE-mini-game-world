@@ -5,7 +5,7 @@ import Bomb from "./Bomb";
 import Nickname from "./Nickname";
 import Arrow from "./Arrow";
 import Crown from "./Crown";
-import ChatBox from "../utils/ChatBox";
+import ChatBalloon from "../utils/ChatBalloon";
 
 class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y, texture, info) {
@@ -56,8 +56,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       this.arrow = new Arrow(this.scene, this);
     }
 
-    // ChatBox 인스턴스 생성
-    this.chatBox = new ChatBox(this);
+    this.chatBalloon = new ChatBalloon(this.scene, this);; // Create chat balloon for all players
   }
 
   processInfo(value) {
@@ -214,11 +213,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.anims.play(`idle${this.avatar}`, true);
       }
     }
-
-    // chatBalloon의 위치 업데이트
-    if (this.chatBox) {
-      this.chatBox.updateChatBalloonPosition();
-    }
   }
 
   createClawAttack() {
@@ -311,7 +305,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
   stopMove() {
     this.isWinner = false;
-    if(!this.isDead){
+    if (!this.isDead) {
       this.anims.play(`idle${this.avatar}`, true);
     }
   }
@@ -375,9 +369,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       this.crown = null;
     }
 
-    if (this.chatBox) {
-      this.chatBox.chatBalloon.destroy();
-      this.chatBox = null;
+    if (this.chatBalloon) {
+      this.chatBalloon.destroy();
+      this.chatBalloon = null;
     }
     super.destroy();
   }

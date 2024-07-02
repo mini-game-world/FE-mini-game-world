@@ -27,7 +27,8 @@ class GameScene extends Phaser.Scene {
     this.bgmManager = null;
     this.cameraManager = null;
     this.mapShrinker = null;
-    this.chatBox = null;
+
+    this.ChatBox = null;
   }
 
   create() {
@@ -56,8 +57,6 @@ class GameScene extends Phaser.Scene {
     );
     // this.mapShrinker.start();
 
-    this.setupKeyboard();
-
     SocketManager.onCurrentPlayers((players) => {
       Object.keys(players).forEach((id) => {
         const { x, y, avatar, isPlay, isDead, nickname } = players[id];
@@ -69,14 +68,12 @@ class GameScene extends Phaser.Scene {
         if (isSelfInitiated) {
           this.player = player;
           this.cameraManager.smoothFollow(this.player);
-
+          this.ChatBox = new ChatBox(this, this.player);
           // 충돌 설정
           // this.physics.add.collider(this.player, this.blocklayer);
           this.physics.add.collider(this.player, this.backGround);
           this.physics.add.collider(this.player, this.house);
           this.physics.add.collider(this.player, this.object);
-
-          this.chatBox = new ChatBox(this.player);
         }
 
         if (isPlay) {
@@ -257,11 +254,8 @@ class GameScene extends Phaser.Scene {
     this.bgmManager.startWaitingBGM();
 
     SocketManager.onChatMessage(({ playerId, message }) => {
-      console.log(playerId);
-      console.log(message);
-      
       if (this.players[playerId]) {
-        this.players[playerId].chatBox.showChatMessage(message);
+        this.players[playerId].chatBalloon.showChatMessage(message);
       }
     });
   }
@@ -333,21 +327,8 @@ class GameScene extends Phaser.Scene {
     this.playerCountText.update(playerCount);
   }
 
-  setupKeyboard() {
-    this.input.keyboard.on("keydown", (event) => {
-      if (event.key === "Enter") {
-        this.chatBox.toggleChatBox();
-      } else if (event.key === "Escape") {
-        this.chatBox.hideChatBox();
-      }
-    });
-
-    this.input.keyboard.removeCapture(Phaser.Input.Keyboard.KeyCodes.SPACE);
-    this.input.keyboard.removeCapture(Phaser.Input.Keyboard.KeyCodes.ENTER);
-  }
-
   update() {
-    if(this.player){
+    if (this.player) {
       this.player.update();
     }
   }
