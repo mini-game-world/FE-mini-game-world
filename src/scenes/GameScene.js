@@ -148,7 +148,9 @@ class GameScene extends Phaser.Scene {
     });
 
     SocketManager.onAttackPlayer((id) => {
-      this.players[id].createClawAttack();
+      if (this.players[id]) {
+        this.players[id].createClawAttack();
+      }
     });
 
     SocketManager.onPlayerDisconnected((id) => {
@@ -196,7 +198,9 @@ class GameScene extends Phaser.Scene {
 
     SocketManager.onBombUsers((players) => {
       players.forEach((id) => {
-        this.players[id].setBombUser();
+        if (this.players[id]) {
+          this.players[id].setBombUser();
+        }
       });
     });
 
