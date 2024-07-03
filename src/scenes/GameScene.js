@@ -141,7 +141,9 @@ class GameScene extends Phaser.Scene {
 
     SocketManager.onPlayerAttacked((ids) => {
       ids.forEach((id) => {
-        this.players[id].stunPlayer();
+        if (this.players[id]) {
+          this.players[id].stunPlayer();
+        }
       });
     });
 
