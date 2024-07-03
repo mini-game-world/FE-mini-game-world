@@ -8,6 +8,7 @@ import MapShrinker from "../utils/MapShrinker";
 import BGMManager from "../utils/BGMManager";
 import CameraManager from "../utils/CameraManager";
 import ChatBox from "../components/ChatBox";
+import Item from "../components/Item";
 
 class GameScene extends Phaser.Scene {
   constructor() {
@@ -19,6 +20,8 @@ class GameScene extends Phaser.Scene {
     this.activePlayers = {};
     this.deadPlayers = {};
     this.waitingPlayers = {};
+
+    this.items = [];
 
     this.resultText = null;
     this.playerCountText = null;
@@ -288,6 +291,14 @@ class GameScene extends Phaser.Scene {
       if (this.players[playerId]) {
         this.players[playerId].chatBalloon.showChatMessage(message);
       }
+    });
+
+    SocketManager.onNewItems((items) => {
+      console.log(items);
+      items.forEach(({ x, y }) => {
+        const newItem = new Item(this, x, y, 'item'); // 'itemTexture'는 preload된 아이템 이미지의 키입니다.
+        this.items.push(newItem);
+      });
     });
   }
 
