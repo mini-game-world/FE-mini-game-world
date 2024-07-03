@@ -1,17 +1,7 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import game from './App';
-import reportWebVitals from './reportWebVitals';
+import Phaser from "phaser";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <game />
-  </React.StrictMode>
-);
+import Config from "./Config";
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+const game = new Phaser.Game(Config);
+
+export default game;
