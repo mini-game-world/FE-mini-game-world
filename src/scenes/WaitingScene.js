@@ -129,7 +129,6 @@ class WaitingScene extends Phaser.Scene {
   update() {
     if (this.player) {
         this.player.update();
-        this.player.handleTransitionCheck();
     }
   }
 }
