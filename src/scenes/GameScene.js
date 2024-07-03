@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import Player from "../components/Player";
 import SocketManager from "../utils/SocketManager";
 import PlayerCountText from "../components/PlayerCountText";
-import WinnerText from "../components/WinnerText";
+import ResultText from "../components/ResultText";
 import GameStatusText from "../components/GameStatusText";
 import MapShrinker from "../utils/MapShrinker";
 import BGMManager from "../utils/BGMManager";
@@ -20,7 +20,7 @@ class GameScene extends Phaser.Scene {
     this.deadPlayers = {};
     this.waitingPlayers = {};
 
-    this.WinnerText = null;
+    this.resultText = null;
     this.playerCountText = null;
     this.gameStatusText = null;
 
@@ -38,7 +38,7 @@ class GameScene extends Phaser.Scene {
     this.bgmManager = new BGMManager(this);
     this.cameraManager = new CameraManager(this);
 
-    this.WinnerText = new WinnerText(this);
+    this.resultText = new ResultText(this);
 
     this.playerCountText = new PlayerCountText(this);
     this.gameStatusText = new GameStatusText(this);
@@ -226,7 +226,7 @@ class GameScene extends Phaser.Scene {
         const winPlayer = this.players[data.gameWinner];
         winPlayer.setCrown();
         this.cameraManager.smoothFollow(winPlayer);
-        this.WinnerText.showWinner(winPlayer.name);
+        this.resultText.showWinner(winPlayer.name);
       }
 
       this.time.delayedCall(
@@ -236,7 +236,7 @@ class GameScene extends Phaser.Scene {
             const bagPlayer = this.players[data.PunchingBag.playerId];
             bagPlayer.setPunching_bag();
             this.cameraManager.smoothFollow(bagPlayer);
-            this.WinnerText.showPunchingBag(bagPlayer.name);
+            this.resultText.showPunchingBag(bagPlayer.name);
           }
         },
         [],
@@ -250,7 +250,7 @@ class GameScene extends Phaser.Scene {
             const bombMasterPlayer = this.players[data.BombMaster.playerId];
             bombMasterPlayer.setBombMaster();
             this.cameraManager.smoothFollow(bombMasterPlayer);
-            this.WinnerText.showBombMaster(bombMasterPlayer.name);
+            this.resultText.showBombMaster(bombMasterPlayer.name);
           }
         },
         [],
