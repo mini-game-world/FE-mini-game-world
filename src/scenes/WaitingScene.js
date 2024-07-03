@@ -20,7 +20,7 @@ class WaitingScene extends Phaser.Scene {
     SocketManager.connect();
     this.setBackground();
 
-    SocketManager.onCurrentPlayers((players) => {
+    SocketManager.onWaitingPlayers((players) => {
       Object.keys(players).forEach((id) => {
         const { x, y, avatar, nickname } = players[id];
         const isSelfInitiated = id === SocketManager.socket.id;

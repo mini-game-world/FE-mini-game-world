@@ -17,6 +17,11 @@ class SocketManager {
     });
   }
 
+  
+  onWaitingPlayers(callback) {
+    this.socket.on("waitingPlayers", callback);
+  }
+
   onCurrentPlayers(callback) {
     this.socket.on("currentPlayers", callback);
   }
