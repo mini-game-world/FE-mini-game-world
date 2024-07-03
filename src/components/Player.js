@@ -8,7 +8,7 @@ import Crown from "./Crown";
 import Star from "./Star";
 import ChatBalloon from "./ChatBalloon";
 import Punching_bag from "./Punching_bag";
-import Bomb_master from "./bomb_master";
+import Bomb_master from "./Bomb_master";
 
 class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y, texture, info) {
