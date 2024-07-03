@@ -47,6 +47,50 @@ class WinnerText extends Phaser.GameObjects.Text {
     );
   }
 
+  showPunchingBag(name) {
+    if (this.winnerText) {
+      this.winnerText.destroy();
+    }
+
+    this.winnerSound = this.scene.sound.add("winner_sound", { volume: 0.2 });
+    this.winnerSound.play();
+
+    this.setText(`동네북!! ${name}`);
+    this.setAlpha(1);
+
+    this.scene.time.delayedCall(
+      5000,
+      () => {
+        this.setAlpha(0);
+        this.winnerText = null;
+      },
+      [],
+      this.scene
+    );
+  }
+
+  showBombMaster(name) {
+    if (this.winnerText) {
+      this.winnerText.destroy();
+    }
+
+    this.winnerSound = this.scene.sound.add("winner_sound", { volume: 0.2 });
+    this.winnerSound.play();
+
+    this.setText(`폭탄돌리기왕 ${name}`);
+    this.setAlpha(1);
+
+    this.scene.time.delayedCall(
+      5000,
+      () => {
+        this.setAlpha(0);
+        this.winnerText = null;
+      },
+      [],
+      this.scene
+    );
+  }
+
   destroy() {
     this.scene.events.off("update", this.updatePosition, this);
     super.destroy();

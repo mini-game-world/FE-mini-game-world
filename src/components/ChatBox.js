@@ -1,4 +1,4 @@
-import SocketManager from "./SocketManager";
+import SocketManager from "../utils/SocketManager";
 
 export default class ChatBox {
   constructor(scene, player) {

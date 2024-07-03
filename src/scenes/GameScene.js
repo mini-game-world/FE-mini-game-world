@@ -2,14 +2,12 @@ import Phaser from "phaser";
 import Player from "../components/Player";
 import SocketManager from "../utils/SocketManager";
 import PlayerCountText from "../components/PlayerCountText";
-import WinnerText from "../components/WinnerText";
-import PunchingBagText from "../components/PunchingBagText";
-import BombMasterText from "../components/BombMaster";
+import ResultText from "../components/ResultText";
 import GameStatusText from "../components/GameStatusText";
 import MapShrinker from "../utils/MapShrinker";
 import BGMManager from "../utils/BGMManager";
 import CameraManager from "../utils/CameraManager";
-import ChatBox from "../utils/ChatBox";
+import ChatBox from "../components/ChatBox";
 
 class GameScene extends Phaser.Scene {
   constructor() {
@@ -22,9 +20,7 @@ class GameScene extends Phaser.Scene {
     this.deadPlayers = {};
     this.waitingPlayers = {};
 
-    this.WinnerText = null;
-    this.PunchingBagText = null;
-    this.BombMasterText = null;
+    this.resultText = null;
     this.playerCountText = null;
     this.gameStatusText = null;
 
@@ -42,9 +38,7 @@ class GameScene extends Phaser.Scene {
     this.bgmManager = new BGMManager(this);
     this.cameraManager = new CameraManager(this);
 
-    this.WinnerText = new WinnerText(this);
-    this.PunchingBagText = new PunchingBagText(this);
-    this.BombMasterText = new BombMasterText(this);
+    this.resultText = new ResultText(this);
 
     this.playerCountText = new PlayerCountText(this);
     this.gameStatusText = new GameStatusText(this);
@@ -193,10 +187,6 @@ class GameScene extends Phaser.Scene {
         });
         this.mapShrinker.start();
       } else {
-        this.player.setScale(1);
-        Object.values(this.players).forEach((player) => {
-          player.setScale(1);
-        });
         this.bgmManager.startWaitingBGM();
         this.gameStatusText.showEnd();
         Object.values(this.players).forEach((player) => {
@@ -237,17 +227,13 @@ class GameScene extends Phaser.Scene {
     });
 
     SocketManager.onWinnerPlayer((data) => {
+      this.gameStatusText.showResult();
+      this.player.stopMove();
       if (this.players[data.gameWinner]) {
-        const winnerPlayer = this.players[data.gameWinner];
-
-        if (this.player !== winnerPlayer) {
-          this.player.stopMove();
-        }
-
-        winnerPlayer.setWinner(true);
-        this.cameraManager.smoothFollow(winnerPlayer);
-
-        this.WinnerText.showWinner(winnerPlayer.name);
+        const winPlayer = this.players[data.gameWinner];
+        winPlayer.setCrown();
+        this.cameraManager.smoothFollow(winPlayer);
+        this.resultText.showWinner(winPlayer.name);
       }
 
       this.time.delayedCall(
@@ -255,14 +241,9 @@ class GameScene extends Phaser.Scene {
         () => {
           if (this.players[data.PunchingBag.playerId]) {
             const bagPlayer = this.players[data.PunchingBag.playerId];
-            if (this.player !== bagPlayer) {
-              this.player.stopMove();
-            }
-
-            bagPlayer.setPlayStatus();
-            bagPlayer.setWinner(false);
+            bagPlayer.setPunching_bag();
             this.cameraManager.smoothFollow(bagPlayer);
-            this.PunchingBagText.showPunchingBag(bagPlayer.name);
+            this.resultText.showPunchingBag(bagPlayer.name);
           }
         },
         [],
@@ -270,17 +251,13 @@ class GameScene extends Phaser.Scene {
       );
 
       this.time.delayedCall(
-        10000,
+        11000,
         () => {
           if (this.players[data.BombMaster.playerId]) {
             const bombMasterPlayer = this.players[data.BombMaster.playerId];
-            if (this.player !== bombMasterPlayer) {
-              this.player.stopMove();
-            }
-            bombMasterPlayer.setPlayStatus();
-            bombMasterPlayer.setWinner(false);
+            bombMasterPlayer.setBombMaster();
             this.cameraManager.smoothFollow(bombMasterPlayer);
-            this.BombMasterText.showBombMaster(bombMasterPlayer.name);
+            this.resultText.showBombMaster(bombMasterPlayer.name);
           }
         },
         [],

@@ -90,6 +90,10 @@ class GameStatusText extends Phaser.GameObjects.Text {
     );
   }
 
+  showResult() {
+    this.showText("게임 결과 발표중 입니다.", "56px", 0, 1, 1);
+  }
+
   clearText() {
     if (this.currentTween) {
       this.currentTween.stop(); // Stop the current tween
