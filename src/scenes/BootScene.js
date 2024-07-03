@@ -10,7 +10,26 @@ import bombSprite from "../assets/bomb.png";
 import explosionSprite from "../assets/explosion.png";
 import starSprite from "../assets/star.png";
 
-// Import map
+//Import Waitingmap
+import map2 from "../assets/maps/Indoor2.tmj";
+import bed from "../assets/tiles/bed.png";
+import book_1 from "../assets/tiles/book_1.png";
+import book_2 from "../assets/tiles/book_2.png";
+import candle from "../assets/tiles/candle.png";
+import cup from "../assets/tiles/cup.png";
+import cupboard_2 from "../assets/tiles/cupboard_2.png";
+import fireplace_2 from "../assets/tiles/fireplace_2.png";
+import knife from "../assets/tiles/knife.png";
+import picture from "../assets/tiles/picture.png";
+import plate from "../assets/tiles/plate.png";
+import shelf from "../assets/tiles/shelf.png";
+import spoon from "../assets/tiles/spoon.png";
+import stool from "../assets/tiles/stool.png";
+import table_1 from "../assets/tiles/table_1.png";
+import table_3 from "../assets/tiles/table_3.png";
+import Tileset_2 from "../assets/tiles/Tileset_2.png";
+
+// Import Gamemap
 import first_tileset from "../assets/tiles/first_tileset.png";
 import map from "../assets/maps/village3.tmj";
 import chest_2 from "../assets/tiles/chest_2.png";
@@ -179,6 +198,25 @@ class BootScene extends Phaser.Scene {
     this.load.image("tree_2", tree_2);
     this.load.image("stone_3", stone_3);
     this.load.image("stone_1", stone_1);
+
+    //waitingMap
+    this.load.tilemapTiledJSON("map2", map2);
+    this.load.image("bed", bed);
+    this.load.image("book_1", book_1);
+    this.load.image("book_2", book_2);
+    this.load.image("candle", candle);
+    this.load.image("cup", cup);
+    this.load.image("cupboard_2", cupboard_2);
+    this.load.image("fireplace_2", fireplace_2);
+    this.load.image("knife", knife);
+    this.load.image("picture", picture);
+    this.load.image("plate", plate);
+    this.load.image("shelf", shelf);
+    this.load.image("spoon", spoon);
+    this.load.image("stool", stool);
+    this.load.image("table_1", table_1);
+    this.load.image("table_3", table_3);
+    this.load.image("Tileset_2", Tileset_2);
 
     //audio
     this.load.audio("scratch_sound", scratchSound);

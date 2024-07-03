@@ -77,10 +77,17 @@ class GameScene extends Phaser.Scene {
           this.cameraManager.smoothFollow(this.player);
           this.ChatBox = new ChatBox(this, this.player);
           // 충돌 설정
-          // this.physics.add.collider(this.player, this.blocklayer);
           this.physics.add.collider(this.player, this.backGround);
           this.physics.add.collider(this.player, this.house);
           this.physics.add.collider(this.player, this.object);
+
+          //waitingRoom(임시테스트)
+          // this.physics.add.collider(this.player, this.tileLayer1);
+          // this.physics.add.collider(this.player, this.object1);
+          // this.physics.add.collider(this.player, this.object2);
+          // this.physics.add.collider(this.player, this.object3);
+          // this.physics.add.collider(this.player, this.object4);
+
         }
 
         if (isPlay) {
@@ -322,10 +329,27 @@ class GameScene extends Phaser.Scene {
     const stone_1 = map.addTilesetImage("stone_1", "stone_1");
     const stone_3 = map.addTilesetImage("stone_3", "stone_3");
 
+    //waitingRoom(임시 테스트)
+    // const map2 = this.make.tilemap({ key: "map2" });
+    // const bed = map2.addTilesetImage("bed", "bed");
+    // const book_1 = map2.addTilesetImage("book_1", "book_1");
+    // const book_2 = map2.addTilesetImage("book_2", "book_2");
+    // const candle = map2.addTilesetImage("candle", "candle");
+    // const cup = map2.addTilesetImage("cup", "cup");
+    // const cupboard_2 = map2.addTilesetImage("cupboard_2", "cupboard_2");
+    // const fireplace_2 = map2.addTilesetImage("fireplace_2", "fireplace_2");
+    // const knife = map2.addTilesetImage("knife", "knife");
+    // const picture = map2.addTilesetImage("picture", "picture");
+    // const plate = map2.addTilesetImage("plate", "plate");
+    // const shelf = map2.addTilesetImage("shelf", "shelf");
+    // const spoon = map2.addTilesetImage("spoon", "spoon");
+    // const stool = map2.addTilesetImage("stool", "stool");
+    // const table_1 = map2.addTilesetImage("table_1", "table_1");
+    // const Tileset_2 = map2.addTilesetImage("Tileset_2", "Tileset_2");
+    // const logs = map2.addTilesetImage("logs", "logs");
+
+
     // 레이어 생성 (Tiled에서 설정한 레이어 이름 사용)
-    // map.createLayer("Tile Layer 1", tileset, 0, 0);
-    // this.blocklayer = map.createLayer("block", tileset, 0, 0);
-    // this.blocklayer.setCollisionByProperty({ collides: true });
     this.backGround = map.createLayer("BackGround", Tileset_1, 0, 0);
     this.backGround.setCollisionByProperty({ collides: true });
     this.house = map.createLayer("House", house_1, 0, 0);
@@ -338,8 +362,20 @@ class GameScene extends Phaser.Scene {
     );
     this.object.setCollisionByProperty({ collides: true });
 
-    this.mapShrink = map.createLayer("MapShrink", Tileset_1, 0, 0);
-    this.mapShrink.setCollisionByProperty({ collides: true });
+    //waitingRoom(임시테스트)
+    // this.tileLayer1 = map2.createLayer("Tile Layer 1", Tileset_2, 0, 0);
+    // this.tileLayer1.setCollisionByProperty({ collides: true });
+    // this.object1 = map2.createLayer("Object1", [Tileset_2, bed, cupboard_2, picture, shelf, stool, fireplace_2], 0, 0);
+    // this.object1.setCollisionByProperty({ collides: true });
+    // this.object2 = map2.createLayer("Object2", [table_1, book_1], 0, 0);
+    // this.object2.setCollisionByProperty({ collides: true });
+    // this.object3 = map2.createLayer("Object3", [book_2, stool, plate], 0, 0);
+    // this.object3.setCollisionByProperty({ collides: true });
+    // this.object4 = map2.createLayer("Object4", [candle, cup, spoon, knife, logs], 0, 0);
+    // this.object4.setCollisionByProperty({ collides: true });
+
+    // this.mapShrink = map.createLayer("MapShrink", Tileset_1, 0, 0);
+    // this.mapShrink.setCollisionByProperty({ collides: true });
 
     // 충돌 디버그 그래픽 추가
     // this.debugGraphics = this.add.graphics();
@@ -365,8 +401,6 @@ class GameScene extends Phaser.Scene {
     // });
 
     // Set world bounds
-    console.log(this.backGround.widthInPixels);
-    console.log(this.backGround.heightInPixels);
     this.physics.world.setBounds(0, 0, 3840, 2560);
   }
 
