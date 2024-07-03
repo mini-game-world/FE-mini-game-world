@@ -52,6 +52,46 @@ class WaitingScene extends Phaser.Scene {
       this.players[playerId] = newPlayer;
     });
 
+    SocketManager.onPlayerMoved((player) => {
+        const { playerId, x, y } = player;
+        if (this.players[playerId]) {
+          const playerSprite = this.players[playerId];
+          const prevX = playerSprite.x;
+  
+          // Apply tween for smooth movement
+          this.tweens.add({
+            targets: playerSprite,
+            x: x,
+            y: y,
+            duration: 100, // Duration of the tween
+            ease: "Linear", // Easing function
+            onUpdate: () => {
+              if (this.players[playerId]) {
+                if (playerSprite.isDead) {
+                  playerSprite.anims.play("dead", true);
+                  playerSprite.setFlipX(prevX < x); // 방향 설정
+                } else {
+                  playerSprite.anims.play(`move${playerSprite.avatar}`, true);
+                  playerSprite.setFlipX(prevX < x); // 방향 설정
+                }
+              }
+            },
+            onComplete: () => {
+              if (this.players[playerId]) {
+                if (!playerSprite.isDead) {
+                  clearTimeout(playerSprite.idleTimeout);
+                  playerSprite.idleTimeout = setTimeout(() => {
+                    if (this.players[playerId]) {
+                      playerSprite.anims.play(`idle${playerSprite.avatar}`, true);
+                    }
+                  }, 100);
+                }
+              }
+            },
+          });
+        }
+      });
+
     SocketManager.onPlayerDisconnected((id) => {
       if (this.players[id]) {
         this.players[id].destroy();
