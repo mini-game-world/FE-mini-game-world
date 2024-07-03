@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import Player from "../components/Player";
 import SocketManager from "../utils/SocketManager";
+import ChatBox from "../components/ChatBox";
 
 class WaitingScene extends Phaser.Scene {
   constructor() {
