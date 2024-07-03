@@ -1,12 +1,13 @@
 import Phaser from "phaser";
 import BootScene from "./scenes/BootScene";
 import GameScene from "./scenes/GameScene";
+import WaitingScene from "./scenes/WaitingScene";
 
 const Config = {
   type: Phaser.AUTO,
   width: 3840,
   height: 2560,
-  scene: [BootScene, GameScene],
+  scene: [BootScene, WaitingScene, GameScene],
   pixelArt: true,
   scale: {
     mode: Phaser.Scale.FIT,

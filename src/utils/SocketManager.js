@@ -16,7 +16,7 @@ class SocketManager {
       console.log("Disconnected from server");
     });
   }
-
+  
   onCurrentPlayers(callback) {
     this.socket.on("currentPlayers", callback);
   }
@@ -79,6 +79,10 @@ class SocketManager {
 
   emitChatMessage(message) {
     this.socket.emit('message', message);
+  }
+
+  emitJoinRoom(data) {
+    this.socket.emit("joinRoom", data);
   }
 
   onChatMessage(callback) {
