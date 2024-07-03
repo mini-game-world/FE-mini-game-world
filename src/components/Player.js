@@ -350,6 +350,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       this.anims.play(`idle${this.avatar}`, true);
     }
     this.isWinner = false;
+    this.isAttacking = false;
   }
 
   setCrown() {
