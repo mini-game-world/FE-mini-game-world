@@ -6,7 +6,7 @@ import Nickname from "./Nickname";
 import Arrow from "./Arrow";
 import Crown from "./Crown";
 import Star from "./Star";
-import ChatBalloon from "../utils/ChatBalloon";
+import ChatBalloon from "./ChatBalloon";
 import Punching_bag from "./Punching_bag";
 import Bomb_master from "./bomb_master";
 

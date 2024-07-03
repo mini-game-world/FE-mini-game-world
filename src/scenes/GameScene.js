@@ -7,7 +7,7 @@ import GameStatusText from "../components/GameStatusText";
 import MapShrinker from "../utils/MapShrinker";
 import BGMManager from "../utils/BGMManager";
 import CameraManager from "../utils/CameraManager";
-import ChatBox from "../utils/ChatBox";
+import ChatBox from "../components/ChatBox";
 
 class GameScene extends Phaser.Scene {
   constructor() {
