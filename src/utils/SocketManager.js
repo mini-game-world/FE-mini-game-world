@@ -6,7 +6,7 @@ class SocketManager {
   }
 
   connect() {
-    this.socket = io("https://www.jungleptest.xyz:3000");
+    this.socket = io("https://localhost:3000");
 
     this.socket.on("connect", () => {
       console.log("Connected to server");
@@ -16,7 +16,7 @@ class SocketManager {
       console.log("Disconnected from server");
     });
   }
-  
+
   onCurrentPlayers(callback) {
     this.socket.on("currentPlayers", callback);
   }
