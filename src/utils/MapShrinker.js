@@ -25,7 +25,7 @@ export default class MapShrinker {
       console.log("MapShrinker start called");
 
       setTimeout(() => {
-          this.statusText.showText('맵이 줄어들기 시작합니다!', '64px', 2000, 1, 0);
+          this.statusText.showText('맵이 줄어들기 시작합니다!', '64px', 3000, 1, 0);
 
           this.timer = setInterval(() => {
               const layer = this.scene.mapShrink;

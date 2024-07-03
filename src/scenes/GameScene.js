@@ -3,8 +3,6 @@ import Player from "../components/Player";
 import SocketManager from "../utils/SocketManager";
 import PlayerCountText from "../components/PlayerCountText";
 import WinnerText from "../components/WinnerText";
-import PunchingBagText from "../components/PunchingBagText";
-import BombMasterText from "../components/BombMaster";
 import GameStatusText from "../components/GameStatusText";
 import MapShrinker from "../utils/MapShrinker";
 import BGMManager from "../utils/BGMManager";
@@ -23,8 +21,6 @@ class GameScene extends Phaser.Scene {
     this.waitingPlayers = {};
 
     this.WinnerText = null;
-    this.PunchingBagText = null;
-    this.BombMasterText = null;
     this.playerCountText = null;
     this.gameStatusText = null;
 
@@ -43,8 +39,6 @@ class GameScene extends Phaser.Scene {
     this.cameraManager = new CameraManager(this);
 
     this.WinnerText = new WinnerText(this);
-    this.PunchingBagText = new PunchingBagText(this);
-    this.BombMasterText = new BombMasterText(this);
 
     this.playerCountText = new PlayerCountText(this);
     this.gameStatusText = new GameStatusText(this);
@@ -186,10 +180,6 @@ class GameScene extends Phaser.Scene {
         });
         this.mapShrinker.start();
       } else {
-        this.player.setScale(1);
-        Object.values(this.players).forEach((player) => {
-          player.setScale(1);
-        });
         this.bgmManager.startWaitingBGM();
         this.gameStatusText.showEnd();
         Object.values(this.players).forEach((player) => {
@@ -230,17 +220,13 @@ class GameScene extends Phaser.Scene {
     });
 
     SocketManager.onWinnerPlayer((data) => {
+      this.gameStatusText.showResult();
+      this.player.stopMove();
       if (this.players[data.gameWinner]) {
-        const winnerPlayer = this.players[data.gameWinner];
-
-        if (this.player !== winnerPlayer) {
-          this.player.stopMove();
-        }
-
-        winnerPlayer.setWinner(true);
-        this.cameraManager.smoothFollow(winnerPlayer);
-
-        this.WinnerText.showWinner(winnerPlayer.name);
+        const winPlayer = this.players[data.gameWinner];
+        winPlayer.setCrown();
+        this.cameraManager.smoothFollow(winPlayer);
+        this.WinnerText.showWinner(winPlayer.name);
       }
 
       this.time.delayedCall(
@@ -248,14 +234,9 @@ class GameScene extends Phaser.Scene {
         () => {
           if (this.players[data.PunchingBag.playerId]) {
             const bagPlayer = this.players[data.PunchingBag.playerId];
-            if (this.player !== bagPlayer) {
-              this.player.stopMove();
-            }
-
-            bagPlayer.setPlayStatus();
-            bagPlayer.setWinner(false);
+            bagPlayer.setPunching_bag();
             this.cameraManager.smoothFollow(bagPlayer);
-            this.PunchingBagText.showPunchingBag(bagPlayer.name);
+            this.WinnerText.showPunchingBag(bagPlayer.name);
           }
         },
         [],
@@ -263,17 +244,13 @@ class GameScene extends Phaser.Scene {
       );
 
       this.time.delayedCall(
-        10000,
+        11000,
         () => {
           if (this.players[data.BombMaster.playerId]) {
             const bombMasterPlayer = this.players[data.BombMaster.playerId];
-            if (this.player !== bombMasterPlayer) {
-              this.player.stopMove();
-            }
-            bombMasterPlayer.setPlayStatus();
-            bombMasterPlayer.setWinner(false);
+            bombMasterPlayer.setBombMaster();
             this.cameraManager.smoothFollow(bombMasterPlayer);
-            this.BombMasterText.showBombMaster(bombMasterPlayer.name);
+            this.WinnerText.showBombMaster(bombMasterPlayer.name);
           }
         },
         [],

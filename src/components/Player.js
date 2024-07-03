@@ -7,6 +7,8 @@ import Arrow from "./Arrow";
 import Crown from "./Crown";
 import Star from "./Star";
 import ChatBalloon from "../utils/ChatBalloon";
+import Punching_bag from "./Punching_bag";
+import Bomb_master from "./bomb_master";
 
 class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y, texture, info) {
@@ -53,6 +55,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.prevY = y;
 
     this.arrow = null;
+
+    this.crown = null;
+    this.punching_bag = null;
+    this.bombking = null;
+
     this.crown = null;
     if (this.isSelfInitiated) {
       this.arrow = new Arrow(this.scene, this);
@@ -98,6 +105,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     }
     this.nickname.setColor("#ffffff");
     this.removeBomb();
+    this.setScale(1);
     this.isDead = false;
     this.isPlay = false;
     this.isWinner = false;
@@ -338,19 +346,20 @@ class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   stopMove() {
-    this.isWinner = false;
     if (!this.isDead) {
       this.anims.play(`idle${this.avatar}`, true);
     }
+    this.isWinner = false;
   }
 
-  setWinner(iswinner) {
+  setCrown() {
     if (!this.scene) return;
-    this.stopMove();
     this.nickname.setColor("#FFD700");
     const originalScale = this.scale;
 
-    if(iswinner) this.crown = new Crown(this.scene, this);
+    if (!this.crown) {
+      this.crown = new Crown(this.scene, this);
+    }
 
     this.scene.tweens.add({
       targets: this,
@@ -376,9 +385,99 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             },
             onComplete: () => {
               if (!this.scene) return;
+              this.nickname.setColor("#ffffff");
+              this.stopMove();
               if (this.crown) {
                 this.crown.destroy();
                 this.crown = null;
+              }
+            },
+          });
+        });
+      },
+    });
+  }
+
+  setPunching_bag() {
+    if (!this.scene) return;
+    this.nickname.setColor("#FFD700");
+    const originalScale = this.scale;
+
+    this.punching_bag = new Punching_bag(this.scene, this);
+
+    this.scene.tweens.add({
+      targets: this,
+      scale: originalScale * 3,
+      duration: 1500,
+      ease: "Power1",
+      onUpdate: () => {
+        if (!this.nickname) return;
+        this.nickname.updatePosition();
+      },
+      onComplete: () => {
+        if (!this.scene) return;
+        this.scene.time.delayedCall(1500, () => {
+          if (!this.scene) return;
+          this.scene.tweens.add({
+            targets: this,
+            scale: originalScale,
+            duration: 1500,
+            ease: "Power1",
+            onUpdate: () => {
+              if (!this.nickname) return;
+              this.nickname.updatePosition();
+            },
+            onComplete: () => {
+              if (!this.scene) return;
+              this.nickname.setColor("#ffffff");
+              this.stopMove();
+              if (this.punching_bag) {
+                this.punching_bag.destroy();
+                this.punching_bag = null;
+              }
+            },
+          });
+        });
+      },
+    });
+  }
+
+  setBombMaster() {
+    if (!this.scene) return;
+    this.nickname.setColor("#FFD700");
+    const originalScale = this.scale;
+
+    this.bomb_master = new Bomb_master(this.scene, this);
+
+    this.scene.tweens.add({
+      targets: this,
+      scale: originalScale * 3,
+      duration: 1500,
+      ease: "Power1",
+      onUpdate: () => {
+        if (!this.nickname) return;
+        this.nickname.updatePosition();
+      },
+      onComplete: () => {
+        if (!this.scene) return;
+        this.scene.time.delayedCall(1500, () => {
+          if (!this.scene) return;
+          this.scene.tweens.add({
+            targets: this,
+            scale: originalScale,
+            duration: 1500,
+            ease: "Power1",
+            onUpdate: () => {
+              if (!this.nickname) return;
+              this.nickname.updatePosition();
+            },
+            onComplete: () => {
+              if (!this.scene) return;
+              this.nickname.setColor("#ffffff");
+              this.stopMove();
+              if (this.bomb_master) {
+                this.bomb_master.destroy();
+                this.bomb_master = null;
               }
             },
           });
@@ -407,6 +506,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     if (this.crown) {
       this.crown.destroy();
       this.crown = null;
+    }
+
+    if (this.punching_bag) {
+      this.punching_bag.destroy();
+      this.punching_bag = null;
     }
 
     if (this.chatBalloon) {
