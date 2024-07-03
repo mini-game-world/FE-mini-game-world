@@ -17,6 +17,7 @@ class WaitingScene extends Phaser.Scene {
   }
 
   create() {
+    SocketManager.connect();
     this.setBackground();
 
     SocketManager.onCurrentPlayers((players) => {

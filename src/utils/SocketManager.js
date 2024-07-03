@@ -6,7 +6,7 @@ class SocketManager {
   }
 
   connect() {
-    this.socket = io("https://localhost:3000");
+    this.socket = io("http://localhost:3000");
 
     this.socket.on("connect", () => {
       console.log("Connected to server");
