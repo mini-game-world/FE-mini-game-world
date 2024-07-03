@@ -153,7 +153,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       frames: this.scene.anims.generateFrameNumbers(
         `player_stun${this.avatar}`
       ),
-      frameRate: 5,
+      frameRate: 15,
       repeat: 0,
     });
 
@@ -271,20 +271,12 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.isStunned = true;
     this.setVelocity(0, 0);
     if (!this.isDead) {
-      this.anims.play(`stun${this.avatar}`, true);
-    }
-    this.scene.tweens.add({
-      targets: this,
-      alpha: 0,
-      yoyo: true,
-      repeat: 1,
-      duration: 50,
-      onComplete: () => {
-        if (!this.isDead) {
+      this.anims
+        .play(`stun${this.avatar}`, true)
+        .once(`animationcomplete-stun${this.avatar}`, () => {
           this.anims.play(`idle${this.avatar}`, true);
-        }
-      },
-    });
+        });
+    }
     this.scene.time.delayedCall(500, () => {
       this.isStunned = false;
       if (this.star) {
@@ -305,23 +297,12 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       this.bomb = new Bomb(this.scene, this);
     }
     this.isStunned = true;
+    this.anims.play(`idle${this.avatar}`, true);
     this.isAttacking = false;
 
     if (!this.star) {
       this.star = new Star(this.scene, this);
     }
-
-    this.setVelocity(0, 0);
-    this.scene.tweens.add({
-      targets: this,
-      alpha: 0,
-      yoyo: true,
-      repeat: 1,
-      duration: 50,
-      onComplete: () => {
-        this.anims.play(`idle${this.avatar}`, true);
-      },
-    });
     this.scene.time.delayedCall(500, () => {
       this.isStunned = false;
       if (this.star) {
@@ -401,6 +382,15 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
   setPunching_bag() {
     if (!this.scene) return;
+
+    if (this.isDead) {
+      this.setTexture(`player${this.avatar}`);
+      this.anims.play(`idle${this.avatar}`, true);
+      this.body.checkCollision.none = false;
+      this.setAlpha(1);
+      this.isDead = false;
+    }
+
     this.nickname.setColor("#FFD700");
     const originalScale = this.scale;
 
@@ -445,6 +435,15 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
   setBombMaster() {
     if (!this.scene) return;
+
+    if (this.isDead) {
+      this.setTexture(`player${this.avatar}`);
+      this.anims.play(`idle${this.avatar}`, true);
+      this.body.checkCollision.none = false;
+      this.setAlpha(1);
+      this.isDead = false;
+    }
+
     this.nickname.setColor("#FFD700");
     const originalScale = this.scale;
 
