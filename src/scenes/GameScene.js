@@ -342,8 +342,6 @@ class GameScene extends Phaser.Scene {
     // });
 
     // Set world bounds
-    console.log(this.backGround.widthInPixels);
-    console.log(this.backGround.heightInPixels);
     this.physics.world.setBounds(0, 0, 3840, 2560);
   }
 
