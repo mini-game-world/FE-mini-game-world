@@ -382,6 +382,15 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
   setPunching_bag() {
     if (!this.scene) return;
+
+    if (this.isDead) {
+      this.setTexture(`player${this.avatar}`);
+      this.anims.play(`idle${this.avatar}`, true);
+      this.body.checkCollision.none = false;
+      this.setAlpha(1);
+      this.isDead = false;
+    }
+
     this.nickname.setColor("#FFD700");
     const originalScale = this.scale;
 
@@ -426,6 +435,15 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
   setBombMaster() {
     if (!this.scene) return;
+
+    if (this.isDead) {
+      this.setTexture(`player${this.avatar}`);
+      this.anims.play(`idle${this.avatar}`, true);
+      this.body.checkCollision.none = false;
+      this.setAlpha(1);
+      this.isDead = false;
+    }
+
     this.nickname.setColor("#FFD700");
     const originalScale = this.scale;
 
