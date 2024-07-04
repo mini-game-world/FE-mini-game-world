@@ -13,13 +13,18 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     this.add(this.player);
     this.add(this.nickname);
 
-    this.scene.add.existing(this);
-    this.scene.physics.world.enable(this);
+    this.hitBox = this.scene.add.zone(
+      this.x,
+      this.y,
+      this.player.width,
+      this.player.height
+    );
+    this.scene.physics.world.enable(this.hitBox);
+    this.hitBox.body.setCollideWorldBounds(true);
 
+    this.scene.add.existing(this);
     this.setSize(this.player.width, this.player.height);
     this.setDepth(30);
-
-    this.body.setCollideWorldBounds(true);
 
     this.createInputKeyBoard();
 
@@ -53,7 +58,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
 
   update() {
     const { velocityX, velocityY } = this.getVelocity();
-    this.body.setVelocity(velocityX, velocityY);
+    this.hitBox.body.setVelocity(velocityX, velocityY);
 
     if (this.prevX !== this.x || this.prevY !== this.y) {
       this.prevX = this.x;
@@ -63,6 +68,9 @@ class PlayerContainer extends Phaser.GameObjects.Container {
 
     this.player.update(); // 플레이어 업데이트
     this.nickname.updatePosition(); // 닉네임 위치 업데이트
+
+    // 컨테이너 위치 업데이트
+    this.setPosition(this.hitBox.x, this.hitBox.y);
   }
 }
 

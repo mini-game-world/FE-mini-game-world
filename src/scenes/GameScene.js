@@ -77,9 +77,9 @@ class GameScene extends Phaser.Scene {
           this.player = playerContainer;
           this.cameraManager.smoothFollow(this.player);
           this.ChatBox = new ChatBox(this, this.player);
-          this.physics.add.collider(this.player, this.backGround);
-          this.physics.add.collider(this.player, this.house);
-          this.physics.add.collider(this.player, this.object);
+          this.physics.add.collider(this.player.hitBox, this.backGround);
+          this.physics.add.collider(this.player.hitBox, this.house);
+          this.physics.add.collider(this.player.hitBox, this.object);
         }
 
         if (isPlay) {
