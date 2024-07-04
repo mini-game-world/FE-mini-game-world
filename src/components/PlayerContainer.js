@@ -26,17 +26,22 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       this.add(this.arrow);
     }
 
+    const hitboxWidth = this.player.width / 4;
+    const hitboxHeight = this.player.height / 4;
+    const hitboxYOffset = this.player.height / 4;
+
     this.hitBox = this.scene.add.zone(
       this.x,
       this.y,
-      this.player.width,
-      this.player.height
+      hitboxWidth,
+      hitboxHeight
     );
     this.scene.physics.world.enable(this.hitBox);
     this.hitBox.body.setCollideWorldBounds(true);
+    this.hitBox.body.setOffset(0, hitboxYOffset);
 
     this.scene.add.existing(this);
-    this.setSize(this.player.width, this.player.height);
+    this.setSize(hitboxWidth, hitboxHeight);
     this.setDepth(30);
 
     this.createInputKeyBoard();
