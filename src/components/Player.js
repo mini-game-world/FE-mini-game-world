@@ -41,6 +41,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.isWinner = false;
     this.isAttacking = false;
 
+    this.speed = 600; // 기본 속도 설정
+
     if (this.isDead) {
       this.setDeadStatus(); // 죽은 상태
     } else {
@@ -173,7 +175,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   getVelocity() {
-    const speed = this.bomb ? 700 : 600;
+    const speed = this.bomb ? 700 : this.speed;
     let velocityX = 0;
     let velocityY = 0;
 
