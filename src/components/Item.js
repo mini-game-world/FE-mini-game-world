@@ -22,7 +22,7 @@ class Item extends Phaser.GameObjects.Image {
     if (!player) {
       console.log(`Player with ID ${playerId} not found`);
       return;
-    }
+    } 
 
     if (!scene.activeEffects) {
       scene.activeEffects = {};
@@ -34,18 +34,18 @@ class Item extends Phaser.GameObjects.Image {
 
     switch (itemId) {
       case 0:
-        // 속도를 증가시키기 위해 setVelocity 사용
-        const originalVelocityX = player.body.velocity.x;
-        const originalVelocityY = player.body.velocity.y;
-        scene.activeEffects[playerId].velocity = { x: originalVelocityX, y: originalVelocityY };
-        player.setVelocity(originalVelocityX * 1.5, originalVelocityY * 1.5);
+        const originalSpeed = player.speed; 
+        console.log("====",player.speed,"====")
+        scene.activeEffects[playerId].speed = originalSpeed;
+        player.speed = 800; // 속도 증가
         console.log(`Increased speed for player ${playerId}`);
-  
+        console.log("====",player.speed,"====")
+
         setTimeout(() => {
-          if (scene.activeEffects[playerId] && scene.activeEffects[playerId].velocity) {
-            player.setVelocity(originalVelocityX, originalVelocityY);
+          if (scene.activeEffects[playerId] && scene.activeEffects[playerId].speed) {
+            player.speed = originalSpeed; // 원래 속도로 복구
             console.log(`Restored original speed for player ${playerId}`);
-            delete scene.activeEffects[playerId].velocity;
+            delete scene.activeEffects[playerId].speed;
             if (Object.keys(scene.activeEffects[playerId]).length === 0) {
               delete scene.activeEffects[playerId];
             }
@@ -53,7 +53,6 @@ class Item extends Phaser.GameObjects.Image {
         }, 5000);
         break;
       case 1:
-        // 투명도를 0으로 설정하기 위해 setAlpha 사용
         const originalAlpha = player.alpha;
         scene.activeEffects[playerId].alpha = originalAlpha;
         player.setAlpha(0);
@@ -71,7 +70,6 @@ class Item extends Phaser.GameObjects.Image {
         }, 5000);
         break;
       case 2:
-        // 크기를 1.5배로 증가시키기 위해 setScale 사용
         const originalScaleX = player.scaleX;
         const originalScaleY = player.scaleY;
         scene.activeEffects[playerId].scale = { x: originalScaleX, y: originalScaleY };
@@ -81,7 +79,6 @@ class Item extends Phaser.GameObjects.Image {
         setTimeout(() => {
           if (scene.activeEffects[playerId] && scene.activeEffects[playerId].scale) {
             player.setScale(originalScaleX, originalScaleY);
-            console.log(`Restored original scale for player ${playerId}`);
             delete scene.activeEffects[playerId].scale;
             if (Object.keys(scene.activeEffects[playerId]).length === 0) {
               delete scene.activeEffects[playerId];
@@ -89,8 +86,6 @@ class Item extends Phaser.GameObjects.Image {
           }
         }, 5000);
         break;
-      default:
-        console.log(`Unknown item ID ${itemId}`);
     }
   }
 
@@ -103,28 +98,38 @@ class Item extends Phaser.GameObjects.Image {
   }
 
   static clearEffects(scene) {
+    console.log("clearEffects");
+    console.log(scene.activeEffects);
     if (!scene.activeEffects) {
       return;
     }
-
     for (const playerId in scene.activeEffects) {
       const player = scene.players[playerId];
-      const effects = scene.activeEffects[playerId];
-
-      if (effects.velocity) {
-        player.setVelocity(effects.velocity.x, effects.velocity.y);
+      console.log(player.speed);
+      if (!player) {
+        console.log(`Player with ID ${playerId} not found`);
+        continue;
       }
+  
+      const effects = scene.activeEffects[playerId];
+  
+      if (effects.speed) {
+        player.speed = 600;
+      }
+  
       if (effects.alpha !== undefined) {
         player.setAlpha(effects.alpha);
       }
+  
       if (effects.scale) {
         player.setScale(effects.scale.x, effects.scale.y);
       }
     }
-
+  
     scene.activeEffects = {};
     console.log('All effects removed');
   }
+  
 }
 
 export default Item;

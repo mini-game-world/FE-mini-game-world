@@ -20,6 +20,7 @@ class GameScene extends Phaser.Scene {
     this.activePlayers = {};
     this.deadPlayers = {};
     this.waitingPlayers = {};
+    this.activeEffects = {};
 
     this.items = [];
 
@@ -231,7 +232,7 @@ class GameScene extends Phaser.Scene {
 
     SocketManager.onWinnerPlayer((data) => {
       Item.clearEffects(this);
-      
+
       this.gameStatusText.showResult();
       this.player.stopMove();
       if (this.players[data.gameWinner]) {
