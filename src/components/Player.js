@@ -1,8 +1,5 @@
 import Phaser from "phaser";
-import SocketManager from "../utils/SocketManager";
-import Claw from "./Claw";
 import Bomb from "./Bomb";
-import Arrow from "./Arrow";
 import Crown from "./Crown";
 import Star from "./Star";
 import ChatBalloon from "./ChatBalloon";
@@ -21,7 +18,7 @@ class Player extends Phaser.GameObjects.Sprite {
     this.bomb = null;
     this.nickname = info.nickname;
 
-    this.scale = 1;
+    this.setScale(1);
     this.setDepth(30);
 
     this.createAnimations();
@@ -43,16 +40,11 @@ class Player extends Phaser.GameObjects.Sprite {
     this.prevX = x;
     this.prevY = y;
 
-    this.arrow = null;
-
     this.crown = null;
     this.punching_bag = null;
     this.bombking = null;
 
     this.crown = null;
-    if (this.isSelfInitiated) {
-      this.arrow = new Arrow(this.scene, this);
-    }
 
     this.chatBalloon = new ChatBalloon(this.scene, this); // Create chat balloon for all players
   }

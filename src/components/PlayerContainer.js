@@ -4,6 +4,7 @@ import Nickname from "./Nickname";
 import SocketManager from "../utils/SocketManager";
 import Claw from "./Claw";
 import Star from "./Star";
+import Arrow from "./Arrow";
 
 class PlayerContainer extends Phaser.GameObjects.Container {
   constructor(scene, x, y, texture, info) {
@@ -35,6 +36,12 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     this.isAttacking = false; // 공격 상태 추가
     this.isStunned = false;
     this.star = null;
+    this.arrow = null;
+
+    if (info.isSelfInitiated) {
+      this.arrow = new Arrow(this.scene, this.player);
+      this.add(this.arrow);
+    }
   }
 
   createInputKeyBoard() {
@@ -98,6 +105,9 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       this.nickname.updatePosition(); // 닉네임 위치 업데이트
       if (this.star) {
         this.star.updatePosition();
+      }
+      if (this.arrow) {
+        this.arrow.updatePosition(); // Arrow 위치 업데이트
       }
       // 컨테이너 위치 업데이트
       this.setPosition(this.hitBox.x, this.hitBox.y);
