@@ -41,7 +41,6 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     this.isStunned = false;
     this.isWinner = false;
 
-    this.star = null;
     this.arrow = null;
     this.bomb = null;
     this.explosion = null;
@@ -125,9 +124,6 @@ class PlayerContainer extends Phaser.GameObjects.Container {
 
       this.player.update(); // 플레이어 업데이트
       this.nickname.updatePosition(); // 닉네임 위치 업데이트
-      if (this.star) {
-        this.star.updatePosition();
-      }
       if (this.arrow) {
         this.arrow.updatePosition(); // Arrow 위치 업데이트
       }
@@ -202,23 +198,16 @@ class PlayerContainer extends Phaser.GameObjects.Container {
   }
 
   stunPlayer() {
-    if (this.player.bomb) return;
+    if (this.bomb) return;
     this.isAttacking = false;
     this.isStunned = true;
-    if (!this.star) {
-      this.star = new Star(this.scene, this.player);
-      this.add(this.star); // Star 객체를 컨테이너에 추가
-    }
+    new Star(this.scene, this.player, this);
     if (!this.player.isDead) {
       this.player.anims
         .play(`stun${this.player.avatar}`, true)
         .once("animationcomplete", () => {
-          this.isStunned = false;
-          if (this.star) {
-            this.star.destroy();
-            this.star = null;
-          }
           this.player.anims.play(`idle${this.player.avatar}`, true);
+          this.isStunned = false;
         });
     }
   }
@@ -252,31 +241,21 @@ class PlayerContainer extends Phaser.GameObjects.Container {
   }
 
   receiveBomb() {
-    if (!this.star) {
-      this.star = new Star(this.scene, this.player);
-      this.add(this.star);
-    }
+    this.isStunned = true;
+    this.isAttacking = false;
+
+    new Star(this.scene, this.player, this);
 
     if (!this.bomb) {
       this.bomb = new Bomb(this.scene, this.player);
       this.add(this.bomb);
     }
-    this.isStunned = true;
-    this.isAttacking = false;
 
-    if (!this.star) {
-      this.star = new Star(this.scene, this.player);
-      this.add(this.star);
-    }
     this.player.anims
       .play(`stun${this.player.avatar}`, true)
       .once("animationcomplete", () => {
-        this.isStunned = false;
-        if (this.star) {
-          this.star.destroy();
-          this.star = null;
-        }
         this.player.anims.play(`idle${this.player.avatar}`, true);
+        this.isStunned = false;
       });
   }
 
