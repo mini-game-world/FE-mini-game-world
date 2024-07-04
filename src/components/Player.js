@@ -24,7 +24,6 @@ class Player extends Phaser.GameObjects.Sprite {
 
     this.isPlay = this.processInfo(info.isPlay);
     this.isDead = this.processInfo(info.isDead);
-    this.isWinner = false;
 
     if (this.isDead) {
       this.setDeadStatus(); // 죽은 상태
@@ -68,8 +67,6 @@ class Player extends Phaser.GameObjects.Sprite {
     this.setScale(1);
     this.isDead = false;
     this.isPlay = false;
-    this.isWinner = false;
-    this.isAttacking = false;
   }
 
   setPlayStatus() {
@@ -165,7 +162,7 @@ class Player extends Phaser.GameObjects.Sprite {
     if (!this.isDead) {
       this.anims.play(`idle${this.avatar}`, true);
     }
-    this.isWinner = false;
+    // this.isWinner = false;
     this.isAttacking = false;
   }
 

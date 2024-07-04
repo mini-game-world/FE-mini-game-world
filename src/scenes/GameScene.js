@@ -151,28 +151,28 @@ class GameScene extends Phaser.Scene {
       this.updatePlayerCountText();
     });
 
-    // SocketManager.onPlayingGame((isPlaying) => {
-    //   if (isPlaying == 1) {
-    //     this.bgmManager.startPlayingBGM();
-    //     this.gameStatusText.showStart();
-    //     Object.values(this.players).forEach((player) => {
-    //       player.setPlayStatus();
-    //       this.activePlayers[player.id] = player;
-    //       delete this.waitingPlayers[player.id];
-    //     });
-    //     this.mapShrinker.start();
-    //   } else {
-    //     this.bgmManager.startWaitingBGM();
-    //     this.gameStatusText.showEnd();
-    //     Object.values(this.players).forEach((player) => {
-    //       player.setReadyStatus();
-    //       this.waitingPlayers[player.id] = player;
-    //       delete this.activePlayers[player.id];
-    //     });
-    //     this.cameraManager.smoothFollow(this.player);
-    //     this.mapShrinker.reset();
-    //   }
-    // });
+    SocketManager.onPlayingGame((isPlaying) => {
+      if (isPlaying == 1) {
+        this.bgmManager.startPlayingBGM();
+        this.gameStatusText.showStart();
+        Object.values(this.players).forEach((player) => {
+          player.setPlay();
+          this.activePlayers[player.id] = player;
+          delete this.waitingPlayers[player.id];
+        });
+        this.mapShrinker.start();
+      } else {
+        this.bgmManager.startWaitingBGM();
+        this.gameStatusText.showEnd();
+        Object.values(this.players).forEach((player) => {
+          player.setReady();
+          this.waitingPlayers[player.id] = player;
+          delete this.activePlayers[player.id];
+        });
+        this.cameraManager.smoothFollow(this.player);
+        this.mapShrinker.reset();
+      }
+    });
 
     // SocketManager.onBombUsers((players) => {
     //   players.forEach((id) => {
@@ -242,25 +242,25 @@ class GameScene extends Phaser.Scene {
     //   );
     // });
 
-    // SocketManager.onBombGameReady((count) => {
-    //   if (this.gameStatusText) {
-    //     if (count === -1) {
-    //       this.gameStatusText.showWait();
-    //     } else {
-    //       this.gameStatusText.showReadyCount(count);
-    //     }
-    //   }
-    // });
+    SocketManager.onBombGameReady((count) => {
+      if (this.gameStatusText) {
+        if (count === -1) {
+          this.gameStatusText.showWait();
+        } else {
+          this.gameStatusText.showReadyCount(count);
+        }
+      }
+    });
 
-    // // 게임 접속 시 현재 상태 확인
-    // SocketManager.onGameStatus((status) => {
-    //   if (status === 1) {
-    //     this.gameStatusText.showProceeding();
-    //   } else {
-    //     this.gameStatusText.showWait();
-    //   }
-    // });
-    // this.bgmManager.startWaitingBGM();
+    // 게임 접속 시 현재 상태 확인
+    SocketManager.onGameStatus((status) => {
+      if (status === 1) {
+        this.gameStatusText.showProceeding();
+      } else {
+        this.gameStatusText.showWait();
+      }
+    });
+    this.bgmManager.startWaitingBGM();
 
     SocketManager.onChatMessage(({ playerId, message }) => {
       if (this.players[playerId]) {

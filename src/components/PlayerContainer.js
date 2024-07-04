@@ -34,8 +34,11 @@ class PlayerContainer extends Phaser.GameObjects.Container {
 
     this.prevX = x;
     this.prevY = y;
+
     this.isAttacking = false; // 공격 상태 추가
     this.isStunned = false;
+    this.isWinner = false;
+
     this.star = null;
     this.arrow = null;
 
@@ -73,6 +76,17 @@ class PlayerContainer extends Phaser.GameObjects.Container {
   }
 
   update() {
+    if (!this.isWinner) {
+      this.hitBox.body.setVelocity(0, 0);
+      if (
+        !this.player.anims.isPlaying ||
+        this.player.anims.currentAnim.key !== `idle${this.player.avatar}`
+      ) {
+        this.player.anims.play(`idle${this.player.avatar}`, true);
+      }
+      return;
+    }
+
     if (this.isStunned) {
       this.hitBox.body.setVelocity(0, 0);
       if (
@@ -205,6 +219,16 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     if (this.chatBalloon) {
       this.chatBalloon.showChatMessage(message);
     }
+  }
+
+  setReady() {
+    this.isWinner = false;
+    this.isAttacking = false;
+    this.player.setReadyStatus();
+  }
+  
+  setPlay() {
+    this.player.setPlayStatus();
   }
 }
 
