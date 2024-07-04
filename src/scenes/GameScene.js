@@ -114,44 +114,7 @@ class GameScene extends Phaser.Scene {
       const { playerId, x, y } = player;
       if (this.players[playerId]) {
         const playerContainer = this.players[playerId];
-        const prevX = playerContainer.x;
-
-        this.tweens.add({
-          targets: playerContainer,
-          x: x,
-          y: y,
-          duration: 100,
-          ease: "Linear",
-          onUpdate: () => {
-            if (this.players[playerId]) {
-              if (playerContainer.player.isDead) {
-                playerContainer.player.anims.play("dead", true);
-                playerContainer.player.setFlipX(prevX < x);
-              } else {
-                playerContainer.player.anims.play(
-                  `move${playerContainer.player.avatar}`,
-                  true
-                );
-                playerContainer.player.setFlipX(prevX < x);
-              }
-            }
-          },
-          onComplete: () => {
-            if (this.players[playerId]) {
-              if (!playerContainer.player.isDead) {
-                clearTimeout(playerContainer.player.idleTimeout);
-                playerContainer.player.idleTimeout = setTimeout(() => {
-                  if (this.players[playerId]) {
-                    playerContainer.player.anims.play(
-                      `idle${playerContainer.player.avatar}`,
-                      true
-                    );
-                  }
-                }, 100);
-              }
-            }
-          },
-        });
+        playerContainer.moveTo(x, y);
       }
     });
 

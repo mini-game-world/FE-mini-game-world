@@ -71,6 +71,42 @@ class PlayerContainer extends Phaser.GameObjects.Container {
 
     // 컨테이너 위치 업데이트
     this.setPosition(this.hitBox.x, this.hitBox.y);
+
+    // 플레이어 애니메이션 처리
+    if (velocityX !== 0 || velocityY !== 0) {
+      this.player.anims.play(`move${this.player.avatar}`, true);
+      this.player.setFlipX(velocityX > 0);
+    } else {
+      this.player.anims.play(`idle${this.player.avatar}`, true);
+    }
+  }
+
+  moveTo(x, y) {
+    const deltaX = x - this.hitBox.x;
+    const deltaY = y - this.hitBox.y;
+
+    this.scene.tweens.add({
+      targets: this.hitBox,
+      x: x,
+      y: y,
+      duration: 100,
+      ease: "Linear",
+      onUpdate: () => {
+        this.setPosition(this.hitBox.x, this.hitBox.y);
+        if (deltaX !== 0 || deltaY !== 0) {
+          this.player.anims.play(`move${this.player.avatar}`, true);
+          this.player.setFlipX(deltaX > 0);
+        } else {
+          this.player.anims.play(`idle${this.player.avatar}`, true);
+        }
+      },
+      onComplete: () => {
+        clearTimeout(this.player.idleTimeout);
+        this.player.idleTimeout = setTimeout(() => {
+          this.player.anims.play(`idle${this.player.avatar}`, true);
+        }, 100);
+      },
+    });
   }
 }
 
