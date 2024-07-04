@@ -1,5 +1,4 @@
 import Phaser from "phaser";
-import Player from "../components/Player";
 import SocketManager from "../utils/SocketManager";
 import PlayerCountText from "../components/PlayerCountText";
 import ResultText from "../components/ResultText";
@@ -132,25 +131,25 @@ class GameScene extends Phaser.Scene {
       }
     });
 
-    // SocketManager.onPlayerDisconnected((id) => {
-    //   if (this.players[id]) {
-    //     this.players[id].destroy();
-    //     delete this.players[id];
-    //   }
-    //   if (this.activePlayers[id]) {
-    //     this.activePlayers[id].destroy();
-    //     delete this.activePlayers[id];
-    //   }
-    //   if (this.deadPlayers[id]) {
-    //     this.deadPlayers[id].destroy();
-    //     delete this.deadPlayers[id];
-    //   }
-    //   if (this.waitingPlayers[id]) {
-    //     this.waitingPlayers[id].destroy();
-    //     delete this.waitingPlayers[id];
-    //   }
-    //   this.updatePlayerCountText();
-    // });
+    SocketManager.onPlayerDisconnected((id) => {
+      if (this.players[id]) {
+        this.players[id].destroy();
+        delete this.players[id];
+      }
+      if (this.activePlayers[id]) {
+        this.activePlayers[id].destroy();
+        delete this.activePlayers[id];
+      }
+      if (this.deadPlayers[id]) {
+        this.deadPlayers[id].destroy();
+        delete this.deadPlayers[id];
+      }
+      if (this.waitingPlayers[id]) {
+        this.waitingPlayers[id].destroy();
+        delete this.waitingPlayers[id];
+      }
+      this.updatePlayerCountText();
+    });
 
     // SocketManager.onPlayingGame((isPlaying) => {
     //   if (isPlaying == 1) {
@@ -263,11 +262,11 @@ class GameScene extends Phaser.Scene {
     // });
     // this.bgmManager.startWaitingBGM();
 
-    // SocketManager.onChatMessage(({ playerId, message }) => {
-    //   if (this.players[playerId]) {
-    //     this.players[playerId].chatBalloon.showChatMessage(message);
-    //   }
-    // });
+    SocketManager.onChatMessage(({ playerId, message }) => {
+      if (this.players[playerId]) {
+        this.players[playerId].showChatMessage(message);
+      }
+    });
   }
 
   setBackground() {

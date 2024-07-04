@@ -5,6 +5,7 @@ import SocketManager from "../utils/SocketManager";
 import Claw from "./Claw";
 import Star from "./Star";
 import Arrow from "./Arrow";
+import ChatBalloon from "./ChatBalloon";
 
 class PlayerContainer extends Phaser.GameObjects.Container {
   constructor(scene, x, y, texture, info) {
@@ -42,6 +43,9 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       this.arrow = new Arrow(this.scene, this.player);
       this.add(this.arrow);
     }
+
+    this.chatBalloon = new ChatBalloon(this.scene, this.player);
+    this.add(this.chatBalloon);
   }
 
   createInputKeyBoard() {
@@ -194,6 +198,12 @@ class PlayerContainer extends Phaser.GameObjects.Container {
           }
           this.player.anims.play(`idle${this.player.avatar}`, true);
         });
+    }
+  }
+
+  showChatMessage(message) {
+    if (this.chatBalloon) {
+      this.chatBalloon.showChatMessage(message);
     }
   }
 }

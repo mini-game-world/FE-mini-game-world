@@ -2,7 +2,6 @@ import Phaser from "phaser";
 import Bomb from "./Bomb";
 import Crown from "./Crown";
 import Star from "./Star";
-import ChatBalloon from "./ChatBalloon";
 import Punching_bag from "./Punching_bag";
 import Bomb_master from "./Bomb_master";
 
@@ -43,10 +42,6 @@ class Player extends Phaser.GameObjects.Sprite {
     this.crown = null;
     this.punching_bag = null;
     this.bombking = null;
-
-    this.crown = null;
-
-    this.chatBalloon = new ChatBalloon(this.scene, this); // Create chat balloon for all players
   }
 
   processInfo(value) {
