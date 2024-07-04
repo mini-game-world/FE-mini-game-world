@@ -39,7 +39,6 @@ class GameScene extends Phaser.Scene {
     this.cameraManager = new CameraManager(this);
 
     this.resultText = new ResultText(this);
-
     this.playerCountText = new PlayerCountText(this);
     this.gameStatusText = new GameStatusText(this);
 

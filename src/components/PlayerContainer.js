@@ -15,9 +15,16 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     this.scene = scene;
     this.player = new Player(scene, 0, 0, texture, info);
     this.nickname = new Nickname(scene, this.player, info.nickname);
+    this.chatBalloon = new ChatBalloon(this.scene, this.player);
 
     this.add(this.player);
     this.add(this.nickname);
+    this.add(this.chatBalloon);
+
+    if (info.isSelfInitiated) {
+      this.arrow = new Arrow(this.scene, this.player);
+      this.add(this.arrow);
+    }
 
     this.hitBox = this.scene.add.zone(
       this.x,
@@ -43,15 +50,6 @@ class PlayerContainer extends Phaser.GameObjects.Container {
 
     this.arrow = null;
     this.bomb = null;
-    this.explosion = null;
-
-    if (info.isSelfInitiated) {
-      this.arrow = new Arrow(this.scene, this.player);
-      this.add(this.arrow);
-    }
-
-    this.chatBalloon = new ChatBalloon(this.scene, this.player);
-    this.add(this.chatBalloon);
   }
 
   createInputKeyBoard() {
@@ -269,12 +267,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
   explodeBomb() {
     if (this.bomb) {
       this.bomb.destroy();
-      this.explosion = new Explosion(this.scene, this.player);
-      this.add(this.explosion);
-      this.explosion.on("animationcomplete", () => {
-        this.explosion.destroy();
-        this.explosion = null;
-      });
+      new Explosion(this.scene, this.player, this);
     }
   }
 }

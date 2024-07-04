@@ -1,13 +1,15 @@
 import Phaser from "phaser";
 
 class Explosion extends Phaser.GameObjects.Sprite {
-  constructor(scene, player) {
+  constructor(scene, player, container) {
     super(scene, player.x, player.y, "explosion");
     this.scene = scene;
     this.player = player;
+    this.container = container;
     this.isSelfInitiated = this.player.isSelfInitiated;
 
     this.scene.add.existing(this);
+    this.container.add(this);
 
     if (this.isSelfInitiated) {
       this.explosion_sound = scene.sound.add("explosion_sound", {
@@ -25,9 +27,9 @@ class Explosion extends Phaser.GameObjects.Sprite {
 
     this.updatePosition();
 
-    // this.on("animationcomplete", () => {
-    //   this.destroy();
-    // });
+    this.on("animationcomplete", () => {
+      this.destroy();
+    });
   }
 
   createAnimations() {
