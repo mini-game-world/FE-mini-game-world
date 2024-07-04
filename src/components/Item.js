@@ -105,7 +105,7 @@ class Item extends Phaser.GameObjects.Image {
       }
   
       if (effects.alpha !== undefined) {
-        player.setAlpha(effects.alpha);
+        if(!player.isDead) player.setAlpha(effects.alpha);
       }
   
       if (effects.scale) {
