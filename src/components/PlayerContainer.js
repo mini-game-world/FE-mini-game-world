@@ -260,6 +260,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
   }
 
   setDead() {
+    this.isAttacking = false;
     this.explodeBomb();
     this.player.setDeadStatus();
   }

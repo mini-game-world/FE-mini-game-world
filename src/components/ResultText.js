@@ -1,4 +1,4 @@
-class WinnerText extends Phaser.GameObjects.Text {
+class ResultText extends Phaser.GameObjects.Text {
   constructor(scene) {
     super(
       scene,
@@ -97,4 +97,4 @@ class WinnerText extends Phaser.GameObjects.Text {
   }
 }
 
-export default WinnerText;
+export default ResultText;
