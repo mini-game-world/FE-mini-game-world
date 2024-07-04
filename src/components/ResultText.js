@@ -1,3 +1,4 @@
+import Item from "./Item";
 class WinnerText extends Phaser.GameObjects.Text {
   constructor(scene) {
     super(
@@ -26,6 +27,7 @@ class WinnerText extends Phaser.GameObjects.Text {
   }
 
   showWinner(name) {
+    Item.clearEffects(this.scene);
     if (this.winnerText) {
       this.winnerText.destroy();
     }
