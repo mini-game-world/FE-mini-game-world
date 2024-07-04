@@ -1,7 +1,5 @@
 import Phaser from "phaser";
-import Bomb from "./Bomb";
 import Crown from "./Crown";
-import Star from "./Star";
 import Punching_bag from "./Punching_bag";
 import Bomb_master from "./Bomb_master";
 

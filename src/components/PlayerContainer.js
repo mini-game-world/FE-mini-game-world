@@ -115,6 +115,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
 
       if (
         !this.player.isDead &&
+        this.player.isPlay &&
         Phaser.Input.Keyboard.JustDown(this.keys.attack) &&
         !this.isAttacking
       ) {
