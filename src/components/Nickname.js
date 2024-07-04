@@ -15,7 +15,7 @@ class Nickname extends Phaser.GameObjects.Text {
     this.scene.add.existing(this);
 
     this.setOrigin(0.5, -0.7);
-    this.setDepth(30);
+    this.setDepth(40);
 
     this.scene.events.on('update', this.updatePosition, this);
   }
