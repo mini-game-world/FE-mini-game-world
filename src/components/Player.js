@@ -51,7 +51,6 @@ class Player extends Phaser.GameObjects.Sprite {
   }
 
   setDeadStatus() {
-    this.explodeBomb();
     this.setTexture("playerDead");
     this.anims.play(`dead`, true);
     this.isDead = true;
@@ -116,46 +115,6 @@ class Player extends Phaser.GameObjects.Sprite {
       frameRate: 6,
       repeat: -1,
     });
-  }
-
-  setBombUser() {
-    if (!this.bomb) {
-      this.bomb = new Bomb(this.scene, this);
-    }
-  }
-
-  receiveBomb() {
-    if (!this.bomb) {
-      this.bomb = new Bomb(this.scene, this);
-    }
-    this.isStunned = true;
-    this.anims.play(`idle${this.avatar}`, true);
-    this.isAttacking = false;
-
-    if (!this.star) {
-      this.star = new Star(this.scene, this);
-    }
-    this.scene.time.delayedCall(500, () => {
-      this.isStunned = false;
-      if (this.star) {
-        this.star.destroy();
-        this.star = null;
-      }
-    });
-  }
-
-  removeBomb() {
-    if (this.bomb) {
-      this.bomb.destroy();
-      this.bomb = null;
-    }
-  }
-
-  explodeBomb() {
-    if (this.bomb) {
-      this.bomb.explode();
-      this.bomb = null;
-    }
   }
 
   stopMove() {

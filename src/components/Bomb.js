@@ -1,5 +1,4 @@
 import Phaser from "phaser";
-import Explosion from "./Explosion";
 
 class Bomb extends Phaser.GameObjects.Sprite {
   constructor(scene, player) {
@@ -22,9 +21,7 @@ class Bomb extends Phaser.GameObjects.Sprite {
     this.createAnimations();
     this.play("bomb");
 
-    // Update position on each frame
-    this.scene.events.on("update", this.updatePosition, this);
-
+    this.updatePosition();
   }
 
   createAnimations() {
@@ -41,13 +38,7 @@ class Bomb extends Phaser.GameObjects.Sprite {
     this.setPosition(this.player.x, this.player.y - 50); // Adjust the Y offset as needed
   }
 
-  explode() {
-    new Explosion(this.scene, this.x, this.y, this.isSelfInitiated);
-    this.destroy();
-  }
-
   destroy() {
-    this.scene.events.off("update", this.updatePosition, this);
     this.stopSound();
     super.destroy();
   }

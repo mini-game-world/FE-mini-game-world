@@ -174,34 +174,34 @@ class GameScene extends Phaser.Scene {
       }
     });
 
-    // SocketManager.onBombUsers((players) => {
-    //   players.forEach((id) => {
-    //     if (this.players[id]) {
-    //       this.players[id].setBombUser();
-    //     }
-    //   });
-    // });
+    SocketManager.onBombUsers((players) => {
+      players.forEach((id) => {
+        if (this.players[id]) {
+          this.players[id].setBombUser();
+        }
+      });
+    });
 
-    // SocketManager.onDeadUsers((players) => {
-    //   players.forEach((id) => {
-    //     if (this.players[id]) {
-    //       this.players[id].setDeadStatus();
-    //       this.deadPlayers[id] = this.players[id];
-    //       delete this.activePlayers[id];
-    //     }
-    //   });
-    // });
+    SocketManager.onDeadUsers((players) => {
+      players.forEach((id) => {
+        if (this.players[id]) {
+          this.players[id].setDead();
+          this.deadPlayers[id] = this.players[id];
+          delete this.activePlayers[id];
+        }
+      });
+    });
 
-    // SocketManager.onChangeBombUser((players) => {
-    //   const current = players[0];
-    //   const previous = players[1];
-    //   if (this.players[current]) {
-    //     this.players[current].receiveBomb();
-    //   }
-    //   if (this.players[previous]) {
-    //     this.players[previous].removeBomb();
-    //   }
-    // });
+    SocketManager.onChangeBombUser((players) => {
+      const current = players[0];
+      const previous = players[1];
+      if (this.players[current]) {
+        this.players[current].receiveBomb();
+      }
+      if (this.players[previous]) {
+        this.players[previous].removeBomb();
+      }
+    });
 
     // SocketManager.onWinnerPlayer((data) => {
     //   this.gameStatusText.showResult();

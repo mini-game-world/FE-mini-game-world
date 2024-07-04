@@ -6,6 +6,8 @@ import Claw from "./Claw";
 import Star from "./Star";
 import Arrow from "./Arrow";
 import ChatBalloon from "./ChatBalloon";
+import Bomb from "./Bomb";
+import Explosion from "./Explosion";
 
 class PlayerContainer extends Phaser.GameObjects.Container {
   constructor(scene, x, y, texture, info) {
@@ -41,6 +43,8 @@ class PlayerContainer extends Phaser.GameObjects.Container {
 
     this.star = null;
     this.arrow = null;
+    this.bomb = null;
+    this.explosion = null;
 
     if (info.isSelfInitiated) {
       this.arrow = new Arrow(this.scene, this.player);
@@ -127,6 +131,10 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       if (this.arrow) {
         this.arrow.updatePosition(); // Arrow 위치 업데이트
       }
+      if (this.bomb) {
+        this.bomb.updatePosition();
+      }
+
       // 컨테이너 위치 업데이트
       this.setPosition(this.hitBox.x, this.hitBox.y);
 
@@ -226,9 +234,69 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     this.isAttacking = false;
     this.player.setReadyStatus();
   }
-  
+
   setPlay() {
     this.player.setPlayStatus();
+  }
+
+  setDead() {
+    this.explodeBomb();
+    this.player.setDeadStatus();
+  }
+
+  setBombUser() {
+    if (!this.bomb) {
+      this.bomb = new Bomb(this.scene, this.player);
+      this.add(this.bomb);
+    }
+  }
+
+  receiveBomb() {
+    if (!this.star) {
+      this.star = new Star(this.scene, this.player);
+      this.add(this.star);
+    }
+
+    if (!this.bomb) {
+      this.bomb = new Bomb(this.scene, this.player);
+      this.add(this.bomb);
+    }
+    this.isStunned = true;
+    this.isAttacking = false;
+
+    if (!this.star) {
+      this.star = new Star(this.scene, this.player);
+      this.add(this.star);
+    }
+    this.player.anims
+      .play(`stun${this.player.avatar}`, true)
+      .once("animationcomplete", () => {
+        this.isStunned = false;
+        if (this.star) {
+          this.star.destroy();
+          this.star = null;
+        }
+        this.player.anims.play(`idle${this.player.avatar}`, true);
+      });
+  }
+
+  removeBomb() {
+    if (this.bomb) {
+      this.bomb.destroy();
+      this.bomb = null;
+    }
+  }
+
+  explodeBomb() {
+    if (this.bomb) {
+      this.bomb.destroy();
+      this.explosion = new Explosion(this.scene, this.player);
+      this.add(this.explosion);
+      this.explosion.on("animationcomplete", () => {
+        this.explosion.destroy();
+        this.explosion = null;
+      });
+    }
   }
 }
 
