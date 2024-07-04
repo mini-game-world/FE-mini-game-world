@@ -90,6 +90,11 @@ class SocketManager {
   onNewItems(callback) {
     this.socket.on("newItems", callback);
   }
+
+  onItemPickedUp(callback){
+    this.socket.on("itemPickedUp", callback);
+  }
+
 }
 
 export default new SocketManager();
