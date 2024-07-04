@@ -13,8 +13,7 @@ class Player extends Phaser.GameObjects.Sprite {
     this.isSelfInitiated = info.isSelfInitiated;
 
     this.scene.add.existing(this);
-    this.star = null;
-    this.bomb = null;
+
     this.nickname = info.nickname;
 
     this.setScale(1);
@@ -41,37 +40,6 @@ class Player extends Phaser.GameObjects.Sprite {
     this.crown = null;
     this.punching_bag = null;
     this.bombking = null;
-  }
-
-  processInfo(value) {
-    if (value === undefined) {
-      return false;
-    }
-    return value === 1;
-  }
-
-  setDeadStatus() {
-    this.setTexture("playerDead");
-    this.anims.play(`dead`, true);
-    this.isDead = true;
-    this.setAlpha(0.3);
-  }
-
-  setReadyStatus() {
-    this.setTexture(`player${this.avatar}`);
-    this.setAlpha(0.5);
-    if (this.isDead) {
-      this.anims.play(`idle${this.avatar}`, true);
-    }
-    this.setScale(1);
-    this.isDead = false;
-    this.isPlay = false;
-  }
-
-  setPlayStatus() {
-    this.setAlpha(1);
-    this.isPlay = true;
-    this.isDead = false;
   }
 
   createAnimations() {
@@ -117,11 +85,41 @@ class Player extends Phaser.GameObjects.Sprite {
     });
   }
 
+  processInfo(value) {
+    if (value === undefined) {
+      return false;
+    }
+    return value === 1;
+  }
+
+  setDeadStatus() {
+    this.isDead = true;
+    this.setAlpha(0.3);
+    this.setTexture("playerDead");
+    this.anims.play(`dead`, true);
+  }
+
+  setReadyStatus() {
+    this.setTexture(`player${this.avatar}`);
+    this.setAlpha(0.5);
+    if (this.isDead) {
+      this.anims.play(`idle${this.avatar}`, true);
+    }
+    this.setScale(1);
+    this.isDead = false;
+    this.isPlay = false;
+  }
+
+  setPlayStatus() {
+    this.setAlpha(1);
+    this.isPlay = true;
+    this.isDead = false;
+  }
+
   stopMove() {
     if (!this.isDead) {
       this.anims.play(`idle${this.avatar}`, true);
     }
-    // this.isWinner = false;
     this.isAttacking = false;
   }
 

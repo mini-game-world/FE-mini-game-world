@@ -48,7 +48,6 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     this.isStunned = false;
     this.isWinner = false;
 
-    this.arrow = null;
     this.bomb = null;
   }
 
@@ -120,7 +119,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
         });
       }
 
-      this.player.update(); // 플레이어 업데이트
+      // this.player.update(); // 플레이어 업데이트
       this.nickname.updatePosition(); // 닉네임 위치 업데이트
       if (this.arrow) {
         this.arrow.updatePosition(); // Arrow 위치 업데이트
@@ -217,6 +216,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
   }
 
   setReady() {
+    this.bomb = null;
     this.isWinner = false;
     this.isAttacking = false;
     this.player.setReadyStatus();
@@ -268,6 +268,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     if (this.bomb) {
       this.bomb.destroy();
       new Explosion(this.scene, this.player, this);
+      this.bomb = null;
     }
   }
 }
