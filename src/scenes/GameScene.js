@@ -118,19 +118,19 @@ class GameScene extends Phaser.Scene {
       }
     });
 
-    // SocketManager.onPlayerAttacked((ids) => {
-    //   ids.forEach((id) => {
-    //     if (this.players[id]) {
-    //       this.players[id].stunPlayer();
-    //     }
-    //   });
-    // });
+    SocketManager.onPlayerAttacked((ids) => {
+      ids.forEach((id) => {
+        if (this.players[id]) {
+          this.players[id].stunPlayer();
+        }
+      });
+    });
 
-    // SocketManager.onAttackPlayer((id) => {
-    //   if (this.players[id]) {
-    //     this.players[id].createClawAttack();
-    //   }
-    // });
+    SocketManager.onAttackPlayer((id) => {
+      if (this.players[id]) {
+        this.players[id].createClawAttack();
+      }
+    });
 
     // SocketManager.onPlayerDisconnected((id) => {
     //   if (this.players[id]) {

@@ -2,6 +2,8 @@ import Phaser from "phaser";
 import Player from "./Player";
 import Nickname from "./Nickname";
 import SocketManager from "../utils/SocketManager";
+import Claw from "./Claw";
+import Star from "./Star";
 
 class PlayerContainer extends Phaser.GameObjects.Container {
   constructor(scene, x, y, texture, info) {
@@ -30,6 +32,9 @@ class PlayerContainer extends Phaser.GameObjects.Container {
 
     this.prevX = x;
     this.prevY = y;
+    this.isAttacking = false; // 공격 상태 추가
+    this.isStunned = false;
+    this.star = null;
   }
 
   createInputKeyBoard() {
@@ -57,27 +62,78 @@ class PlayerContainer extends Phaser.GameObjects.Container {
   }
 
   update() {
-    const { velocityX, velocityY } = this.getVelocity();
-    this.hitBox.body.setVelocity(velocityX, velocityY);
-
-    if (this.prevX !== this.x || this.prevY !== this.y) {
-      this.prevX = this.x;
-      this.prevY = this.y;
-      SocketManager.emitPlayerMovement({ x: this.x, y: this.y });
-    }
-
-    this.player.update(); // 플레이어 업데이트
-    this.nickname.updatePosition(); // 닉네임 위치 업데이트
-
-    // 컨테이너 위치 업데이트
-    this.setPosition(this.hitBox.x, this.hitBox.y);
-
-    // 플레이어 애니메이션 처리
-    if (velocityX !== 0 || velocityY !== 0) {
-      this.player.anims.play(`move${this.player.avatar}`, true);
-      this.player.setFlipX(velocityX > 0);
+    if (this.isStunned) {
+      this.hitBox.body.setVelocity(0, 0);
+      if (
+        !this.player.anims.isPlaying ||
+        this.player.anims.currentAnim.key !== `stun${this.player.avatar}`
+      ) {
+        this.player.anims.play(`stun${this.player.avatar}`, true);
+      }
     } else {
-      this.player.anims.play(`idle${this.player.avatar}`, true);
+      const { velocityX, velocityY } = this.getVelocity();
+      this.hitBox.body.setVelocity(velocityX, velocityY);
+
+      if (this.prevX !== this.x || this.prevY !== this.y) {
+        this.prevX = this.x;
+        this.prevY = this.y;
+        SocketManager.emitPlayerMovement({ x: this.x, y: this.y });
+      }
+
+      if (
+        Phaser.Input.Keyboard.JustDown(this.keys.attack) &&
+        !this.isAttacking
+      ) {
+        this.isAttacking = true;
+        this.player.anims.play(`attack${this.player.avatar}`, true);
+        this.createClawAttack();
+        this.player.on("animationcomplete", (anim) => {
+          if (anim.key === `attack${this.player.avatar}`) {
+            this.isAttacking = false;
+          }
+        });
+      }
+
+      this.player.update(); // 플레이어 업데이트
+      this.nickname.updatePosition(); // 닉네임 위치 업데이트
+      if (this.star) {
+        this.star.updatePosition();
+      }
+      // 컨테이너 위치 업데이트
+      this.setPosition(this.hitBox.x, this.hitBox.y);
+
+      // 플레이어 애니메이션 처리
+      if (velocityX !== 0 || velocityY !== 0) {
+        if (!this.isAttacking) {
+          this.player.anims.play(`move${this.player.avatar}`, true);
+        }
+        this.player.setFlipX(velocityX > 0);
+      } else {
+        if (!this.isAttacking) {
+          this.player.anims.play(`idle${this.player.avatar}`, true);
+        }
+      }
+    }
+  }
+
+  createClawAttack() {
+    const offset = -110; // Claw의 오프셋을 조정합니다
+    const clawX = this.hitBox.x + (this.player.flipX ? -offset : offset);
+    const clawY = this.hitBox.y;
+    const isHeadingRight = this.player.flipX;
+    const startingPosition = [clawX, clawY];
+    const damage = 10;
+    const scale = 1.5;
+    new Claw(
+      this.scene,
+      startingPosition,
+      isHeadingRight,
+      damage,
+      scale,
+      this.player.isSelfInitiated
+    );
+    if (this.player.isSelfInitiated) {
+      SocketManager.emitPlayerAttack({ x: clawX, y: clawY });
     }
   }
 
@@ -107,6 +163,28 @@ class PlayerContainer extends Phaser.GameObjects.Container {
         }, 100);
       },
     });
+  }
+
+  stunPlayer() {
+    if (this.player.bomb) return;
+    this.isAttacking = false;
+    this.isStunned = true;
+    if (!this.star) {
+      this.star = new Star(this.scene, this.player);
+      this.add(this.star); // Star 객체를 컨테이너에 추가
+    }
+    if (!this.player.isDead) {
+      this.player.anims
+        .play(`stun${this.player.avatar}`, true)
+        .once("animationcomplete", () => {
+          this.isStunned = false;
+          if (this.star) {
+            this.star.destroy();
+            this.star = null;
+          }
+          this.player.anims.play(`idle${this.player.avatar}`, true);
+        });
+    }
   }
 }
 

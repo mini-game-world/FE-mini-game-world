@@ -16,20 +16,18 @@ class Star extends Phaser.GameObjects.Sprite {
     this.createAnimations();
     this.play("stun_star");
 
-    // Update position on each frame
-    this.scene.events.on("update", this.updatePosition, this);
-
+    this.updatePosition();
   }
 
   createAnimations() {
     // 별 애니메이션 정의
     this.anims.create({
-        key: "stun_star",
-        frames: this.anims.generateFrameNumbers("star"),
-        frameRate: 20,
-        repeat: -1,
-        hideOnComplete: true,
-      })
+      key: "stun_star",
+      frames: this.anims.generateFrameNumbers("star"),
+      frameRate: 20,
+      repeat: -1,
+      hideOnComplete: true,
+    });
   }
 
   updatePosition() {
@@ -37,10 +35,8 @@ class Star extends Phaser.GameObjects.Sprite {
   }
 
   destroy() {
-    this.scene.events.off("update", this.updatePosition, this);
     super.destroy();
   }
-
 }
 
 export default Star;

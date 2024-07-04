@@ -26,11 +26,9 @@ class Player extends Phaser.GameObjects.Sprite {
 
     this.createAnimations();
 
-    this.isStunned = false;
     this.isPlay = this.processInfo(info.isPlay);
     this.isDead = this.processInfo(info.isDead);
     this.isWinner = false;
-    this.isAttacking = false;
 
     if (this.isDead) {
       this.setDeadStatus(); // 죽은 상태
@@ -133,99 +131,6 @@ class Player extends Phaser.GameObjects.Sprite {
       frames: this.scene.anims.generateFrameNumbers("playerDead"),
       frameRate: 6,
       repeat: -1,
-    });
-
-    this.on("animationcomplete", (anim, frame) => {
-      if (anim.key === `attack${this.avatar}`) {
-        this.createClawAttack();
-        this.isAttacking = false; // 공격 애니메이션이 끝났을 때 공격 상태 해제
-      }
-    });
-  }
-
-  // update() {
-  //   if (!this.isWinner) {
-  //     this.setVelocity(0, 0);
-  //     return;
-  //   }
-
-  //   if (this.isStunned) {
-  //     this.setVelocity(0, 0);
-  //     return;
-  //   }
-
-  //   if (this.isAttacking) {
-  //     return; // 공격 중일 때 다른 입력 무시
-  //   }
-
-  //   if (this.isDead) {
-  //     this.anims.play("dead", true);
-  //   } else {
-  //     if (
-  //       Phaser.Input.Keyboard.JustDown(this.keys.attack) &&
-  //       this.isPlay &&
-  //       !this.isDead
-  //     ) {
-  //       this.isAttacking = true; // 공격 시작
-  //       this.anims.play(`attack${this.avatar}`, true);
-  //     } else if (this.body.velocity.x !== 0 || this.body.velocity.y !== 0) {
-  //       this.anims.play(`move${this.avatar}`, true);
-  //       this.setFlipX(this.body.velocity.x > 0);
-  //     } else {
-  //       this.anims.play(`idle${this.avatar}`, true);
-  //     }
-  //   }
-  // }
-
-  createClawAttack() {
-    if (!this.isSelfInitiated) {
-      this.anims
-        .play(`attack${this.avatar}`, true)
-        .on("animationcomplete", () => {
-          this.anims.play(`idle${this.avatar}`, true);
-        });
-    }
-    const offset = -110;
-    const clawX = this.x + (this.flipX ? -offset : offset);
-    const clawY = this.y;
-    const isHeadingRight = this.flipX;
-    const startingPosition = [clawX, clawY];
-    const damage = 10;
-    const scale = 1.5;
-    new Claw(
-      this.scene,
-      startingPosition,
-      isHeadingRight,
-      damage,
-      scale,
-      this.isSelfInitiated
-    );
-    if (this.isSelfInitiated) {
-      SocketManager.emitPlayerAttack({ x: clawX, y: clawY });
-    }
-  }
-
-  stunPlayer() {
-    if (this.bomb) return;
-    if (!this.star) {
-      this.star = new Star(this.scene, this);
-    }
-    this.isAttacking = false;
-    this.isStunned = true;
-    this.setVelocity(0, 0);
-    if (!this.isDead) {
-      this.anims
-        .play(`stun${this.avatar}`, true)
-        .once(`animationcomplete-stun${this.avatar}`, () => {
-          this.anims.play(`idle${this.avatar}`, true);
-        });
-    }
-    this.scene.time.delayedCall(500, () => {
-      this.isStunned = false;
-      if (this.star) {
-        this.star.destroy();
-        this.star = null;
-      }
     });
   }
 
