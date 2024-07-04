@@ -99,10 +99,10 @@ class Player extends Phaser.GameObjects.Sprite {
 
   setReadyStatus() {
     this.setTexture(`player${this.avatar}`);
-    this.setAlpha(0.5);
     if (this.isDead) {
       this.anims.play(`idle${this.avatar}`, true);
     }
+    this.setAlpha(0.5);
     this.setScale(1);
     this.isDead = false;
     this.isPlay = false;

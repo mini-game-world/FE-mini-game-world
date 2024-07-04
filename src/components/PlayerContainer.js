@@ -299,6 +299,37 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       this.bomb = null;
     }
   }
+
+  destroy() {
+    // Custom cleanup for PlayerContainer
+    if (this.player) {
+      this.player.destroy();
+      this.player = null;
+    }
+    if (this.nickname) {
+      this.nickname.destroy();
+      this.nickname = null;
+    }
+    if (this.chatBalloon) {
+      this.chatBalloon.destroy();
+      this.chatBalloon = null;
+    }
+    if (this.arrow) {
+      this.arrow.destroy();
+      this.arrow = null;
+    }
+    if (this.bomb) {
+      this.bomb.destroy();
+      this.bomb = null;
+    }
+    if (this.hitBox) {
+      this.hitBox.destroy();
+      this.hitBox = null;
+    }
+
+    // Call the parent class's destroy method
+    super.destroy();
+  }
 }
 
 export default PlayerContainer;
