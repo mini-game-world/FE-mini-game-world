@@ -9,7 +9,7 @@ import ChatBalloon from "./ChatBalloon";
 import Punching_bag from "./Punching_bag";
 import Bomb_master from "./Bomb_master";
 
-class Player extends Phaser.Physics.Arcade.Sprite {
+class Player extends Phaser.GameObjects.Sprite {
   constructor(scene, x, y, texture, info) {
     super(scene, x, y, texture);
     this.scene = scene;
@@ -17,15 +17,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.isSelfInitiated = info.isSelfInitiated;
 
     this.scene.add.existing(this);
-    this.scene.physics.add.existing(this);
-    this.setCollideWorldBounds(true);
-
-    // this.body.setSize(50, 50); // 히트박스 크기 설정 (너비, 높이)
-    // this.body.setOffset(75, 150); // 히트박스 오프셋 설정 (x, y)
-
     this.star = null;
     this.bomb = null;
-    this.name = info.nickname;
+    this.nickname = info.nickname;
 
     this.scale = 1;
     this.setDepth(30);
@@ -91,15 +85,12 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.isPlay = false;
     this.isWinner = false;
     this.isAttacking = false;
-
-    this.body.checkCollision.none = false;
   }
 
   setPlayStatus() {
     this.setAlpha(1);
     this.isPlay = true;
     this.isDead = false;
-    this.body.checkCollision.none = false;
   }
 
   createAnimations() {
@@ -152,39 +143,39 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     });
   }
 
-  update() {
-    if (!this.isWinner) {
-      this.setVelocity(0, 0);
-      return;
-    }
+  // update() {
+  //   if (!this.isWinner) {
+  //     this.setVelocity(0, 0);
+  //     return;
+  //   }
 
-    if (this.isStunned) {
-      this.setVelocity(0, 0);
-      return;
-    }
+  //   if (this.isStunned) {
+  //     this.setVelocity(0, 0);
+  //     return;
+  //   }
 
-    if (this.isAttacking) {
-      return; // 공격 중일 때 다른 입력 무시
-    }
+  //   if (this.isAttacking) {
+  //     return; // 공격 중일 때 다른 입력 무시
+  //   }
 
-    if (this.isDead) {
-      this.anims.play("dead", true);
-    } else {
-      if (
-        Phaser.Input.Keyboard.JustDown(this.keys.attack) &&
-        this.isPlay &&
-        !this.isDead
-      ) {
-        this.isAttacking = true; // 공격 시작
-        this.anims.play(`attack${this.avatar}`, true);
-      } else if (this.body.velocity.x !== 0 || this.body.velocity.y !== 0) {
-        this.anims.play(`move${this.avatar}`, true);
-        this.setFlipX(this.body.velocity.x > 0);
-      } else {
-        this.anims.play(`idle${this.avatar}`, true);
-      }
-    }
-  }
+  //   if (this.isDead) {
+  //     this.anims.play("dead", true);
+  //   } else {
+  //     if (
+  //       Phaser.Input.Keyboard.JustDown(this.keys.attack) &&
+  //       this.isPlay &&
+  //       !this.isDead
+  //     ) {
+  //       this.isAttacking = true; // 공격 시작
+  //       this.anims.play(`attack${this.avatar}`, true);
+  //     } else if (this.body.velocity.x !== 0 || this.body.velocity.y !== 0) {
+  //       this.anims.play(`move${this.avatar}`, true);
+  //       this.setFlipX(this.body.velocity.x > 0);
+  //     } else {
+  //       this.anims.play(`idle${this.avatar}`, true);
+  //     }
+  //   }
+  // }
 
   createClawAttack() {
     if (!this.isSelfInitiated) {
@@ -336,7 +327,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     if (this.isDead) {
       this.setTexture(`player${this.avatar}`);
       this.anims.play(`idle${this.avatar}`, true);
-      this.body.checkCollision.none = false;
       this.setAlpha(1);
       this.isDead = false;
     }
@@ -387,7 +377,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     if (this.isDead) {
       this.setTexture(`player${this.avatar}`);
       this.anims.play(`idle${this.avatar}`, true);
-      this.body.checkCollision.none = false;
       this.setAlpha(1);
       this.isDead = false;
     }

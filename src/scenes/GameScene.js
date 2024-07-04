@@ -155,156 +155,156 @@ class GameScene extends Phaser.Scene {
       }
     });
 
-    SocketManager.onPlayerAttacked((ids) => {
-      ids.forEach((id) => {
-        if (this.players[id]) {
-          this.players[id].stunPlayer();
-        }
-      });
-    });
+    // SocketManager.onPlayerAttacked((ids) => {
+    //   ids.forEach((id) => {
+    //     if (this.players[id]) {
+    //       this.players[id].stunPlayer();
+    //     }
+    //   });
+    // });
 
-    SocketManager.onAttackPlayer((id) => {
-      if (this.players[id]) {
-        this.players[id].createClawAttack();
-      }
-    });
+    // SocketManager.onAttackPlayer((id) => {
+    //   if (this.players[id]) {
+    //     this.players[id].createClawAttack();
+    //   }
+    // });
 
-    SocketManager.onPlayerDisconnected((id) => {
-      if (this.players[id]) {
-        this.players[id].destroy();
-        delete this.players[id];
-      }
-      if (this.activePlayers[id]) {
-        this.activePlayers[id].destroy();
-        delete this.activePlayers[id];
-      }
-      if (this.deadPlayers[id]) {
-        this.deadPlayers[id].destroy();
-        delete this.deadPlayers[id];
-      }
-      if (this.waitingPlayers[id]) {
-        this.waitingPlayers[id].destroy();
-        delete this.waitingPlayers[id];
-      }
-      this.updatePlayerCountText();
-    });
+    // SocketManager.onPlayerDisconnected((id) => {
+    //   if (this.players[id]) {
+    //     this.players[id].destroy();
+    //     delete this.players[id];
+    //   }
+    //   if (this.activePlayers[id]) {
+    //     this.activePlayers[id].destroy();
+    //     delete this.activePlayers[id];
+    //   }
+    //   if (this.deadPlayers[id]) {
+    //     this.deadPlayers[id].destroy();
+    //     delete this.deadPlayers[id];
+    //   }
+    //   if (this.waitingPlayers[id]) {
+    //     this.waitingPlayers[id].destroy();
+    //     delete this.waitingPlayers[id];
+    //   }
+    //   this.updatePlayerCountText();
+    // });
 
-    SocketManager.onPlayingGame((isPlaying) => {
-      if (isPlaying == 1) {
-        this.bgmManager.startPlayingBGM();
-        this.gameStatusText.showStart();
-        Object.values(this.players).forEach((player) => {
-          player.setPlayStatus();
-          this.activePlayers[player.id] = player;
-          delete this.waitingPlayers[player.id];
-        });
-        this.mapShrinker.start();
-      } else {
-        this.bgmManager.startWaitingBGM();
-        this.gameStatusText.showEnd();
-        Object.values(this.players).forEach((player) => {
-          player.setReadyStatus();
-          this.waitingPlayers[player.id] = player;
-          delete this.activePlayers[player.id];
-        });
-        this.cameraManager.smoothFollow(this.player);
-        this.mapShrinker.reset();
-      }
-    });
+    // SocketManager.onPlayingGame((isPlaying) => {
+    //   if (isPlaying == 1) {
+    //     this.bgmManager.startPlayingBGM();
+    //     this.gameStatusText.showStart();
+    //     Object.values(this.players).forEach((player) => {
+    //       player.setPlayStatus();
+    //       this.activePlayers[player.id] = player;
+    //       delete this.waitingPlayers[player.id];
+    //     });
+    //     this.mapShrinker.start();
+    //   } else {
+    //     this.bgmManager.startWaitingBGM();
+    //     this.gameStatusText.showEnd();
+    //     Object.values(this.players).forEach((player) => {
+    //       player.setReadyStatus();
+    //       this.waitingPlayers[player.id] = player;
+    //       delete this.activePlayers[player.id];
+    //     });
+    //     this.cameraManager.smoothFollow(this.player);
+    //     this.mapShrinker.reset();
+    //   }
+    // });
 
-    SocketManager.onBombUsers((players) => {
-      players.forEach((id) => {
-        if (this.players[id]) {
-          this.players[id].setBombUser();
-        }
-      });
-    });
+    // SocketManager.onBombUsers((players) => {
+    //   players.forEach((id) => {
+    //     if (this.players[id]) {
+    //       this.players[id].setBombUser();
+    //     }
+    //   });
+    // });
 
-    SocketManager.onDeadUsers((players) => {
-      players.forEach((id) => {
-        if (this.players[id]) {
-          this.players[id].setDeadStatus();
-          this.deadPlayers[id] = this.players[id];
-          delete this.activePlayers[id];
-        }
-      });
-    });
+    // SocketManager.onDeadUsers((players) => {
+    //   players.forEach((id) => {
+    //     if (this.players[id]) {
+    //       this.players[id].setDeadStatus();
+    //       this.deadPlayers[id] = this.players[id];
+    //       delete this.activePlayers[id];
+    //     }
+    //   });
+    // });
 
-    SocketManager.onChangeBombUser((players) => {
-      const current = players[0];
-      const previous = players[1];
-      if (this.players[current]) {
-        this.players[current].receiveBomb();
-      }
-      if (this.players[previous]) {
-        this.players[previous].removeBomb();
-      }
-    });
+    // SocketManager.onChangeBombUser((players) => {
+    //   const current = players[0];
+    //   const previous = players[1];
+    //   if (this.players[current]) {
+    //     this.players[current].receiveBomb();
+    //   }
+    //   if (this.players[previous]) {
+    //     this.players[previous].removeBomb();
+    //   }
+    // });
 
-    SocketManager.onWinnerPlayer((data) => {
-      this.gameStatusText.showResult();
-      this.player.stopMove();
-      if (this.players[data.gameWinner]) {
-        const winPlayer = this.players[data.gameWinner];
-        winPlayer.setCrown();
-        this.cameraManager.smoothFollow(winPlayer);
-        this.resultText.showWinner(winPlayer.name);
-      }
+    // SocketManager.onWinnerPlayer((data) => {
+    //   this.gameStatusText.showResult();
+    //   this.player.stopMove();
+    //   if (this.players[data.gameWinner]) {
+    //     const winPlayer = this.players[data.gameWinner];
+    //     winPlayer.setCrown();
+    //     this.cameraManager.smoothFollow(winPlayer);
+    //     this.resultText.showWinner(winPlayer.name);
+    //   }
 
-      this.time.delayedCall(
-        5000,
-        () => {
-          if (this.players[data.PunchingBag.playerId]) {
-            const bagPlayer = this.players[data.PunchingBag.playerId];
-            bagPlayer.setPunching_bag();
-            this.cameraManager.smoothFollow(bagPlayer);
-            this.resultText.showPunchingBag(bagPlayer.name);
-          }
-        },
-        [],
-        this.scene
-      );
+    //   this.time.delayedCall(
+    //     5000,
+    //     () => {
+    //       if (this.players[data.PunchingBag.playerId]) {
+    //         const bagPlayer = this.players[data.PunchingBag.playerId];
+    //         bagPlayer.setPunching_bag();
+    //         this.cameraManager.smoothFollow(bagPlayer);
+    //         this.resultText.showPunchingBag(bagPlayer.name);
+    //       }
+    //     },
+    //     [],
+    //     this.scene
+    //   );
 
-      this.time.delayedCall(
-        11000,
-        () => {
-          if (this.players[data.BombMaster.playerId]) {
-            const bombMasterPlayer = this.players[data.BombMaster.playerId];
-            bombMasterPlayer.setBombMaster();
-            this.cameraManager.smoothFollow(bombMasterPlayer);
-            this.resultText.showBombMaster(bombMasterPlayer.name);
-          }
-        },
-        [],
-        this.scene
-      );
-    });
+    //   this.time.delayedCall(
+    //     11000,
+    //     () => {
+    //       if (this.players[data.BombMaster.playerId]) {
+    //         const bombMasterPlayer = this.players[data.BombMaster.playerId];
+    //         bombMasterPlayer.setBombMaster();
+    //         this.cameraManager.smoothFollow(bombMasterPlayer);
+    //         this.resultText.showBombMaster(bombMasterPlayer.name);
+    //       }
+    //     },
+    //     [],
+    //     this.scene
+    //   );
+    // });
 
-    SocketManager.onBombGameReady((count) => {
-      if (this.gameStatusText) {
-        if (count === -1) {
-          this.gameStatusText.showWait();
-        } else {
-          this.gameStatusText.showReadyCount(count);
-        }
-      }
-    });
+    // SocketManager.onBombGameReady((count) => {
+    //   if (this.gameStatusText) {
+    //     if (count === -1) {
+    //       this.gameStatusText.showWait();
+    //     } else {
+    //       this.gameStatusText.showReadyCount(count);
+    //     }
+    //   }
+    // });
 
-    // 게임 접속 시 현재 상태 확인
-    SocketManager.onGameStatus((status) => {
-      if (status === 1) {
-        this.gameStatusText.showProceeding();
-      } else {
-        this.gameStatusText.showWait();
-      }
-    });
-    this.bgmManager.startWaitingBGM();
+    // // 게임 접속 시 현재 상태 확인
+    // SocketManager.onGameStatus((status) => {
+    //   if (status === 1) {
+    //     this.gameStatusText.showProceeding();
+    //   } else {
+    //     this.gameStatusText.showWait();
+    //   }
+    // });
+    // this.bgmManager.startWaitingBGM();
 
-    SocketManager.onChatMessage(({ playerId, message }) => {
-      if (this.players[playerId]) {
-        this.players[playerId].chatBalloon.showChatMessage(message);
-      }
-    });
+    // SocketManager.onChatMessage(({ playerId, message }) => {
+    //   if (this.players[playerId]) {
+    //     this.players[playerId].chatBalloon.showChatMessage(message);
+    //   }
+    // });
   }
 
   setBackground() {
@@ -341,27 +341,27 @@ class GameScene extends Phaser.Scene {
     this.mapShrink.setCollisionByProperty({ collides: true });
 
     // 충돌 디버그 그래픽 추가
-    // this.debugGraphics = this.add.graphics();
-    // this.backGround.renderDebug(this.debugGraphics, {
-    //   tileColor: null, // 충돌하지 않는 타일은 표시하지 않음
-    //   collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
-    //   faceColor: new Phaser.Display.Color(0, 255, 0, 128), // 충돌하는 면은 반투명 녹색으로 표시
-    // });
-    // this.house.renderDebug(this.debugGraphics, {
-    //   tileColor: null, // 충돌하지 않는 타일은 표시하지 않음
-    //   collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
-    //   faceColor: new Phaser.Display.Color(0, 255, 0, 128), // 충돌하는 면은 반투명 녹색으로 표시
-    // });
-    // this.object.renderDebug(this.debugGraphics, {
-    //   tileColor: null, // 충돌하지 않는 타일은 표시하지 않음
-    //   collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
-    //   faceColor: new Phaser.Display.Color(0, 255, 0, 128), // 충돌하는 면은 반투명 녹색으로 표시
-    // });
-    // this.mapShrink.renderDebug(this.debugGraphics, {
-    //   tileColor: null, // 충돌하지 않는 타일은 표시하지 않음
-    //   collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
-    //   faceColor: new Phaser.Display.Color(0, 255, 0, 128), // 충돌하는 면은 반투명 녹색으로 표시
-    // });
+    this.debugGraphics = this.add.graphics();
+    this.backGround.renderDebug(this.debugGraphics, {
+      tileColor: null, // 충돌하지 않는 타일은 표시하지 않음
+      collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
+      faceColor: new Phaser.Display.Color(0, 255, 0, 128), // 충돌하는 면은 반투명 녹색으로 표시
+    });
+    this.house.renderDebug(this.debugGraphics, {
+      tileColor: null, // 충돌하지 않는 타일은 표시하지 않음
+      collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
+      faceColor: new Phaser.Display.Color(0, 255, 0, 128), // 충돌하는 면은 반투명 녹색으로 표시
+    });
+    this.object.renderDebug(this.debugGraphics, {
+      tileColor: null, // 충돌하지 않는 타일은 표시하지 않음
+      collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
+      faceColor: new Phaser.Display.Color(0, 255, 0, 128), // 충돌하는 면은 반투명 녹색으로 표시
+    });
+    this.mapShrink.renderDebug(this.debugGraphics, {
+      tileColor: null, // 충돌하지 않는 타일은 표시하지 않음
+      collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
+      faceColor: new Phaser.Display.Color(0, 255, 0, 128), // 충돌하는 면은 반투명 녹색으로 표시
+    });
 
     // Set world bounds
     this.physics.world.setBounds(0, 0, 3840, 2560);
