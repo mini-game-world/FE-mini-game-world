@@ -80,9 +80,13 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       this.hitBox.body.setVelocity(0, 0);
       if (
         !this.player.anims.isPlaying ||
-        this.player.anims.currentAnim.key !== `idle${this.player.avatar}`
+        this.player.anims.currentAnim.key !==
+          (this.player.isDead ? `dead` : `idle${this.player.avatar}`)
       ) {
-        this.player.anims.play(`idle${this.player.avatar}`, true);
+        this.player.anims.play(
+          this.player.isDead ? `dead` : `idle${this.player.avatar}`,
+          true
+        );
       }
       return;
     }
@@ -91,9 +95,13 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       this.hitBox.body.setVelocity(0, 0);
       if (
         !this.player.anims.isPlaying ||
-        this.player.anims.currentAnim.key !== `stun${this.player.avatar}`
+        this.player.anims.currentAnim.key !==
+          (this.player.isDead ? `dead` : `stun${this.player.avatar}`)
       ) {
-        this.player.anims.play(`stun${this.player.avatar}`, true);
+        this.player.anims.play(
+          this.player.isDead ? `dead` : `stun${this.player.avatar}`,
+          true
+        );
       }
     } else {
       const { velocityX, velocityY } = this.getVelocity();
@@ -106,6 +114,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       }
 
       if (
+        !this.player.isDead &&
         Phaser.Input.Keyboard.JustDown(this.keys.attack) &&
         !this.isAttacking
       ) {
@@ -119,7 +128,6 @@ class PlayerContainer extends Phaser.GameObjects.Container {
         });
       }
 
-      // this.player.update(); // 플레이어 업데이트
       this.nickname.updatePosition(); // 닉네임 위치 업데이트
       if (this.arrow) {
         this.arrow.updatePosition(); // Arrow 위치 업데이트
@@ -134,12 +142,18 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       // 플레이어 애니메이션 처리
       if (velocityX !== 0 || velocityY !== 0) {
         if (!this.isAttacking) {
-          this.player.anims.play(`move${this.player.avatar}`, true);
+          this.player.anims.play(
+            this.player.isDead ? `dead` : `move${this.player.avatar}`,
+            true
+          );
+          this.player.setFlipX(velocityX > 0);
         }
-        this.player.setFlipX(velocityX > 0);
       } else {
         if (!this.isAttacking) {
-          this.player.anims.play(`idle${this.player.avatar}`, true);
+          this.player.anims.play(
+            this.player.isDead ? `dead` : `idle${this.player.avatar}`,
+            true
+          );
         }
       }
     }
@@ -179,16 +193,29 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       onUpdate: () => {
         this.setPosition(this.hitBox.x, this.hitBox.y);
         if (deltaX !== 0 || deltaY !== 0) {
-          this.player.anims.play(`move${this.player.avatar}`, true);
-          this.player.setFlipX(deltaX > 0);
+          if (this.player.isDead) {
+            this.player.anims.play(`dead`, true);
+            this.player.setFlipX(deltaX > 0);
+          } else {
+            this.player.anims.play(`move${this.player.avatar}`, true);
+            this.player.setFlipX(deltaX > 0);
+          }
         } else {
-          this.player.anims.play(`idle${this.player.avatar}`, true);
+          if (this.player.isDead) {
+            this.player.anims.play(`dead`, true);
+          } else {
+            this.player.anims.play(`idle${this.player.avatar}`, true);
+          }
         }
       },
       onComplete: () => {
         clearTimeout(this.player.idleTimeout);
         this.player.idleTimeout = setTimeout(() => {
-          this.player.anims.play(`idle${this.player.avatar}`, true);
+          if (this.player.isDead) {
+            this.player.anims.play(`dead`, true);
+          } else {
+            this.player.anims.play(`idle${this.player.avatar}`, true);
+          }
         }, 100);
       },
     });
