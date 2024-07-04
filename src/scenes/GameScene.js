@@ -230,6 +230,8 @@ class GameScene extends Phaser.Scene {
     });
 
     SocketManager.onWinnerPlayer((data) => {
+      Item.clearEffects(this);
+      
       this.gameStatusText.showResult();
       this.player.stopMove();
       if (this.players[data.gameWinner]) {
@@ -306,7 +308,7 @@ class GameScene extends Phaser.Scene {
     SocketManager.onItemPickedUp((arr) => {
       console.log(arr.playerId, arr.item, arr.x, arr.y);
       Item.destroyItem(this, arr.x, arr.y);
-      // Item.applyItemEffect(this,arr.playerId, arr.item);
+      Item.applyItemEffect(this,arr.playerId, arr.item);
     });
   }
 
