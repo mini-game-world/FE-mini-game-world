@@ -2,7 +2,6 @@ import Phaser from "phaser";
 import SocketManager from "../utils/SocketManager";
 import Claw from "./Claw";
 import Bomb from "./Bomb";
-import Nickname from "./Nickname";
 import Arrow from "./Arrow";
 import Crown from "./Crown";
 import Star from "./Star";
@@ -27,12 +26,10 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.star = null;
     this.bomb = null;
     this.name = info.nickname;
-    this.nickname = new Nickname(scene, this, this.name);
 
     this.scale = 1;
     this.setDepth(30);
 
-    this.createInputKeyBoard();
     this.createAnimations();
 
     this.isStunned = false;
@@ -75,26 +72,12 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     return value === 1;
   }
 
-  createInputKeyBoard() {
-    this.cursors = this.scene.input.keyboard.createCursorKeys();
-    this.keys = this.scene.input.keyboard.addKeys({
-      up: Phaser.Input.Keyboard.KeyCodes.UP,
-      down: Phaser.Input.Keyboard.KeyCodes.DOWN,
-      left: Phaser.Input.Keyboard.KeyCodes.LEFT,
-      right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
-      attack: Phaser.Input.Keyboard.KeyCodes.Z, // 공격 키 추가
-    });
-  }
-
   setDeadStatus() {
     this.explodeBomb();
     this.setTexture("playerDead");
     this.anims.play(`dead`, true);
     this.isDead = true;
     this.setAlpha(0.3);
-    this.nickname.setColor("#F78181");
-
-    this.body.checkCollision.none = true;
   }
 
   setReadyStatus() {
@@ -103,8 +86,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     if (this.isDead) {
       this.anims.play(`idle${this.avatar}`, true);
     }
-    this.nickname.setColor("#ffffff");
-    this.removeBomb();
     this.setScale(1);
     this.isDead = false;
     this.isPlay = false;
@@ -118,7 +99,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.setAlpha(1);
     this.isPlay = true;
     this.isDead = false;
-    this.nickname.setColor("#ffffff");
     this.body.checkCollision.none = false;
   }
 
@@ -172,19 +152,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     });
   }
 
-  getVelocity() {
-    const speed = this.bomb ? 700 : 600;
-    let velocityX = 0;
-    let velocityY = 0;
-
-    if (this.keys.up.isDown) velocityY = -speed;
-    if (this.keys.down.isDown) velocityY = speed;
-    if (this.keys.left.isDown) velocityX = -speed;
-    if (this.keys.right.isDown) velocityX = speed;
-
-    return { velocityX, velocityY };
-  }
-
   update() {
     if (!this.isWinner) {
       this.setVelocity(0, 0);
@@ -196,24 +163,12 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       return;
     }
 
-    const { velocityX, velocityY } = this.getVelocity();
-    this.setVelocity(velocityX, velocityY);
-
-    if (this.prevX !== this.x || this.prevY !== this.y) {
-      this.prevX = this.x;
-      this.prevY = this.y;
-      SocketManager.emitPlayerMovement({ x: this.x, y: this.y });
-    }
-
     if (this.isAttacking) {
       return; // 공격 중일 때 다른 입력 무시
     }
 
     if (this.isDead) {
       this.anims.play("dead", true);
-      if (velocityX !== 0 || velocityY !== 0) {
-        this.setFlipX(velocityX > 0);
-      }
     } else {
       if (
         Phaser.Input.Keyboard.JustDown(this.keys.attack) &&
@@ -222,12 +177,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       ) {
         this.isAttacking = true; // 공격 시작
         this.anims.play(`attack${this.avatar}`, true);
-        if (velocityX !== 0 || velocityY !== 0) {
-          this.setFlipX(velocityX > 0);
-        }
-      } else if (velocityX !== 0 || velocityY !== 0) {
+      } else if (this.body.velocity.x !== 0 || this.body.velocity.y !== 0) {
         this.anims.play(`move${this.avatar}`, true);
-        this.setFlipX(velocityX > 0);
+        this.setFlipX(this.body.velocity.x > 0);
       } else {
         this.anims.play(`idle${this.avatar}`, true);
       }
@@ -336,7 +288,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
   setCrown() {
     if (!this.scene) return;
-    this.nickname.setColor("#FFD700");
     const originalScale = this.scale;
 
     if (!this.crown) {
@@ -367,7 +318,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             },
             onComplete: () => {
               if (!this.scene) return;
-              this.nickname.setColor("#ffffff");
               this.stopMove();
               if (this.crown) {
                 this.crown.destroy();
@@ -391,7 +341,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       this.isDead = false;
     }
 
-    this.nickname.setColor("#FFD700");
     const originalScale = this.scale;
 
     this.punching_bag = new Punching_bag(this.scene, this);
@@ -420,7 +369,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             },
             onComplete: () => {
               if (!this.scene) return;
-              this.nickname.setColor("#ffffff");
               this.stopMove();
               if (this.punching_bag) {
                 this.punching_bag.destroy();
@@ -444,7 +392,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       this.isDead = false;
     }
 
-    this.nickname.setColor("#FFD700");
     const originalScale = this.scale;
 
     this.bomb_master = new Bomb_master(this.scene, this);
@@ -473,7 +420,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             },
             onComplete: () => {
               if (!this.scene) return;
-              this.nickname.setColor("#ffffff");
               this.stopMove();
               if (this.bomb_master) {
                 this.bomb_master.destroy();
@@ -484,45 +430,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         });
       },
     });
-  }
-
-  setPosition(x, y) {
-    super.setPosition(x, y);
-  }
-
-  destroy() {
-    this.removeBomb();
-
-    if (this.nickname) {
-      this.nickname.destroy();
-      this.nickname = null;
-    }
-
-    if (this.arrow) {
-      this.arrow.destroy();
-      this.arrow = null;
-    }
-
-    if (this.crown) {
-      this.crown.destroy();
-      this.crown = null;
-    }
-
-    if (this.punching_bag) {
-      this.punching_bag.destroy();
-      this.punching_bag = null;
-    }
-
-    if (this.chatBalloon) {
-      this.chatBalloon.destroy();
-      this.chatBalloon = null;
-    }
-
-    if (this.star) {
-      this.star.destroy();
-      this.star = null;
-    }
-    super.destroy();
   }
 }
 

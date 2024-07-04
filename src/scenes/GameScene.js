@@ -8,6 +8,7 @@ import MapShrinker from "../utils/MapShrinker";
 import BGMManager from "../utils/BGMManager";
 import CameraManager from "../utils/CameraManager";
 import ChatBox from "../components/ChatBox";
+import PlayerContainer from "../components/PlayerContainer";
 
 class GameScene extends Phaser.Scene {
   constructor() {
@@ -63,26 +64,30 @@ class GameScene extends Phaser.Scene {
         const { x, y, avatar, isPlay, isDead, nickname } = players[id];
         const isSelfInitiated = id === SocketManager.socket.id;
         const info = { avatar, isPlay, isDead, nickname, isSelfInitiated };
-        const player = new Player(this, x, y, `player${avatar}`, info);
-        this.players[id] = player;
+        const playerContainer = new PlayerContainer(
+          this,
+          x,
+          y,
+          `player${avatar}`,
+          info
+        );
+        this.players[id] = playerContainer;
 
         if (isSelfInitiated) {
-          this.player = player;
+          this.player = playerContainer;
           this.cameraManager.smoothFollow(this.player);
           this.ChatBox = new ChatBox(this, this.player);
-          // 충돌 설정
-          // this.physics.add.collider(this.player, this.blocklayer);
           this.physics.add.collider(this.player, this.backGround);
           this.physics.add.collider(this.player, this.house);
           this.physics.add.collider(this.player, this.object);
         }
 
         if (isPlay) {
-          this.activePlayers[id] = player;
+          this.activePlayers[id] = playerContainer;
         } else if (isDead) {
-          this.deadPlayers[id] = player;
+          this.deadPlayers[id] = playerContainer;
         } else {
-          this.waitingPlayers[id] = player;
+          this.waitingPlayers[id] = playerContainer;
         }
       });
       this.updatePlayerCountText();
@@ -92,7 +97,13 @@ class GameScene extends Phaser.Scene {
       const { playerId, x, y, avatar, nickname } = player;
       const isSelfInitiated = false;
       const info = { avatar, nickname, isSelfInitiated };
-      const newPlayer = new Player(this, x, y, `player${avatar}`, info);
+      const newPlayer = new PlayerContainer(
+        this,
+        x,
+        y,
+        `player${avatar}`,
+        info
+      );
       this.players[playerId] = newPlayer;
       this.waitingPlayers[playerId] = newPlayer;
 
@@ -102,34 +113,39 @@ class GameScene extends Phaser.Scene {
     SocketManager.onPlayerMoved((player) => {
       const { playerId, x, y } = player;
       if (this.players[playerId]) {
-        const playerSprite = this.players[playerId];
-        const prevX = playerSprite.x;
+        const playerContainer = this.players[playerId];
+        const prevX = playerContainer.x;
 
-        // Apply tween for smooth movement
         this.tweens.add({
-          targets: playerSprite,
+          targets: playerContainer,
           x: x,
           y: y,
-          duration: 100, // Duration of the tween
-          ease: "Linear", // Easing function
+          duration: 100,
+          ease: "Linear",
           onUpdate: () => {
             if (this.players[playerId]) {
-              if (playerSprite.isDead) {
-                playerSprite.anims.play("dead", true);
-                playerSprite.setFlipX(prevX < x); // 방향 설정
+              if (playerContainer.player.isDead) {
+                playerContainer.player.anims.play("dead", true);
+                playerContainer.player.setFlipX(prevX < x);
               } else {
-                playerSprite.anims.play(`move${playerSprite.avatar}`, true);
-                playerSprite.setFlipX(prevX < x); // 방향 설정
+                playerContainer.player.anims.play(
+                  `move${playerContainer.player.avatar}`,
+                  true
+                );
+                playerContainer.player.setFlipX(prevX < x);
               }
             }
           },
           onComplete: () => {
             if (this.players[playerId]) {
-              if (!playerSprite.isDead) {
-                clearTimeout(playerSprite.idleTimeout);
-                playerSprite.idleTimeout = setTimeout(() => {
+              if (!playerContainer.player.isDead) {
+                clearTimeout(playerContainer.player.idleTimeout);
+                playerContainer.player.idleTimeout = setTimeout(() => {
                   if (this.players[playerId]) {
-                    playerSprite.anims.play(`idle${playerSprite.avatar}`, true);
+                    playerContainer.player.anims.play(
+                      `idle${playerContainer.player.avatar}`,
+                      true
+                    );
                   }
                 }, 100);
               }
