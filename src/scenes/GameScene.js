@@ -9,6 +9,7 @@ import BGMManager from "../utils/BGMManager";
 import CameraManager from "../utils/CameraManager";
 import ChatBox from "../components/ChatBox";
 import Item from "../components/Item";
+import CollisionChecker from "../utils/CollisionChecker";
 
 class GameScene extends Phaser.Scene {
   constructor() {
@@ -382,6 +383,8 @@ class GameScene extends Phaser.Scene {
       this.player.update();
     }
   }
+
+  
 }
 
 export default GameScene;
