@@ -10,6 +10,7 @@ import ChatBox from "../components/ChatBox";
 import PlayerContainer from "../components/PlayerContainer";
 import Item from "../components/Item";
 import CollisionChecker from "../utils/CollisionChecker";
+import Player from "../components/Player";
 
 class GameScene extends Phaser.Scene {
   constructor() {
@@ -217,19 +218,21 @@ class GameScene extends Phaser.Scene {
       this.player.stopMove();
 
       if (data && data.gameWinner && this.players[data.gameWinner]) {
+        // this.players[data.gameWinner].body.checkCollision.none = false;
         const winPlayer = this.players[data.gameWinner];
-        winPlayer.choice();
+        this.players[data.gameWinner].choice();
         this.resultText.showWinner(winPlayer.player.nickname);
         this.cameraManager.smoothFollow(winPlayer);
       }
 
       if (data && data.PunchingBag && data.PunchingBag.playerId) {
+        // this.players[data.PunchingBag.playerId].body.checkCollision.none = false;
         this.time.delayedCall(
           5000,
           () => {
             if (this.players[data.PunchingBag.playerId]) {
               const bagPlayer = this.players[data.PunchingBag.playerId];
-              bagPlayer.choice();
+              this.players[data.PunchingBag.playerId].choice();
               this.resultText.showPunchingBag(bagPlayer.player.nickname);
               this.cameraManager.smoothFollow(bagPlayer);
             }
@@ -240,12 +243,13 @@ class GameScene extends Phaser.Scene {
       }
 
       if (data && data.BombMaster && data.BombMaster.playerId) {
+        // this.players[data.BombMaster.playerId].body.checkCollision.none = false;
         this.time.delayedCall(
           10000,
           () => {
             if (this.players[data.BombMaster.playerId]) {
               const bombMasterPlayer = this.players[data.BombMaster.playerId];
-              bombMasterPlayer.choice();
+              this.players[data.BombMaster.playerId].choice();
               this.resultText.showBombMaster(bombMasterPlayer.player.nickname);
               this.cameraManager.smoothFollow(bombMasterPlayer);
             }

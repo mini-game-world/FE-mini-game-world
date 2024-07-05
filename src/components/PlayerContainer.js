@@ -330,8 +330,11 @@ class PlayerContainer extends Phaser.GameObjects.Container {
 
   choice() {
     if (this.player.isDead) {
-      this.player.anims.play(`idle${this.player.avatar}`, true);
-      this.player.setAlpha(1);
+        this.player.isDead = false;
+        this.player.setTexture(`player${this.player.avatar}`);
+        this.player.anims.play(`idle${this.player.avatar}`, true);
+        this.player.setAlpha(1);
+        this.hitBox.body.checkCollision.none = false;
     }
     this.scene.tweens.add({
       targets: this.player,
@@ -359,15 +362,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
               this.player.anims.play(`move${this.player.avatar}`, true);
               this.player.setFlipX(velocityX > 0);
             }
-          },
-          onComplete: () => {
-            if (!this.scene) return;
-            if (this.player.isDead) {
-              this.player.anims.play(`dead`, true);
-              this.player.setAlpha(0.3);
-            }
-            this.stopMove();
-          },
+          }
         });
       },
     });
