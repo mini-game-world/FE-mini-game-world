@@ -15,7 +15,7 @@ class Nickname extends Phaser.GameObjects.Text {
     this.scene.add.existing(this);
 
     this.setOrigin(0.5, -0.7);
-    this.setDepth(30);
+    this.setDepth(40);
 
     this.updatePosition(); // 생성 시 위치를 즉시 업데이트합니다.
   }

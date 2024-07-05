@@ -86,6 +86,15 @@ class SocketManager {
       callback({ playerId, message });
     });
   }
+
+  onNewItems(callback) {
+    this.socket.on("newItems", callback);
+  }
+
+  onItemPickedUp(callback){
+    this.socket.on("itemPickedUp", callback);
+  }
+
 }
 
 export default new SocketManager();

@@ -1,6 +1,7 @@
 import Bomb_master from "./Bomb_master";
 import Crown from "./Crown";
 import Punching_bag from "./Punching_bag";
+import Item from "./Item";
 
 class ResultText extends Phaser.GameObjects.Text {
   constructor(scene) {
@@ -57,6 +58,7 @@ class ResultText extends Phaser.GameObjects.Text {
   }
 
   showWinner(name) {
+    Item.clearEffects(this.scene);
     if (this.winnerText) {
       this.winnerText.destroy();
     }

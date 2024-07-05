@@ -12,6 +12,9 @@ import bombSprite from "../assets/bomb.png";
 import explosionSprite from "../assets/explosion.png";
 import starSprite from "../assets/star.png";
 
+// Import Item
+import itemImg from "../assets/item.png";
+
 // Import map
 import first_tileset from "../assets/tiles/first_tileset.png";
 import map from "../assets/maps/village3.tmj";
@@ -172,6 +175,7 @@ class BootScene extends Phaser.Scene {
     this.load.image("crown", crownImg);
     this.load.image("punching_bag", punching_bagImg);
     this.load.image("bomb_master", bomb_masterImg);
+    this.load.image("item", itemImg);
 
     this.load.tilemapTiledJSON("map", map);
     this.load.image("first_tileset", first_tileset);
