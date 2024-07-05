@@ -1,99 +1,117 @@
-import io from "socket.io-client";
+import geckos from "@geckos.io/client";
 
 class SocketManager {
   constructor() {
-    this.socket = null;
+    this.channel = null;
   }
 
   connect() {
-    this.socket = io("http://localhost:3000");
+    this.channel = geckos({
+      url: "https://www.jungleptest.xyz",
+      port: 443,
+    });
 
-    this.socket.on("connect", () => {
+    this.channel.onConnect((error) => {
+      if (error) {
+        console.error("Connection error:", error.message);
+        return;
+      }
       console.log("Connected to server");
     });
 
-    this.socket.on("disconnect", () => {
+    this.channel.onDisconnect(() => {
       console.log("Disconnected from server");
     });
-  }
 
-  
-  onWaitingPlayers(callback) {
-    this.socket.on("waitingPlayers", callback);
+    this.channel.on("error", (error) => {
+      console.error("Channel error:", error);
+    });
+
+    this.channel.on("iceConnectionStateChange", (state) => {
+      console.log("ICE Connection State Change:", state);
+    });
+
+    this.channel.on("connectionStateChange", (state) => {
+      console.log("Connection State Change:", state);
+    });
   }
 
   onCurrentPlayers(callback) {
-    this.socket.on("currentPlayers", callback);
+    this.channel.on("currentPlayers", callback);
   }
 
   onNewPlayer(callback) {
-    this.socket.on("newPlayer", callback);
+    this.channel.on("newPlayer", callback);
   }
 
   onPlayerMoved(callback) {
-    this.socket.on("playerMoved", callback);
+    this.channel.on("playerMoved", callback);
   }
 
   onPlayerAttacked(callback) {
-    this.socket.on("attackedPlayers", callback);
+    this.channel.on("attackedPlayers", callback);
   }
 
   onAttackPlayer(callback) {
-    this.socket.on("attackPlayer", callback);
+    this.channel.on("attackPlayer", callback);
   }
 
   onPlayerDisconnected(callback) {
-    this.socket.on("playerDisconnected", callback);
+    this.channel.on("playerDisconnected", callback);
   }
 
   onPlayingGame(callback) {
-    this.socket.on("playingGame", callback);
+    this.channel.on("playingGame", callback);
   }
 
   onBombUsers(callback) {
-    this.socket.on("bombUsers", callback);
+    this.channel.on("bombUsers", callback);
   }
 
   onDeadUsers(callback) {
-    this.socket.on("deadUsers", callback);
+    this.channel.on("deadUsers", callback);
   }
 
   onChangeBombUser(callback) {
-    this.socket.on("changeBombUser", callback);
+    this.channel.on("changeBombUser", callback);
   }
 
   onWinnerPlayer(callback) {
-    this.socket.on("gameWinner", callback);
+    this.channel.on("gameWinner", callback);
   }
 
   onBombGameReady(callback) {
-    this.socket.on("bombGameReady", callback);
+    this.channel.on("bombGameReady", callback);
   }
 
   onGameStatus(callback) {
-    this.socket.on("gamestatus", callback);
+    this.channel.on("gamestatus", callback);
   }
 
   emitPlayerMovement(data) {
-    this.socket.emit("playerMovement", data);
+    this.channel.emit("playerMovement", data);
   }
 
   emitPlayerAttack(data) {
-    this.socket.emit("attackPosition", data);
+    this.channel.emit("attackPosition", data);
   }
 
   emitChatMessage(message) {
-    this.socket.emit('message', message);
-  }
-
-  emitJoinRoom(data) {
-    this.socket.emit("joinRoom", data);
+    this.channel.emit("message", message);
   }
 
   onChatMessage(callback) {
-    this.socket.on('broadcastMessage', ({ playerId, message }) => {
+    this.channel.on("broadcastMessage", ({ playerId, message }) => {
       callback({ playerId, message });
     });
+  }
+
+  onNewItems(callback) {
+    this.channel.on("newItems", callback);
+  }
+
+  onItemPickedUp(callback) {
+    this.channel.on("itemPickedUp", callback);
   }
 }
 

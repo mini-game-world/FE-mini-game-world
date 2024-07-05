@@ -1,4 +1,9 @@
-class WinnerText extends Phaser.GameObjects.Text {
+import Bomb_master from "./Bomb_master";
+import Crown from "./Crown";
+import Punching_bag from "./Punching_bag";
+import Item from "./Item";
+
+class ResultText extends Phaser.GameObjects.Text {
   constructor(scene) {
     super(
       scene,
@@ -23,12 +28,41 @@ class WinnerText extends Phaser.GameObjects.Text {
     this.scene.add.existing(this);
 
     this.winnerText = null;
+    this.crownImage = null;
+    this.punching_bagImage = null;
+    this.bomb_masterImage = null;
+  }
+
+  createCrownImage() {
+    if (this.crownImage) {
+      this.crownImage.destroy();
+      this.crownImage = null;
+    }
+    this.crownImage = new Crown(this.scene, this);
+  }
+
+  createPunching_bagImage() {
+    if (this.punching_bagImage) {
+      this.punching_bagImage.destroy();
+      this.punching_bagImage = null;
+    }
+    this.punching_bagImage = new Punching_bag(this.scene, this);
+  }
+
+  createBomb_masterImage() {
+    if (this.bomb_masterImage) {
+      this.bomb_masterImage.destroy();
+      this.bomb_masterImage = null;
+    }
+    this.bomb_masterImage = new Bomb_master(this.scene, this);
   }
 
   showWinner(name) {
+    Item.clearEffects(this.scene);
     if (this.winnerText) {
       this.winnerText.destroy();
     }
+    this.createCrownImage();
 
     this.winnerSound = this.scene.sound.add("winner_sound", { volume: 0.2 });
     this.winnerSound.play();
@@ -40,6 +74,10 @@ class WinnerText extends Phaser.GameObjects.Text {
       5000,
       () => {
         this.setAlpha(0);
+        if (this.crownImage) {
+          this.crownImage.destroy();
+          this.crownImage = null;
+        }
         this.winnerText = null;
       },
       [],
@@ -51,6 +89,7 @@ class WinnerText extends Phaser.GameObjects.Text {
     if (this.winnerText) {
       this.winnerText.destroy();
     }
+    this.createPunching_bagImage();
 
     this.winnerSound = this.scene.sound.add("winner_sound", { volume: 0.2 });
     this.winnerSound.play();
@@ -62,6 +101,10 @@ class WinnerText extends Phaser.GameObjects.Text {
       5000,
       () => {
         this.setAlpha(0);
+        if (this.punching_bagImage) {
+          this.punching_bagImage.destroy();
+          this.punching_bagImage = null;
+        }
         this.winnerText = null;
       },
       [],
@@ -73,6 +116,7 @@ class WinnerText extends Phaser.GameObjects.Text {
     if (this.winnerText) {
       this.winnerText.destroy();
     }
+    this.createBomb_masterImage();
 
     this.winnerSound = this.scene.sound.add("winner_sound", { volume: 0.2 });
     this.winnerSound.play();
@@ -84,6 +128,10 @@ class WinnerText extends Phaser.GameObjects.Text {
       5000,
       () => {
         this.setAlpha(0);
+        if (this.bomb_masterImage) {
+          this.bomb_masterImage.destroy();
+          this.bomb_masterImage = null;
+        }
         this.winnerText = null;
       },
       [],
@@ -92,9 +140,21 @@ class WinnerText extends Phaser.GameObjects.Text {
   }
 
   destroy() {
+    if (this.crownImage) {
+      this.crownImage.destroy();
+      this.crownImage = null;
+    }
+    if (this.punching_bagImage) {
+      this.punching_bagImage.destroy();
+      this.punching_bagImage = null;
+    }
+    if (this.bomb_masterImage) {
+      this.bomb_masterImage.destroy();
+      this.bomb_masterImage = null;
+    }
     this.scene.events.off("update", this.updatePosition, this);
     super.destroy();
   }
 }
 
-export default WinnerText;
+export default ResultText;
