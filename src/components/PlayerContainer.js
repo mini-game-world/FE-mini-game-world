@@ -71,7 +71,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
   }
 
   getVelocity() {
-    const speed = this.player.bomb ? 700 : 600;
+    const speed = this.bomb ? 700 : 600;
     let velocityX = 0;
     let velocityY = 0;
 

@@ -99,8 +99,6 @@ class CollisionChecker {
         console.log("Moving player to safe position:", safePosition);
         if (player.hitBox) {
           player.hitBox.setPosition(safePosition.x, safePosition.y);
-        } else {
-          player.setPosition(safePosition.x, safePosition.y);
         }
       }
     }
