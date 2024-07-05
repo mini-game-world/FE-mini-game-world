@@ -66,7 +66,7 @@ class GameScene extends Phaser.Scene {
     SocketManager.onCurrentPlayers((players) => {
       Object.keys(players).forEach((id) => {
         const { x, y, avatar, isPlay, isDead, nickname } = players[id];
-        const isSelfInitiated = id === SocketManager.socket.id;
+        const isSelfInitiated = id === SocketManager.channel.id;
         const info = { avatar, isPlay, isDead, nickname, isSelfInitiated };
         const playerContainer = new PlayerContainer(
           this,
@@ -168,7 +168,7 @@ class GameScene extends Phaser.Scene {
         });
         this.mapShrinker.start();
       } else {
-        Item.clearAllItems(this); 
+        Item.clearAllItems(this);
         this.bgmManager.startWaitingBGM();
         this.gameStatusText.showEnd();
         Object.values(this.players).forEach((player) => {
@@ -294,7 +294,7 @@ class GameScene extends Phaser.Scene {
     SocketManager.onItemPickedUp((arr) => {
       console.log(arr.playerId, arr.item, arr.x, arr.y);
       Item.destroyItem(this, arr.x, arr.y);
-      Item.applyItemEffect(this,arr.playerId, arr.item);
+      Item.applyItemEffect(this, arr.playerId, arr.item);
     });
   }
 
@@ -366,7 +366,6 @@ class GameScene extends Phaser.Scene {
     if (this.player) {
       this.player.update();
     }
-  
     for (const playerId in this.players) {
       const player = this.players[playerId];
       if (player.itemIcons) {
@@ -380,7 +379,6 @@ class GameScene extends Phaser.Scene {
     }
   }  
 
-  
 }
 
 export default GameScene;
