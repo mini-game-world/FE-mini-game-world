@@ -191,7 +191,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   update() {
-    this.collisionChecker.checkCollisionAndMove(this);
+    
+    if (!this.isDead) {
+      this.collisionChecker.checkCollisionAndMove(this);
+    }
+
     if (!this.isWinner) {
       this.setVelocity(0, 0);
       return;
