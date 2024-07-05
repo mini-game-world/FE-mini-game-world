@@ -55,8 +55,8 @@ class GameScene extends Phaser.Scene {
       this,
       15000, //delay
       1000, //interval
-      1300, //min Width
-      1300, //min Height
+      1400, //min Width
+      1400, //min Height
       3840, //initial Width
       2560, //initial Height
       32, //tile Width
