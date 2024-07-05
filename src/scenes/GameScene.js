@@ -54,7 +54,7 @@ class GameScene extends Phaser.Scene {
     this.mapShrinker = new MapShrinker(
       this,
       15000, //delay
-      3000, //interval
+      1000, //interval
       1300, //min Width
       1300, //min Height
       3840, //initial Width

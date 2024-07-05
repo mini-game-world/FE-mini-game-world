@@ -110,7 +110,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   setPlayStatus() {
-    console.log("여기이이이이이이이이ㅣ이잉");
     this.isPlay = true;
     this.isDead = false;
     this.setAlpha(1);
