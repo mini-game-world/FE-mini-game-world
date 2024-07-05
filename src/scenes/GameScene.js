@@ -241,7 +241,7 @@ class GameScene extends Phaser.Scene {
 
       if (data && data.BombMaster && data.BombMaster.playerId) {
         this.time.delayedCall(
-          11000,
+          10000,
           () => {
             if (this.players[data.BombMaster.playerId]) {
               const bombMasterPlayer = this.players[data.BombMaster.playerId];

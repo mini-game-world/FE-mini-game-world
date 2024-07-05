@@ -73,6 +73,7 @@ class Item extends Phaser.GameObjects.Image {
         setTimeout(() => {
           if (scene.activeEffects[playerId] && scene.activeEffects[playerId].alpha !== undefined) {
             if (!player.isDead) player.setAlpha(originalAlpha);
+            if (player.isDead) player.setAlpha(0.3);
             if (player.itemIcons && player.itemIcons[1]) {
               player.itemIcons[1].destroy(); 
               delete player.itemIcons[1];
@@ -141,6 +142,7 @@ class Item extends Phaser.GameObjects.Image {
   
       if (effects.alpha !== undefined) {
         if (!player.isDead) player.setAlpha(effects.alpha);
+        if (player.isDead) player.setAlpha(0.3);
       }
   
       if (effects.scale) {

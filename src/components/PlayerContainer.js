@@ -246,6 +246,9 @@ class PlayerContainer extends Phaser.GameObjects.Container {
           this.player.anims.play(`idle${this.player.avatar}`, true);
           this.isStunned = false;
         });
+    } else {
+          this.player.anims.play(`dead`, true);
+          this.isStunned = false;
     }
   }
 
@@ -333,11 +336,12 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     this.scene.tweens.add({
       targets: this.player,
       scale: 3,
-      duration: 3000,
+      duration: 2000,
       ease: "Power1",
       onUpdate: () => {
         const { velocityX, velocityY } = this.getVelocity();
         if (velocityX !== 0 || velocityY !== 0) {
+          console.log(`move${this.player.avatar}`);
           this.player.anims.play(`move${this.player.avatar}`, true);
           this.player.setFlipX(velocityX > 0);
         }
