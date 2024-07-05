@@ -1,3 +1,4 @@
+import Bomb_master from "./Bomb_master";
 import Crown from "./Crown";
 import Punching_bag from "./Punching_bag";
 
@@ -28,6 +29,7 @@ class ResultText extends Phaser.GameObjects.Text {
     this.winnerText = null;
     this.crownImage = null;
     this.punching_bagImage = null;
+    this.bomb_masterImage = null;
   }
 
   createCrownImage() {
@@ -44,6 +46,14 @@ class ResultText extends Phaser.GameObjects.Text {
       this.punching_bagImage = null;
     }
     this.punching_bagImage = new Punching_bag(this.scene, this);
+  }
+
+  createBomb_masterImage() {
+    if (this.bomb_masterImage) {
+      this.bomb_masterImage.destroy();
+      this.bomb_masterImage = null;
+    }
+    this.bomb_masterImage = new Bomb_master(this.scene, this);
   }
 
   showWinner(name) {
@@ -104,7 +114,7 @@ class ResultText extends Phaser.GameObjects.Text {
     if (this.winnerText) {
       this.winnerText.destroy();
     }
-    this.createCrownImage();
+    this.createBomb_masterImage();
 
     this.winnerSound = this.scene.sound.add("winner_sound", { volume: 0.2 });
     this.winnerSound.play();
@@ -116,9 +126,9 @@ class ResultText extends Phaser.GameObjects.Text {
       5000,
       () => {
         this.setAlpha(0);
-        if (this.crownImage) {
-          this.crownImage.destroy();
-          this.crownImage = null;
+        if (this.bomb_masterImage) {
+          this.bomb_masterImage.destroy();
+          this.bomb_masterImage = null;
         }
         this.winnerText = null;
       },
@@ -131,6 +141,14 @@ class ResultText extends Phaser.GameObjects.Text {
     if (this.crownImage) {
       this.crownImage.destroy();
       this.crownImage = null;
+    }
+    if (this.punching_bagImage) {
+      this.punching_bagImage.destroy();
+      this.punching_bagImage = null;
+    }
+    if (this.bomb_masterImage) {
+      this.bomb_masterImage.destroy();
+      this.bomb_masterImage = null;
     }
     this.scene.events.off("update", this.updatePosition, this);
     super.destroy();
