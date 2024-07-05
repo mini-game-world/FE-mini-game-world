@@ -1,46 +1,23 @@
 import Phaser from "phaser";
-import SocketManager from "../utils/SocketManager";
-import Claw from "./Claw";
-import Bomb from "./Bomb";
-import Nickname from "./Nickname";
-import Arrow from "./Arrow";
-import Crown from "./Crown";
-import Star from "./Star";
-import ChatBalloon from "./ChatBalloon";
-import Punching_bag from "./Punching_bag";
-import Bomb_master from "./Bomb_master";
 import CollisionChecker from "../utils/CollisionChecker";
 
-class Player extends Phaser.Physics.Arcade.Sprite {
+class Player extends Phaser.GameObjects.Sprite {
   constructor(scene, x, y, texture, info) {
     super(scene, x, y, texture);
     this.scene = scene;
     this.avatar = info.avatar;
     this.isSelfInitiated = info.isSelfInitiated;
+    this.nickname = info.nickname;
 
     this.scene.add.existing(this);
-    this.scene.physics.add.existing(this);
-    this.setCollideWorldBounds(true);
 
-    this.body.setSize(50, 50); // 히트박스 크기 설정 (너비, 높이)
-    this.body.setOffset(75, 150); // 히트박스 오프셋 설정 (x, y)
-
-    this.star = null;
-    this.bomb = null;
-    this.name = info.nickname;
-    this.nickname = new Nickname(scene, this, this.name);
-
-    this.scale = 1;
+    this.setScale(1);
     this.setDepth(30);
 
-    this.createInputKeyBoard();
     this.createAnimations();
 
-    this.isStunned = false;
     this.isPlay = this.processInfo(info.isPlay);
     this.isDead = this.processInfo(info.isDead);
-    this.isWinner = false;
-    this.isAttacking = false;
 
     this.speed = 600; // 기본 속도 설정
 
@@ -58,73 +35,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
     this.prevX = x;
     this.prevY = y;
-
-    this.arrow = null;
-
-    this.crown = null;
-    this.punching_bag = null;
-    this.bombking = null;
-
-    this.crown = null;
-    if (this.isSelfInitiated) {
-      this.arrow = new Arrow(this.scene, this);
-    }
-
-    this.chatBalloon = new ChatBalloon(this.scene, this); // Create chat balloon for all players
-  }
-
-  processInfo(value) {
-    if (value === undefined) {
-      return false;
-    }
-    return value === 1;
-  }
-
-  createInputKeyBoard() {
-    this.cursors = this.scene.input.keyboard.createCursorKeys();
-    this.keys = this.scene.input.keyboard.addKeys({
-      up: Phaser.Input.Keyboard.KeyCodes.UP,
-      down: Phaser.Input.Keyboard.KeyCodes.DOWN,
-      left: Phaser.Input.Keyboard.KeyCodes.LEFT,
-      right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
-      attack: Phaser.Input.Keyboard.KeyCodes.Z, // 공격 키 추가
-    });
-  }
-
-  setDeadStatus() {
-    this.explodeBomb();
-    this.setTexture("playerDead");
-    this.anims.play(`dead`, true);
-    this.isDead = true;
-    this.setAlpha(0.3);
-    this.nickname.setColor("#F78181");
-
-    this.body.checkCollision.none = true;
-  }
-
-  setReadyStatus() {
-    this.setTexture(`player${this.avatar}`);
-    this.setAlpha(0.5);
-    if (this.isDead) {
-      this.anims.play(`idle${this.avatar}`, true);
-    }
-    this.nickname.setColor("#ffffff");
-    this.removeBomb();
-    this.setScale(1);
-    this.isDead = false;
-    this.isPlay = false;
-    this.isWinner = false;
-    this.isAttacking = false;
-
-    this.body.checkCollision.none = false;
-  }
-
-  setPlayStatus() {
-    this.setAlpha(1);
-    this.isPlay = true;
-    this.isDead = false;
-    this.nickname.setColor("#ffffff");
-    this.body.checkCollision.none = false;
   }
 
   createAnimations() {
@@ -168,367 +78,36 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       frameRate: 6,
       repeat: -1,
     });
-
-    this.on("animationcomplete", (anim, frame) => {
-      if (anim.key === `attack${this.avatar}`) {
-        this.createClawAttack();
-        this.isAttacking = false; // 공격 애니메이션이 끝났을 때 공격 상태 해제
-      }
-    });
   }
 
-  getVelocity() {
-    const speed = this.bomb ? 700 : this.speed;
-    let velocityX = 0;
-    let velocityY = 0;
-
-    if (this.keys.up.isDown) velocityY = -speed;
-    if (this.keys.down.isDown) velocityY = speed;
-    if (this.keys.left.isDown) velocityX = -speed;
-    if (this.keys.right.isDown) velocityX = speed;
-
-    return { velocityX, velocityY };
+  processInfo(value) {
+    if (value === undefined) {
+      return false;
+    }
+    return value === 1;
   }
 
-  update() {
-    this.collisionChecker.checkCollisionAndMove(this);
-    if (!this.isWinner) {
-      this.setVelocity(0, 0);
-      return;
-    }
-
-    if (this.isStunned) {
-      this.setVelocity(0, 0);
-      return;
-    }
-
-    const { velocityX, velocityY } = this.getVelocity();
-    this.setVelocity(velocityX, velocityY);
-
-    if (this.prevX !== this.x || this.prevY !== this.y) {
-      this.prevX = this.x;
-      this.prevY = this.y;
-      SocketManager.emitPlayerMovement({ x: this.x, y: this.y });
-    }
-
-    if (this.isAttacking) {
-      return; // 공격 중일 때 다른 입력 무시
-    }
-
-    if (this.isDead) {
-      this.anims.play("dead", true);
-      if (velocityX !== 0 || velocityY !== 0) {
-        this.setFlipX(velocityX > 0);
-      }
-    } else {
-      if (
-        Phaser.Input.Keyboard.JustDown(this.keys.attack) &&
-        this.isPlay &&
-        !this.isDead
-      ) {
-        this.isAttacking = true; // 공격 시작
-        this.anims.play(`attack${this.avatar}`, true);
-        if (velocityX !== 0 || velocityY !== 0) {
-          this.setFlipX(velocityX > 0);
-        }
-      } else if (velocityX !== 0 || velocityY !== 0) {
-        this.anims.play(`move${this.avatar}`, true);
-        this.setFlipX(velocityX > 0);
-      } else {
-        this.anims.play(`idle${this.avatar}`, true);
-      }
-    }
+  setDeadStatus() {
+    this.isDead = true;
+    this.isPlay = true;
+    this.setTexture("playerDead");
+    this.anims.play(`dead`, true);
+    this.setAlpha(0.3);
   }
 
-  createClawAttack() {
-    if (!this.isSelfInitiated) {
-      this.anims
-        .play(`attack${this.avatar}`, true)
-        .on("animationcomplete", () => {
-          this.anims.play(`idle${this.avatar}`, true);
-        });
-    }
-    const offset = -110;
-    const clawX = this.x + (this.flipX ? -offset : offset);
-    const clawY = this.y;
-    const isHeadingRight = this.flipX;
-    const startingPosition = [clawX, clawY];
-    const damage = 10;
-    const scale = 1.5;
-    new Claw(
-      this.scene,
-      startingPosition,
-      isHeadingRight,
-      damage,
-      scale,
-      this.isSelfInitiated
-    );
-    if (this.isSelfInitiated) {
-      SocketManager.emitPlayerAttack({ x: clawX, y: clawY });
-    }
-  }
-
-  stunPlayer() {
-    if (this.bomb) return;
-    if (!this.star) {
-      this.star = new Star(this.scene, this);
-    }
-    this.isAttacking = false;
-    this.isStunned = true;
-    this.setVelocity(0, 0);
-    if (!this.isDead) {
-      this.anims
-        .play(`stun${this.avatar}`, true)
-        .once(`animationcomplete-stun${this.avatar}`, () => {
-          this.anims.play(`idle${this.avatar}`, true);
-        });
-    }
-    this.scene.time.delayedCall(500, () => {
-      this.isStunned = false;
-      if (this.star) {
-        this.star.destroy();
-        this.star = null;
-      }
-    });
-  }
-
-  setBombUser() {
-    if (!this.bomb) {
-      this.bomb = new Bomb(this.scene, this);
-    }
-  }
-
-  receiveBomb() {
-    if (!this.bomb) {
-      this.bomb = new Bomb(this.scene, this);
-    }
-    this.isStunned = true;
+  setReadyStatus() {
+    this.isDead = false;
+    this.isPlay = false;
+    this.setTexture(`player${this.avatar}`);
     this.anims.play(`idle${this.avatar}`, true);
-    this.isAttacking = false;
-
-    if (!this.star) {
-      this.star = new Star(this.scene, this);
-    }
-    this.scene.time.delayedCall(500, () => {
-      this.isStunned = false;
-      if (this.star) {
-        this.star.destroy();
-        this.star = null;
-      }
-    });
+    this.setAlpha(0.5);
+    this.setScale(1);
   }
 
-  removeBomb() {
-    if (this.bomb) {
-      this.bomb.destroy();
-      this.bomb = null;
-    }
-  }
-
-  explodeBomb() {
-    if (this.bomb) {
-      this.bomb.explode();
-      this.bomb = null;
-    }
-  }
-
-  stopMove() {
-    if (!this.isDead) {
-      this.anims.play(`idle${this.avatar}`, true);
-    }
-    this.isWinner = false;
-    this.isAttacking = false;
-  }
-
-  setCrown() {
-    if (!this.scene) return;
-    this.nickname.setColor("#FFD700");
-    const originalScale = this.scale;
-
-    if (!this.crown) {
-      this.crown = new Crown(this.scene, this);
-    }
-
-    this.scene.tweens.add({
-      targets: this,
-      scale: originalScale * 3,
-      duration: 1500,
-      ease: "Power1",
-      onUpdate: () => {
-        if (!this.nickname) return;
-        this.nickname.updatePosition();
-      },
-      onComplete: () => {
-        if (!this.scene) return;
-        this.scene.time.delayedCall(1500, () => {
-          if (!this.scene) return;
-          this.scene.tweens.add({
-            targets: this,
-            scale: originalScale,
-            duration: 1500,
-            ease: "Power1",
-            onUpdate: () => {
-              if (!this.nickname) return;
-              this.nickname.updatePosition();
-            },
-            onComplete: () => {
-              if (!this.scene) return;
-              this.nickname.setColor("#ffffff");
-              this.stopMove();
-              if (this.crown) {
-                this.crown.destroy();
-                this.crown = null;
-              }
-            },
-          });
-        });
-      },
-    });
-  }
-
-  setPunching_bag() {
-    if (!this.scene) return;
-
-    if (this.isDead) {
-      this.setTexture(`player${this.avatar}`);
-      this.anims.play(`idle${this.avatar}`, true);
-      this.body.checkCollision.none = false;
-      this.setAlpha(1);
-      this.isDead = false;
-    }
-
-    this.nickname.setColor("#FFD700");
-    const originalScale = this.scale;
-
-    this.punching_bag = new Punching_bag(this.scene, this);
-
-    this.scene.tweens.add({
-      targets: this,
-      scale: originalScale * 3,
-      duration: 1500,
-      ease: "Power1",
-      onUpdate: () => {
-        if (!this.nickname) return;
-        this.nickname.updatePosition();
-      },
-      onComplete: () => {
-        if (!this.scene) return;
-        this.scene.time.delayedCall(1500, () => {
-          if (!this.scene) return;
-          this.scene.tweens.add({
-            targets: this,
-            scale: originalScale,
-            duration: 1500,
-            ease: "Power1",
-            onUpdate: () => {
-              if (!this.nickname) return;
-              this.nickname.updatePosition();
-            },
-            onComplete: () => {
-              if (!this.scene) return;
-              this.nickname.setColor("#ffffff");
-              this.stopMove();
-              if (this.punching_bag) {
-                this.punching_bag.destroy();
-                this.punching_bag = null;
-              }
-            },
-          });
-        });
-      },
-    });
-  }
-
-  setBombMaster() {
-    if (!this.scene) return;
-
-    if (this.isDead) {
-      this.setTexture(`player${this.avatar}`);
-      this.anims.play(`idle${this.avatar}`, true);
-      this.body.checkCollision.none = false;
-      this.setAlpha(1);
-      this.isDead = false;
-    }
-
-    this.nickname.setColor("#FFD700");
-    const originalScale = this.scale;
-
-    this.bomb_master = new Bomb_master(this.scene, this);
-
-    this.scene.tweens.add({
-      targets: this,
-      scale: originalScale * 3,
-      duration: 1500,
-      ease: "Power1",
-      onUpdate: () => {
-        if (!this.nickname) return;
-        this.nickname.updatePosition();
-      },
-      onComplete: () => {
-        if (!this.scene) return;
-        this.scene.time.delayedCall(1500, () => {
-          if (!this.scene) return;
-          this.scene.tweens.add({
-            targets: this,
-            scale: originalScale,
-            duration: 1500,
-            ease: "Power1",
-            onUpdate: () => {
-              if (!this.nickname) return;
-              this.nickname.updatePosition();
-            },
-            onComplete: () => {
-              if (!this.scene) return;
-              this.nickname.setColor("#ffffff");
-              this.stopMove();
-              if (this.bomb_master) {
-                this.bomb_master.destroy();
-                this.bomb_master = null;
-              }
-            },
-          });
-        });
-      },
-    });
-  }
-
-  setPosition(x, y) {
-    super.setPosition(x, y);
-  }
-
-  destroy() {
-    this.removeBomb();
-
-    if (this.nickname) {
-      this.nickname.destroy();
-      this.nickname = null;
-    }
-
-    if (this.arrow) {
-      this.arrow.destroy();
-      this.arrow = null;
-    }
-
-    if (this.crown) {
-      this.crown.destroy();
-      this.crown = null;
-    }
-
-    if (this.punching_bag) {
-      this.punching_bag.destroy();
-      this.punching_bag = null;
-    }
-
-    if (this.chatBalloon) {
-      this.chatBalloon.destroy();
-      this.chatBalloon = null;
-    }
-
-    if (this.star) {
-      this.star.destroy();
-      this.star = null;
-    }
-    super.destroy();
+  setPlayStatus() {
+    this.isPlay = true;
+    this.isDead = false;
+    this.setAlpha(1);
   }
 }
 

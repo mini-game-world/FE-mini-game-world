@@ -1,26 +1,25 @@
-import Phaser from "phaser";
-
 class Bomb_master extends Phaser.GameObjects.Image {
-  constructor(scene, player) {
-    super(scene, player.x - 100, player.y - 100, "bomb_master"); // 'arrow' is the texture key for the arrow image
+  constructor(scene, target) {
+    super(
+      scene,
+      scene.cameras.main.width / 2,
+      scene.cameras.main.height / 2 -
+        scene.cameras.main.height / 4 / scene.cameras.main.zoom -
+        150,
+      "bomb_master"
+    );
     this.scene = scene;
-    this.player = player;
+    this.target = target;
+
+    this.setOrigin(0.5, 1);
+    this.setDepth(101);
+    this.setScale(0.5);
+    this.setScrollFactor(0);
 
     this.scene.add.existing(this);
-    this.setOrigin(0.5, 1);
-    this.setDepth(32);
-    this.setScale(0.5);
-
-    // Update the position of the arrow to follow the player
-    this.scene.events.on("update", this.updatePosition, this);
-  }
-
-  updatePosition() {
-    this.setPosition(this.player.x, this.player.y - 100);
   }
 
   destroy() {
-    this.scene.events.off("update", this.updatePosition, this);
     super.destroy();
   }
 }

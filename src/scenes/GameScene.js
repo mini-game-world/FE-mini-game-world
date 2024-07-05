@@ -1,5 +1,4 @@
 import Phaser from "phaser";
-import Player from "../components/Player";
 import SocketManager from "../utils/SocketManager";
 import PlayerCountText from "../components/PlayerCountText";
 import ResultText from "../components/ResultText";
@@ -8,6 +7,7 @@ import MapShrinker from "../utils/MapShrinker";
 import BGMManager from "../utils/BGMManager";
 import CameraManager from "../utils/CameraManager";
 import ChatBox from "../components/ChatBox";
+import PlayerContainer from "../components/PlayerContainer";
 import Item from "../components/Item";
 import CollisionChecker from "../utils/CollisionChecker";
 
@@ -44,7 +44,6 @@ class GameScene extends Phaser.Scene {
     this.cameraManager = new CameraManager(this);
 
     this.resultText = new ResultText(this);
-
     this.playerCountText = new PlayerCountText(this);
     this.gameStatusText = new GameStatusText(this);
 
@@ -68,26 +67,30 @@ class GameScene extends Phaser.Scene {
         const { x, y, avatar, isPlay, isDead, nickname } = players[id];
         const isSelfInitiated = id === SocketManager.socket.id;
         const info = { avatar, isPlay, isDead, nickname, isSelfInitiated };
-        const player = new Player(this, x, y, `player${avatar}`, info);
-        this.players[id] = player;
+        const playerContainer = new PlayerContainer(
+          this,
+          x,
+          y,
+          `player${avatar}`,
+          info
+        );
+        this.players[id] = playerContainer;
 
         if (isSelfInitiated) {
-          this.player = player;
+          this.player = playerContainer;
           this.cameraManager.smoothFollow(this.player);
           this.ChatBox = new ChatBox(this, this.player);
-          // 충돌 설정
-          // this.physics.add.collider(this.player, this.blocklayer);
-          this.physics.add.collider(this.player, this.backGround);
-          this.physics.add.collider(this.player, this.house);
-          this.physics.add.collider(this.player, this.object);
+          this.physics.add.collider(this.player.hitBox, this.backGround);
+          this.physics.add.collider(this.player.hitBox, this.house);
+          this.physics.add.collider(this.player.hitBox, this.object);
         }
 
         if (isPlay) {
-          this.activePlayers[id] = player;
+          this.activePlayers[id] = playerContainer;
         } else if (isDead) {
-          this.deadPlayers[id] = player;
+          this.deadPlayers[id] = playerContainer;
         } else {
-          this.waitingPlayers[id] = player;
+          this.waitingPlayers[id] = playerContainer;
         }
       });
       this.updatePlayerCountText();
@@ -97,7 +100,13 @@ class GameScene extends Phaser.Scene {
       const { playerId, x, y, avatar, nickname } = player;
       const isSelfInitiated = false;
       const info = { avatar, nickname, isSelfInitiated };
-      const newPlayer = new Player(this, x, y, `player${avatar}`, info);
+      const newPlayer = new PlayerContainer(
+        this,
+        x,
+        y,
+        `player${avatar}`,
+        info
+      );
       this.players[playerId] = newPlayer;
       this.waitingPlayers[playerId] = newPlayer;
 
@@ -107,40 +116,8 @@ class GameScene extends Phaser.Scene {
     SocketManager.onPlayerMoved((player) => {
       const { playerId, x, y } = player;
       if (this.players[playerId]) {
-        const playerSprite = this.players[playerId];
-        const prevX = playerSprite.x;
-
-        // Apply tween for smooth movement
-        this.tweens.add({
-          targets: playerSprite,
-          x: x,
-          y: y,
-          duration: 100, // Duration of the tween
-          ease: "Linear", // Easing function
-          onUpdate: () => {
-            if (this.players[playerId]) {
-              if (playerSprite.isDead) {
-                playerSprite.anims.play("dead", true);
-                playerSprite.setFlipX(prevX < x); // 방향 설정
-              } else {
-                playerSprite.anims.play(`move${playerSprite.avatar}`, true);
-                playerSprite.setFlipX(prevX < x); // 방향 설정
-              }
-            }
-          },
-          onComplete: () => {
-            if (this.players[playerId]) {
-              if (!playerSprite.isDead) {
-                clearTimeout(playerSprite.idleTimeout);
-                playerSprite.idleTimeout = setTimeout(() => {
-                  if (this.players[playerId]) {
-                    playerSprite.anims.play(`idle${playerSprite.avatar}`, true);
-                  }
-                }, 100);
-              }
-            }
-          },
-        });
+        const playerContainer = this.players[playerId];
+        playerContainer.moveTo(x, y);
       }
     });
 
@@ -183,7 +160,7 @@ class GameScene extends Phaser.Scene {
         this.bgmManager.startPlayingBGM();
         this.gameStatusText.showStart();
         Object.values(this.players).forEach((player) => {
-          player.setPlayStatus();
+          player.setPlay();
           this.activePlayers[player.id] = player;
           delete this.waitingPlayers[player.id];
         });
@@ -193,7 +170,7 @@ class GameScene extends Phaser.Scene {
         this.bgmManager.startWaitingBGM();
         this.gameStatusText.showEnd();
         Object.values(this.players).forEach((player) => {
-          player.setReadyStatus();
+          player.setReady();
           this.waitingPlayers[player.id] = player;
           delete this.activePlayers[player.id];
         });
@@ -213,7 +190,7 @@ class GameScene extends Phaser.Scene {
     SocketManager.onDeadUsers((players) => {
       players.forEach((id) => {
         if (this.players[id]) {
-          this.players[id].setDeadStatus();
+          this.players[id].setDead();
           this.deadPlayers[id] = this.players[id];
           delete this.activePlayers[id];
         }
@@ -236,40 +213,45 @@ class GameScene extends Phaser.Scene {
 
       this.gameStatusText.showResult();
       this.player.stopMove();
-      if (this.players[data.gameWinner]) {
+
+      if (data && data.gameWinner && this.players[data.gameWinner]) {
         const winPlayer = this.players[data.gameWinner];
-        winPlayer.setCrown();
+        winPlayer.choice();
+        this.resultText.showWinner(winPlayer.player.nickname);
         this.cameraManager.smoothFollow(winPlayer);
-        this.resultText.showWinner(winPlayer.name);
       }
 
-      this.time.delayedCall(
-        5000,
-        () => {
-          if (this.players[data.PunchingBag.playerId]) {
-            const bagPlayer = this.players[data.PunchingBag.playerId];
-            bagPlayer.setPunching_bag();
-            this.cameraManager.smoothFollow(bagPlayer);
-            this.resultText.showPunchingBag(bagPlayer.name);
-          }
-        },
-        [],
-        this.scene
-      );
+      if (data && data.PunchingBag && data.PunchingBag.playerId) {
+        this.time.delayedCall(
+          5000,
+          () => {
+            if (this.players[data.PunchingBag.playerId]) {
+              const bagPlayer = this.players[data.PunchingBag.playerId];
+              bagPlayer.choice();
+              this.resultText.showPunchingBag(bagPlayer.player.nickname);
+              this.cameraManager.smoothFollow(bagPlayer);
+            }
+          },
+          [],
+          this
+        );
+      }
 
-      this.time.delayedCall(
-        11000,
-        () => {
-          if (this.players[data.BombMaster.playerId]) {
-            const bombMasterPlayer = this.players[data.BombMaster.playerId];
-            bombMasterPlayer.setBombMaster();
-            this.cameraManager.smoothFollow(bombMasterPlayer);
-            this.resultText.showBombMaster(bombMasterPlayer.name);
-          }
-        },
-        [],
-        this.scene
-      );
+      if (data && data.BombMaster && data.BombMaster.playerId) {
+        this.time.delayedCall(
+          11000,
+          () => {
+            if (this.players[data.BombMaster.playerId]) {
+              const bombMasterPlayer = this.players[data.BombMaster.playerId];
+              bombMasterPlayer.choice();
+              this.resultText.showBombMaster(bombMasterPlayer.player.nickname);
+              this.cameraManager.smoothFollow(bombMasterPlayer);
+            }
+          },
+          [],
+          this
+        );
+      }
     });
 
     SocketManager.onBombGameReady((count) => {
@@ -294,7 +276,7 @@ class GameScene extends Phaser.Scene {
 
     SocketManager.onChatMessage(({ playerId, message }) => {
       if (this.players[playerId]) {
-        this.players[playerId].chatBalloon.showChatMessage(message);
+        this.players[playerId].showChatMessage(message);
       }
     });
 

@@ -11,8 +11,7 @@ class Arrow extends Phaser.GameObjects.Image {
     this.setDepth(32);
     this.setScale(0.1);
 
-    // Update the position of the arrow to follow the player
-    scene.events.on("update", this.updatePosition, this);
+    this.updatePosition();
   }
 
   updatePosition() {
@@ -20,7 +19,6 @@ class Arrow extends Phaser.GameObjects.Image {
   }
 
   destroy() {
-    this.scene.events.off("update", this.updatePosition, this);
     super.destroy();
   }
 }

@@ -1,28 +1,29 @@
-export default class ChatBalloon {
+import Phaser from "phaser";
+
+export default class ChatBalloon extends Phaser.GameObjects.Container {
   constructor(scene, player) {
+    super(scene, player.x, player.y - 100);
     this.scene = scene;
     this.player = player;
 
-    this.chatBalloon = this.scene.add
-      .container(player.x, player.y - 50)
-      .setDepth(31)
-      .setVisible(false);
+    this.setDepth(31).setVisible(false);
+
     this.balloonGraphics = this.scene.add.graphics();
     this.chatText = this.scene.add
       .text(0, 0, "", {
         fontSize: "24px",
         fill: "#000000",
-        fontFamily: 'BMJUA',
+        fontFamily: "BMJUA",
         padding: { x: 10, y: 5 },
         align: "center",
         wordWrap: { width: 280, useAdvancedWrap: true },
       })
       .setOrigin(0.5);
 
-    this.chatBalloon.add(this.balloonGraphics);
-    this.chatBalloon.add(this.chatText);
+    this.add(this.balloonGraphics);
+    this.add(this.chatText);
 
-    scene.events.on("update", this.updatePosition, this);
+    scene.add.existing(this);
   }
 
   showChatMessage(message) {
@@ -50,24 +51,17 @@ export default class ChatBalloon {
       balloonHeight / 2
     );
 
-    this.chatBalloon.setVisible(true);
+    this.setVisible(true);
     this.scene.time.addEvent({
       delay: 3000,
       callback: () => {
-        this.chatBalloon.setVisible(false);
+        this.setVisible(false);
       },
       callbackScope: this,
     });
   }
 
-  updatePosition() {
-    if (this.chatBalloon.visible) {
-      this.chatBalloon.setPosition(this.player.x, this.player.y - 50);
-    }
-  }
-
   destroy() {
-    this.scene.events.off("update", this.updatePosition, this);
-    this.chatBalloon.destroy();
+    super.destroy();
   }
 }
