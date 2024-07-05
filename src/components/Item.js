@@ -30,6 +30,7 @@ class Item extends Phaser.GameObjects.Image {
 
     if (player.itemIcons && player.itemIcons[itemId]) {
       player.itemIcons[itemId].destroy();
+      delete player.itemIcons[itemId];
     }
 
     let itemIcon;
@@ -144,6 +145,16 @@ class Item extends Phaser.GameObjects.Image {
   
       if (effects.scale) {
         player.setScale(effects.scale.x, effects.scale.y);
+      }
+
+      if (player.itemIcons) {
+        for (const itemId in player.itemIcons) {
+          const itemIcon = player.itemIcons[itemId];
+          if (itemIcon) {
+            itemIcon.destroy();
+            delete player.itemIcons[itemId];
+          }
+        }
       }
     }
   
