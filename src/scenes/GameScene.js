@@ -34,6 +34,7 @@ class GameScene extends Phaser.Scene {
     this.mapShrinker = null;
 
     this.ChatBox = null;
+    this.collisionChecker = new CollisionChecker();
   }
 
   create() {
@@ -119,6 +120,7 @@ class GameScene extends Phaser.Scene {
         const playerContainer = this.players[playerId];
         playerContainer.moveTo(x, y);
       }
+      this.collisionChecker.checkCollisionAndMove(player);
     });
 
     SocketManager.onPlayerAttacked((ids) => {
