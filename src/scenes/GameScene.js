@@ -364,7 +364,19 @@ class GameScene extends Phaser.Scene {
     if (this.player) {
       this.player.update();
     }
-  }
+  
+    for (const playerId in this.players) {
+      const player = this.players[playerId];
+      if (player.itemIcons) {
+        for (const itemId in player.itemIcons) {
+          const itemIcon = player.itemIcons[itemId];
+          if (itemIcon) {
+            itemIcon.setPosition(player.x + player.displayWidth / 2 + 40, player.y - player.displayHeight / 2 - 10);
+          }
+        }
+      }
+    }
+  }  
 
   
 }
