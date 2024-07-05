@@ -110,6 +110,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   setPlayStatus() {
+    console.log("여기이이이이이이이이ㅣ이잉");
     this.isPlay = true;
     this.isDead = false;
     this.setAlpha(1);
@@ -117,6 +118,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     // 물리 충돌을 활성화
     this.body.checkCollision.none = false;
   }
+
 }
 
 export default Player;
