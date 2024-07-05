@@ -9,6 +9,7 @@ import Star from "./Star";
 import ChatBalloon from "./ChatBalloon";
 import Punching_bag from "./Punching_bag";
 import Bomb_master from "./Bomb_master";
+import CollisionChecker from "../utils/CollisionChecker";
 
 class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y, texture, info) {
@@ -42,6 +43,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.isAttacking = false;
 
     this.speed = 600; // 기본 속도 설정
+
+    this.collisionChecker = new CollisionChecker();
 
     if (this.isDead) {
       this.setDeadStatus(); // 죽은 상태
@@ -188,6 +191,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   update() {
+    this.collisionChecker.checkCollisionAndMove(this);
     if (!this.isWinner) {
       this.setVelocity(0, 0);
       return;
