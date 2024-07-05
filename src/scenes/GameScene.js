@@ -34,6 +34,7 @@ class GameScene extends Phaser.Scene {
     this.mapShrinker = null;
 
     this.ChatBox = null;
+    this.collisionChecker = new CollisionChecker();
   }
 
   create() {
@@ -119,6 +120,7 @@ class GameScene extends Phaser.Scene {
         const playerContainer = this.players[playerId];
         playerContainer.moveTo(x, y);
       }
+      this.collisionChecker.checkCollisionAndMove(player);
     });
 
     SocketManager.onPlayerAttacked((ids) => {
@@ -364,7 +366,19 @@ class GameScene extends Phaser.Scene {
     if (this.player) {
       this.player.update();
     }
-  }
+    for (const playerId in this.players) {
+      const player = this.players[playerId];
+      if (player.itemIcons) {
+        for (const itemId in player.itemIcons) {
+          const itemIcon = player.itemIcons[itemId];
+          if (itemIcon) {
+            itemIcon.setPosition(player.x + player.displayWidth / 2 + 40, player.y - player.displayHeight / 2 - 10);
+          }
+        }
+      }
+    }
+  }  
+
 }
 
 export default GameScene;
