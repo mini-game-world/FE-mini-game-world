@@ -306,6 +306,13 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     }
   }
 
+  stopMove() {
+    if (!this.player.isDead) {
+      this.player.anims.play(`idle${this.player.avatar}`, true);
+    }
+    this.isWinner = false;
+  }
+
   destroy() {
     // Custom cleanup for PlayerContainer
     if (this.player) {

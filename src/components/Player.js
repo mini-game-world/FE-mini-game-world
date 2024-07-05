@@ -114,57 +114,6 @@ class Player extends Phaser.GameObjects.Sprite {
     this.isDead = false;
   }
 
-  stopMove() {
-    if (!this.isDead) {
-      this.anims.play(`idle${this.avatar}`, true);
-    }
-    this.isAttacking = false;
-  }
-
-  setCrown() {
-    if (!this.scene) return;
-    const originalScale = this.scale;
-
-    if (!this.crown) {
-      this.crown = new Crown(this.scene, this);
-    }
-
-    this.scene.tweens.add({
-      targets: this,
-      scale: originalScale * 3,
-      duration: 1500,
-      ease: "Power1",
-      onUpdate: () => {
-        if (!this.nickname) return;
-        this.nickname.updatePosition();
-      },
-      onComplete: () => {
-        if (!this.scene) return;
-        this.scene.time.delayedCall(1500, () => {
-          if (!this.scene) return;
-          this.scene.tweens.add({
-            targets: this,
-            scale: originalScale,
-            duration: 1500,
-            ease: "Power1",
-            onUpdate: () => {
-              if (!this.nickname) return;
-              this.nickname.updatePosition();
-            },
-            onComplete: () => {
-              if (!this.scene) return;
-              this.stopMove();
-              if (this.crown) {
-                this.crown.destroy();
-                this.crown = null;
-              }
-            },
-          });
-        });
-      },
-    });
-  }
-
   setPunching_bag() {
     if (!this.scene) return;
 

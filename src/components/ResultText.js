@@ -1,3 +1,5 @@
+import Crown from "./Crown";
+
 class ResultText extends Phaser.GameObjects.Text {
   constructor(scene) {
     super(
@@ -23,12 +25,21 @@ class ResultText extends Phaser.GameObjects.Text {
     this.scene.add.existing(this);
 
     this.winnerText = null;
+    this.crownImage = null;
+  }
+
+  createCrownImage() {
+    if (this.crownImage) {
+      this.crownImage.destroy();
+    }
+    this.crownImage = new Crown(this.scene, this);
   }
 
   showWinner(name) {
     if (this.winnerText) {
       this.winnerText.destroy();
     }
+    this.createCrownImage();
 
     this.winnerSound = this.scene.sound.add("winner_sound", { volume: 0.2 });
     this.winnerSound.play();
@@ -40,6 +51,10 @@ class ResultText extends Phaser.GameObjects.Text {
       5000,
       () => {
         this.setAlpha(0);
+        if (this.crownImage) {
+          this.crownImage.destroy();
+          this.crownImage = null;
+        }
         this.winnerText = null;
       },
       [],
@@ -51,6 +66,7 @@ class ResultText extends Phaser.GameObjects.Text {
     if (this.winnerText) {
       this.winnerText.destroy();
     }
+    this.createCrownImage();
 
     this.winnerSound = this.scene.sound.add("winner_sound", { volume: 0.2 });
     this.winnerSound.play();
@@ -62,6 +78,10 @@ class ResultText extends Phaser.GameObjects.Text {
       5000,
       () => {
         this.setAlpha(0);
+        if (this.crownImage) {
+          this.crownImage.destroy();
+          this.crownImage = null;
+        }
         this.winnerText = null;
       },
       [],
@@ -73,6 +93,7 @@ class ResultText extends Phaser.GameObjects.Text {
     if (this.winnerText) {
       this.winnerText.destroy();
     }
+    this.createCrownImage();
 
     this.winnerSound = this.scene.sound.add("winner_sound", { volume: 0.2 });
     this.winnerSound.play();
@@ -84,6 +105,10 @@ class ResultText extends Phaser.GameObjects.Text {
       5000,
       () => {
         this.setAlpha(0);
+        if (this.crownImage) {
+          this.crownImage.destroy();
+          this.crownImage = null;
+        }
         this.winnerText = null;
       },
       [],
@@ -92,6 +117,10 @@ class ResultText extends Phaser.GameObjects.Text {
   }
 
   destroy() {
+    if (this.crownImage) {
+      this.crownImage.destroy();
+      this.crownImage = null;
+    }
     this.scene.events.off("update", this.updatePosition, this);
     super.destroy();
   }
