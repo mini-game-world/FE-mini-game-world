@@ -213,21 +213,21 @@ class GameScene extends Phaser.Scene {
         this.cameraManager.smoothFollow(winPlayer);
       }
 
-      // if (data && data.PunchingBag && data.PunchingBag.playerId) {
-      //   this.time.delayedCall(
-      //     5000,
-      //     () => {
-      //       if (this.players[data.PunchingBag.playerId]) {
-      //         const bagPlayer = this.players[data.PunchingBag.playerId];
-      //         // bagPlayer.setPunching_bag();
-      //         this.cameraManager.smoothFollow(bagPlayer);
-      //         this.resultText.showPunchingBag(bagPlayer.nickname);
-      //       }
-      //     },
-      //     [],
-      //     this
-      //   );
-      // }
+      if (data && data.PunchingBag && data.PunchingBag.playerId) {
+        this.time.delayedCall(
+          5000,
+          () => {
+            if (this.players[data.PunchingBag.playerId]) {
+              this.player.stopMove();
+              const bagPlayer = this.players[data.PunchingBag.playerId];
+              this.resultText.showPunchingBag(bagPlayer.player.nickname);
+              this.cameraManager.smoothFollow(bagPlayer);
+            }
+          },
+          [],
+          this
+        );
+      }
 
       // if (data && data.BombMaster && data.BombMaster.playerId) {
       //   this.time.delayedCall(

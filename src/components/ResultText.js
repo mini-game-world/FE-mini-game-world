@@ -1,4 +1,5 @@
 import Crown from "./Crown";
+import Punching_bag from "./Punching_bag";
 
 class ResultText extends Phaser.GameObjects.Text {
   constructor(scene) {
@@ -26,13 +27,23 @@ class ResultText extends Phaser.GameObjects.Text {
 
     this.winnerText = null;
     this.crownImage = null;
+    this.punching_bagImage = null;
   }
 
   createCrownImage() {
     if (this.crownImage) {
       this.crownImage.destroy();
+      this.crownImage = null;
     }
     this.crownImage = new Crown(this.scene, this);
+  }
+
+  createPunching_bagImage() {
+    if (this.punching_bagImage) {
+      this.punching_bagImage.destroy();
+      this.punching_bagImage = null;
+    }
+    this.punching_bagImage = new Punching_bag(this.scene, this);
   }
 
   showWinner(name) {
@@ -66,7 +77,7 @@ class ResultText extends Phaser.GameObjects.Text {
     if (this.winnerText) {
       this.winnerText.destroy();
     }
-    this.createCrownImage();
+    this.createPunching_bagImage();
 
     this.winnerSound = this.scene.sound.add("winner_sound", { volume: 0.2 });
     this.winnerSound.play();
@@ -78,9 +89,9 @@ class ResultText extends Phaser.GameObjects.Text {
       5000,
       () => {
         this.setAlpha(0);
-        if (this.crownImage) {
-          this.crownImage.destroy();
-          this.crownImage = null;
+        if (this.punching_bagImage) {
+          this.punching_bagImage.destroy();
+          this.punching_bagImage = null;
         }
         this.winnerText = null;
       },
