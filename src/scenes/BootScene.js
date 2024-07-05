@@ -14,6 +14,9 @@ import starSprite from "../assets/star.png";
 
 // Import Item
 import itemImg from "../assets/item.png";
+import itemImg0 from "../assets/item0.png";
+import itemImg1 from "../assets/item1.png";
+import itemImg2 from "../assets/item2.png";
 
 // Import map
 import first_tileset from "../assets/tiles/first_tileset.png";
@@ -176,6 +179,9 @@ class BootScene extends Phaser.Scene {
     this.load.image("punching_bag", punching_bagImg);
     this.load.image("bomb_master", bomb_masterImg);
     this.load.image("item", itemImg);
+    this.load.image("item0", itemImg0);
+    this.load.image("item1", itemImg1);
+    this.load.image("item2", itemImg2);
 
     this.load.tilemapTiledJSON("map", map);
     this.load.image("first_tileset", first_tileset);
