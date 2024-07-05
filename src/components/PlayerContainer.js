@@ -8,6 +8,7 @@ import Arrow from "./Arrow";
 import ChatBalloon from "./ChatBalloon";
 import Bomb from "./Bomb";
 import Explosion from "./Explosion";
+import CollisionChecker from "../utils/CollisionChecker";
 
 class PlayerContainer extends Phaser.GameObjects.Container {
   constructor(scene, x, y, texture, info) {
@@ -54,6 +55,8 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     this.isWinner = false;
 
     this.bomb = null;
+
+    this.collisionChecker = new CollisionChecker();
   }
 
   createInputKeyBoard() {
@@ -81,6 +84,10 @@ class PlayerContainer extends Phaser.GameObjects.Container {
   }
 
   update() {
+    if (!this.isDead) {
+      this.collisionChecker.checkCollisionAndMove(this);
+    }
+
     if (!this.isWinner) {
       this.hitBox.body.setVelocity(0, 0);
       if (

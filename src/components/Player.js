@@ -21,8 +21,6 @@ class Player extends Phaser.GameObjects.Sprite {
 
     this.speed = 600; // 기본 속도 설정
 
-    this.collisionChecker = new CollisionChecker();
-
     if (this.isDead) {
       this.setDeadStatus(); // 죽은 상태
     } else {
