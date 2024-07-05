@@ -309,8 +309,54 @@ class PlayerContainer extends Phaser.GameObjects.Container {
   stopMove() {
     if (!this.player.isDead) {
       this.player.anims.play(`idle${this.player.avatar}`, true);
+    } else {
+      this.player.anims.play(`dead`, true);
     }
     this.isWinner = false;
+  }
+
+  choice() {
+    if (this.player.isDead) {
+      this.player.anims.play(`idle${this.player.avatar}`, true);
+      this.player.setAlpha(1);
+    }
+    this.scene.tweens.add({
+      targets: this.player,
+      scale: 3,
+      duration: 3000,
+      ease: "Power1",
+      onUpdate: () => {
+        const { velocityX, velocityY } = this.getVelocity();
+        if (velocityX !== 0 || velocityY !== 0) {
+          this.player.anims.play(`move${this.player.avatar}`, true);
+          this.player.setFlipX(velocityX > 0);
+        }
+      },
+      onComplete: () => {
+        if (!this.scene) return;
+        this.scene.tweens.add({
+          targets: this.player,
+          scale: 1,
+          duration: 2000,
+          ease: "Power1",
+          onUpdate: () => {
+            const { velocityX, velocityY } = this.getVelocity();
+            if (velocityX !== 0 || velocityY !== 0) {
+              this.player.anims.play(`move${this.player.avatar}`, true);
+              this.player.setFlipX(velocityX > 0);
+            }
+          },
+          onComplete: () => {
+            if (!this.scene) return;
+            if (this.player.isDead) {
+              this.player.anims.play(`dead`, true);
+              this.player.setAlpha(0.3);
+            }
+            this.stopMove();
+          },
+        });
+      },
+    });
   }
 
   destroy() {

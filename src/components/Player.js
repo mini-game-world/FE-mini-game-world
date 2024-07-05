@@ -1,7 +1,4 @@
 import Phaser from "phaser";
-import Crown from "./Crown";
-import Punching_bag from "./Punching_bag";
-import Bomb_master from "./Bomb_master";
 
 class Player extends Phaser.GameObjects.Sprite {
   constructor(scene, x, y, texture, info) {
@@ -9,10 +6,9 @@ class Player extends Phaser.GameObjects.Sprite {
     this.scene = scene;
     this.avatar = info.avatar;
     this.isSelfInitiated = info.isSelfInitiated;
+    this.nickname = info.nickname;
 
     this.scene.add.existing(this);
-
-    this.nickname = info.nickname;
 
     this.setScale(1);
     this.setDepth(30);
@@ -34,10 +30,6 @@ class Player extends Phaser.GameObjects.Sprite {
 
     this.prevX = x;
     this.prevY = y;
-
-    this.crown = null;
-    this.punching_bag = null;
-    this.bombking = null;
   }
 
   createAnimations() {
@@ -92,126 +84,25 @@ class Player extends Phaser.GameObjects.Sprite {
 
   setDeadStatus() {
     this.isDead = true;
-    this.setAlpha(0.3);
+    this.isPlay = true;
     this.setTexture("playerDead");
     this.anims.play(`dead`, true);
+    this.setAlpha(0.3);
   }
 
   setReadyStatus() {
-    this.setTexture(`player${this.avatar}`);
-    if (this.isDead) {
-      this.anims.play(`idle${this.avatar}`, true);
-    }
-    this.setAlpha(0.5);
-    this.setScale(1);
     this.isDead = false;
     this.isPlay = false;
+    this.setTexture(`player${this.avatar}`);
+    this.anims.play(`idle${this.avatar}`, true);
+    this.setAlpha(0.5);
+    this.setScale(1);
   }
 
   setPlayStatus() {
-    this.setAlpha(1);
     this.isPlay = true;
     this.isDead = false;
-  }
-
-  setPunching_bag() {
-    if (!this.scene) return;
-
-    if (this.isDead) {
-      this.setTexture(`player${this.avatar}`);
-      this.anims.play(`idle${this.avatar}`, true);
-      this.setAlpha(1);
-      this.isDead = false;
-    }
-
-    const originalScale = this.scale;
-
-    this.punching_bag = new Punching_bag(this.scene, this);
-
-    this.scene.tweens.add({
-      targets: this,
-      scale: originalScale * 3,
-      duration: 1500,
-      ease: "Power1",
-      onUpdate: () => {
-        if (!this.nickname) return;
-        this.nickname.updatePosition();
-      },
-      onComplete: () => {
-        if (!this.scene) return;
-        this.scene.time.delayedCall(1500, () => {
-          if (!this.scene) return;
-          this.scene.tweens.add({
-            targets: this,
-            scale: originalScale,
-            duration: 1500,
-            ease: "Power1",
-            onUpdate: () => {
-              if (!this.nickname) return;
-              this.nickname.updatePosition();
-            },
-            onComplete: () => {
-              if (!this.scene) return;
-              this.stopMove();
-              if (this.punching_bag) {
-                this.punching_bag.destroy();
-                this.punching_bag = null;
-              }
-            },
-          });
-        });
-      },
-    });
-  }
-
-  setBombMaster() {
-    if (!this.scene) return;
-
-    if (this.isDead) {
-      this.setTexture(`player${this.avatar}`);
-      this.anims.play(`idle${this.avatar}`, true);
-      this.setAlpha(1);
-      this.isDead = false;
-    }
-
-    const originalScale = this.scale;
-
-    this.bomb_master = new Bomb_master(this.scene, this);
-
-    this.scene.tweens.add({
-      targets: this,
-      scale: originalScale * 3,
-      duration: 1500,
-      ease: "Power1",
-      onUpdate: () => {
-        if (!this.nickname) return;
-        this.nickname.updatePosition();
-      },
-      onComplete: () => {
-        if (!this.scene) return;
-        this.scene.time.delayedCall(1500, () => {
-          if (!this.scene) return;
-          this.scene.tweens.add({
-            targets: this,
-            scale: originalScale,
-            duration: 1500,
-            ease: "Power1",
-            onUpdate: () => {
-              if (!this.nickname) return;
-              this.nickname.updatePosition();
-            },
-            onComplete: () => {
-              if (!this.scene) return;
-              this.stopMove();
-              if (this.bomb_master) {
-                this.bomb_master.destroy();
-                this.bomb_master = null;
-              }
-            },
-          });
-        });
-      },
-    });
+    this.setAlpha(1);
   }
 }
 

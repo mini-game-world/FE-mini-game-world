@@ -204,11 +204,11 @@ class GameScene extends Phaser.Scene {
 
     SocketManager.onWinnerPlayer((data) => {
       this.gameStatusText.showResult();
+      this.player.stopMove();
 
-      // Check if data and necessary properties are present
       if (data && data.gameWinner && this.players[data.gameWinner]) {
-        this.player.stopMove();
         const winPlayer = this.players[data.gameWinner];
+        winPlayer.choice();
         this.resultText.showWinner(winPlayer.player.nickname);
         this.cameraManager.smoothFollow(winPlayer);
       }
@@ -218,8 +218,8 @@ class GameScene extends Phaser.Scene {
           5000,
           () => {
             if (this.players[data.PunchingBag.playerId]) {
-              this.player.stopMove();
               const bagPlayer = this.players[data.PunchingBag.playerId];
+              bagPlayer.choice();
               this.resultText.showPunchingBag(bagPlayer.player.nickname);
               this.cameraManager.smoothFollow(bagPlayer);
             }
@@ -229,21 +229,21 @@ class GameScene extends Phaser.Scene {
         );
       }
 
-      // if (data && data.BombMaster && data.BombMaster.playerId) {
-      //   this.time.delayedCall(
-      //     11000,
-      //     () => {
-      //       if (this.players[data.BombMaster.playerId]) {
-      //         const bombMasterPlayer = this.players[data.BombMaster.playerId];
-      //         // bombMasterPlayer.setBombMaster();
-      //         this.cameraManager.smoothFollow(bombMasterPlayer);
-      //         this.resultText.showBombMaster(bombMasterPlayer.nickname); // Assuming the player's nickname property is called 'nickname'
-      //       }
-      //     },
-      //     [],
-      //     this
-      //   );
-      // }
+      if (data && data.BombMaster && data.BombMaster.playerId) {
+        this.time.delayedCall(
+          11000,
+          () => {
+            if (this.players[data.BombMaster.playerId]) {
+              const bombMasterPlayer = this.players[data.BombMaster.playerId];
+              bombMasterPlayer.choice();
+              this.resultText.showBombMaster(bombMasterPlayer.player.nickname);
+              this.cameraManager.smoothFollow(bombMasterPlayer);
+            }
+          },
+          [],
+          this
+        );
+      }
     });
 
     SocketManager.onBombGameReady((count) => {
