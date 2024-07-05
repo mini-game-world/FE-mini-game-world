@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import CollisionChecker from "../utils/CollisionChecker";
 
-class Player extends Phaser.GameObjects.Sprite {
+class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y, texture, info) {
     super(scene, x, y, texture);
     this.scene = scene;
@@ -10,6 +10,7 @@ class Player extends Phaser.GameObjects.Sprite {
     this.nickname = info.nickname;
 
     this.scene.add.existing(this);
+    this.scene.physics.add.existing(this);
 
     this.setScale(1);
     this.setDepth(30);
@@ -91,6 +92,9 @@ class Player extends Phaser.GameObjects.Sprite {
     this.setTexture("playerDead");
     this.anims.play(`dead`, true);
     this.setAlpha(0.3);
+    
+    // 물리 충돌을 비활성화
+    this.body.checkCollision.none = true;
   }
 
   setReadyStatus() {
@@ -100,12 +104,18 @@ class Player extends Phaser.GameObjects.Sprite {
     this.anims.play(`idle${this.avatar}`, true);
     this.setAlpha(0.5);
     this.setScale(1);
+    
+    // 물리 충돌을 활성화
+    this.body.checkCollision.none = false;
   }
 
   setPlayStatus() {
     this.isPlay = true;
     this.isDead = false;
     this.setAlpha(1);
+    
+    // 물리 충돌을 활성화
+    this.body.checkCollision.none = false;
   }
 }
 

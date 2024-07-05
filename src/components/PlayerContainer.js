@@ -84,7 +84,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
   }
 
   update() {
-    if (!this.isDead) {
+    if (!this.player.isDead) {
       this.collisionChecker.checkCollisionAndMove(this);
     }
 
@@ -260,16 +260,19 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     this.isWinner = false;
     this.isAttacking = false;
     this.player.setReadyStatus();
+    this.hitBox.body.checkCollision.none = false;
   }
 
   setPlay() {
     this.player.setPlayStatus();
+    this.hitBox.body.checkCollision.none = false;
   }
 
   setDead() {
     this.isAttacking = false;
     this.explodeBomb();
     this.player.setDeadStatus();
+    this.hitBox.body.checkCollision.none = true;
   }
 
   setBombUser() {
