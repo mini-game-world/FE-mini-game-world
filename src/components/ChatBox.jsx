@@ -3,19 +3,10 @@ import styled from "styled-components";
 import SocketManager from "../utils/SocketManager";
 
 const ChatContainer = styled.div`
-    display: ${({ isVisible }) => (isVisible ? "flex" : "none")};
-    position: fixed;
-    bottom: 0;
-    left: 20%;
-    width: 40%;
-    max-width: 400px;
-    background-color: rgba(255, 255, 255, 0.5);
-    border: 1px solid black;
+    display: ${({ $visible }) => ($visible ? "flex" : "none")};
     flex-direction: column;
-    border-radius: 10px 10px 0 0;
     font-family: "BMJUA", sans-serif;
-    padding: 10px;
-    box-sizing: border-box;
+    width: 100%;
 `;
 
 const ChatInputWrapper = styled.div`
@@ -36,7 +27,7 @@ const ChatInput = styled.input`
 `;
 
 const ChatBox = () => {
-    const [isVisible, setIsVisible] = useState(false);
+    const [visible, setVisible] = useState(false);
     const [message, setMessage] = useState("");
     const chatInputRef = useRef(null);
 
@@ -45,16 +36,16 @@ const ChatBox = () => {
             SocketManager.emitChatMessage(message.substring(0, 20));
             setMessage("");
         }
-        setIsVisible(false);
+        setVisible(false);
     }, [message]);
 
     useEffect(() => {
         const handleKeyDown = (event) => {
             if (event.key === "Enter") {
-                if (isVisible) {
+                if (visible) {
                     sendMessage();
                 } else {
-                    setIsVisible(true);
+                    setVisible(true);
                 }
             }
         };
@@ -64,16 +55,16 @@ const ChatBox = () => {
         return () => {
             document.removeEventListener("keydown", handleKeyDown);
         };
-    }, [isVisible, sendMessage]);
+    }, [visible, sendMessage]);
 
     useEffect(() => {
-        if (isVisible) {
+        if (visible) {
             chatInputRef.current.focus();
         }
-    }, [isVisible]);
+    }, [visible]);
 
     return (
-        <ChatContainer isVisible={isVisible}>
+        <ChatContainer $visible={visible}>
             <ChatInputWrapper>
                 <ChatInput
                     type="text"

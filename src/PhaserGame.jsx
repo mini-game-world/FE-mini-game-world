@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import { forwardRef, useLayoutEffect, useRef, useEffect } from "react";
 import StartGame from "./StartGame";
 import { EventBus } from "./EventBus";
-import ChatBox from "./components/ChatBox";
+import ChatContainer from "./components/ChatContainer";
 
 export const PhaserGame = forwardRef(function PhaserGame(props, ref) {
     const game = useRef();
@@ -37,7 +37,7 @@ export const PhaserGame = forwardRef(function PhaserGame(props, ref) {
 
     return (
         <div id="game-container">
-            <ChatBox />
+            <ChatContainer />
         </div>
     );
 });
