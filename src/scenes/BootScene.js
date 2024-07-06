@@ -33,10 +33,10 @@ class BootScene extends Phaser.Scene {
         this.load.audio("timer_sound", "assets/sounds/timer.ogg");
         this.load.audio("explosion_sound", "assets/sounds/explosion.ogg");
         this.load.audio("winner_sound", "assets/sounds/winner.ogg");
-        this.load.audio("playingBGM1", "assets/sounds/playingBGM1.mp3");
-        this.load.audio("playingBGM2", "assets/sounds/playingBGM2.mp3");
-        this.load.audio("waitingBGM1", "assets/sounds/waitingBGM1.mp3");
-        this.load.audio("waitingBGM2", "assets/sounds/waitingBGM2.mp3");
+        this.load.audio("playingBGM1", "assets/bgm/playingBGM1.ogg");
+        this.load.audio("playingBGM2", "assets/bgm/playingBGM2.ogg");
+        this.load.audio("waitingBGM1", "assets/bgm/waitingBGM1.ogg");
+        this.load.audio("waitingBGM2", "assets/bgm/waitingBGM2.ogg");
 
         this.load.spritesheet("playerDead", "assets/playerDead.png", {
             frameWidth: 150,

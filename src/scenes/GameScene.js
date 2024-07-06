@@ -5,7 +5,7 @@ import PlayerCountText from "../components/PlayerCountText";
 import ResultText from "../components/ResultText";
 import GameStatusText from "../components/GameStatusText";
 import MapShrinker from "../utils/MapShrinker";
-// import BGMManager from "../utils/BGMManager";
+import BGMManager from "../utils/BGMManager";
 import CameraManager from "../utils/CameraManager";
 import ChatBox from "../components/ChatBox";
 import PlayerContainer from "../components/PlayerContainer";
@@ -42,7 +42,7 @@ class GameScene extends Phaser.Scene {
         SocketManager.connect();
         this.setBackground();
 
-        // this.bgmManager = new BGMManager(this);
+        this.bgmManager = new BGMManager(this);
         this.cameraManager = new CameraManager(this);
 
         this.resultText = new ResultText(this);
@@ -170,7 +170,7 @@ class GameScene extends Phaser.Scene {
 
         SocketManager.onPlayingGame((isPlaying) => {
             if (isPlaying == 1) {
-                // this.bgmManager.startPlayingBGM();
+                this.bgmManager.startPlayingBGM();
                 this.gameStatusText.showStart();
                 Object.values(this.players).forEach((player) => {
                     player.setPlay();
@@ -180,7 +180,7 @@ class GameScene extends Phaser.Scene {
                 this.mapShrinker.start();
             } else {
                 Item.clearAllItems(this);
-                // this.bgmManager.startWaitingBGM();
+                this.bgmManager.startWaitingBGM();
                 this.gameStatusText.showEnd();
                 Object.values(this.players).forEach((player) => {
                     player.setReady();
@@ -290,7 +290,7 @@ class GameScene extends Phaser.Scene {
                 this.gameStatusText.showWait();
             }
         });
-        // this.bgmManager.startWaitingBGM();
+        this.bgmManager.startWaitingBGM();
 
         SocketManager.onChatMessage(({ playerId, message }) => {
             if (this.players[playerId]) {
