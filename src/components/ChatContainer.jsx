@@ -1,4 +1,3 @@
-import { useState } from "react";
 import styled from "styled-components";
 import ChatBox from "./ChatBox";
 import ChatLog from "./ChatLog";
@@ -17,7 +16,7 @@ const Container = styled.div`
     box-sizing: border-box;
 `;
 
-const ChatLogToggleContainer = styled.div`
+const ChatLogContainer = styled.div`
     position: fixed;
     bottom: 0;
     left: 55%;
@@ -31,27 +30,15 @@ const ChatLogToggleContainer = styled.div`
     box-sizing: border-box;
 `;
 
-const ToggleButton = styled.button`
-    padding: 0.5em 1em;
-    font-family: "BMJUA", sans-serif;
-    cursor: pointer;
-    margin-bottom: 10px;
-`;
-
 const ChatContainer = () => {
-    const [isLogVisible, setIsLogVisible] = useState(false);
-
     return (
         <>
             <Container>
                 <ChatBox />
             </Container>
-            <ChatLogToggleContainer>
-                <ToggleButton onClick={() => setIsLogVisible(!isLogVisible)}>
-                    {isLogVisible ? "Hide Chat Log" : "Show Chat Log"}
-                </ToggleButton>
-                {isLogVisible && <ChatLog />}
-            </ChatLogToggleContainer>
+            <ChatLogContainer>
+                <ChatLog />
+            </ChatLogContainer>
         </>
     );
 };
