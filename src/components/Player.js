@@ -14,8 +14,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.setScale(1);
         this.setDepth(30);
 
-        this.createAnimations();
-
         this.isPlay = this.processInfo(info.isPlay);
         this.isDead = this.processInfo(info.isDead);
 
@@ -33,44 +31,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
         this.prevX = x;
         this.prevY = y;
-    }
-
-    createAnimations() {
-        this.scene.anims.create({
-            key: `idle${this.avatar}`,
-            frames: this.scene.anims.generateFrameNumbers(
-                `player${this.avatar}`
-            ),
-            frameRate: 5,
-            repeat: -1,
-        });
-
-        this.scene.anims.create({
-            key: `move${this.avatar}`,
-            frames: this.scene.anims.generateFrameNumbers(
-                `player_move${this.avatar}`
-            ),
-            frameRate: 5,
-            repeat: -1,
-        });
-
-        this.scene.anims.create({
-            key: `attack${this.avatar}`,
-            frames: this.scene.anims.generateFrameNumbers(
-                `player_attack${this.avatar}`
-            ),
-            frameRate: 12,
-            repeat: 0,
-        });
-
-        this.scene.anims.create({
-            key: `stun${this.avatar}`,
-            frames: this.scene.anims.generateFrameNumbers(
-                `player_stun${this.avatar}`
-            ),
-            frameRate: 15,
-            repeat: 0,
-        });
     }
 
     processInfo(value) {

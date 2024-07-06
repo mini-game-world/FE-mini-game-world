@@ -100,6 +100,36 @@ class BootScene extends Phaser.Scene {
     }
 
     create() {
+        for (let i = 0; i <= 30; i++) {
+            this.anims.create({
+                key: `idle${i}`,
+                frames: this.anims.generateFrameNumbers(`player${i}`),
+                frameRate: 5,
+                repeat: -1,
+            });
+
+            this.anims.create({
+                key: `move${i}`,
+                frames: this.anims.generateFrameNumbers(`player_move${i}`),
+                frameRate: 5,
+                repeat: -1,
+            });
+
+            this.anims.create({
+                key: `attack${i}`,
+                frames: this.anims.generateFrameNumbers(`player_attack${i}`),
+                frameRate: 12,
+                repeat: 0,
+            });
+
+            this.anims.create({
+                key: `stun${i}`,
+                frames: this.anims.generateFrameNumbers(`player_stun${i}`),
+                frameRate: 15,
+                repeat: 0,
+            });
+        }
+
         this.anims.create({
             key: "dead",
             frames: this.anims.generateFrameNumbers("playerDead"),
@@ -142,5 +172,4 @@ class BootScene extends Phaser.Scene {
 }
 
 export default BootScene;
-
 
