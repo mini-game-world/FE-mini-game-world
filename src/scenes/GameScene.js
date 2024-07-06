@@ -290,7 +290,13 @@ class GameScene extends Phaser.Scene {
 
         SocketManager.onChatMessage(({ playerId, message }) => {
             if (this.players[playerId]) {
+                const playerNickname = this.players[playerId].player.nickname;
                 this.players[playerId].showChatMessage(message);
+
+                EventBus.emit("chat message", {
+                    nickname: playerNickname,
+                    message,
+                });
             }
         });
 
@@ -385,4 +391,5 @@ class GameScene extends Phaser.Scene {
 }
 
 export default GameScene;
+
 

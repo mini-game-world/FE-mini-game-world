@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import SocketManager from "../utils/SocketManager";
+import { EventBus } from "../EventBus";
 
 const ChatLogContainer = styled.div`
     max-height: 300px;
@@ -22,14 +22,17 @@ const ChatLog = () => {
     const [messages, setMessages] = useState([]);
 
     useEffect(() => {
-        const handleNewMessage = (message) => {
-            setMessages((prevMessages) => [...prevMessages, message]);
+        const handleNewMessage = ({ nickname, message }) => {
+            setMessages((prevMessages) => [
+                ...prevMessages,
+                `${nickname}: ${message}`,
+            ]);
         };
 
-        // SocketManager.on("chat message", handleNewMessage);
+        EventBus.on("chat message", handleNewMessage);
 
         return () => {
-            // SocketManager.off("chat message", handleNewMessage);
+            EventBus.off("chat message", handleNewMessage);
         };
     }, []);
 
