@@ -87,7 +87,8 @@ class GameScene extends Phaser.Scene {
                 if (isSelfInitiated) {
                     this.player = playerContainer;
                     this.cameraManager.smoothFollow(this.player);
-                    this.ChatBox = new ChatBox(this, this.player);
+                    // this.ChatBox = new ChatBox(this, this.player);
+                    EventBus.emit("player-ready", this.player);
                     this.physics.add.collider(
                         this.player.hitBox,
                         this.backGround
@@ -388,4 +389,5 @@ class GameScene extends Phaser.Scene {
 }
 
 export default GameScene;
+
 

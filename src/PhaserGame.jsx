@@ -1,10 +1,18 @@
 import PropTypes from "prop-types";
-import { forwardRef, useLayoutEffect, useRef, useEffect } from "react";
+import {
+    forwardRef,
+    useLayoutEffect,
+    useRef,
+    useEffect,
+    useState,
+} from "react";
 import StartGame from "./StartGame";
 import { EventBus } from "./EventBus";
+import ChatBox from "./components/ChatBox";
 
 export const PhaserGame = forwardRef(function PhaserGame(props, ref) {
     const game = useRef();
+    const [currentPlayer, setCurrentPlayer] = useState(null);
 
     useLayoutEffect(() => {
         if (game.current === undefined) {
@@ -29,16 +37,24 @@ export const PhaserGame = forwardRef(function PhaserGame(props, ref) {
             }
         });
 
+        EventBus.on("player-ready", (player) => {
+            setCurrentPlayer(player);
+        });
+
         return () => {
             EventBus.removeListener("current-scene-ready");
+            EventBus.removeListener("player-ready");
         };
     }, [ref]);
 
-    return <div id="game-container"></div>;
+    return (
+        <div id="game-container">
+            <ChatBox player={currentPlayer} />
+        </div>
+    );
 });
 
 PhaserGame.propTypes = {
     currentActiveScene: PropTypes.func,
 };
-
 
