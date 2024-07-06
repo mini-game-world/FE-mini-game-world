@@ -431,7 +431,7 @@ class BootScene extends Phaser.Scene {
       hideOnComplete: true,
     });
 
-    this.scene.start("WaitingScene");
+    this.scene.start("GameScene");
   }
 }
 

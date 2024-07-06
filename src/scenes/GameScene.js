@@ -368,8 +368,8 @@ class GameScene extends Phaser.Scene {
     // this.object4 = map2.createLayer("Object4", [candle, cup, spoon, knife, logs], 0, 0);
     // this.object4.setCollisionByProperty({ collides: true });
 
-    // this.mapShrink = map.createLayer("MapShrink", Tileset_1, 0, 0);
-    // this.mapShrink.setCollisionByProperty({ collides: true });
+    this.mapShrink = map.createLayer("MapShrink", Tileset_1, 0, 0);
+    this.mapShrink.setCollisionByProperty({ collides: true });
 
     // 충돌 디버그 그래픽 추가
     this.debugGraphics = this.add.graphics();

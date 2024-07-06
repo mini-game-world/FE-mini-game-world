@@ -47,25 +47,29 @@ class WaitingScene extends Phaser.Scene {
           this.cameraManager.smoothFollow(this.player);
           this.ChatBox = new ChatBox(this, this.player);
 
-          this.player.body.setCollideWorldBounds(true);
-
           this.physics.add.collider(this.player, this.tileLayer1);
           this.physics.add.collider(this.player, this.object1);
           this.physics.add.collider(this.player, this.object2);
           this.physics.add.collider(this.player, this.object3);
           this.physics.add.collider(this.player, this.object4);
-
         }
       });
     });
 
     SocketManager.onNewPlayer((player) => {
       const { playerId, x, y, avatar, nickname } = player;
-      const info = { avatar, nickname };
-      const newPlayer = new Player(this, x, y, `player${avatar}`, info);
+      const isSelfInitiated = false;
+      const info = { avatar, nickname, isSelfInitiated };
+      const newPlayer = new PlayerContainer(
+        this,
+        x,
+        y,
+        `player${avatar}`,
+        info
+      );
       this.players[playerId] = newPlayer;
     });
-
+    
     SocketManager.onPlayerMoved((player) => {
       const { playerId, x, y } = player;
       if (this.players[playerId]) {

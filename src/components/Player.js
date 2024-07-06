@@ -10,7 +10,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.nickname = info.nickname;
 
     this.scene.add.existing(this);
-    console.log(this.scene);
     this.scene.physics.add.existing(this);
 
     this.setScale(1);
