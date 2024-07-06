@@ -7,7 +7,6 @@ import GameStatusText from "../components/GameStatusText";
 import MapShrinker from "../utils/MapShrinker";
 import BGMManager from "../utils/BGMManager";
 import CameraManager from "../utils/CameraManager";
-import ChatBox from "../components/ChatBox";
 import PlayerContainer from "../components/PlayerContainer";
 import Item from "../components/Item";
 import CollisionChecker from "../utils/CollisionChecker";
@@ -34,7 +33,6 @@ class GameScene extends Phaser.Scene {
         this.cameraManager = null;
         this.mapShrinker = null;
 
-        this.ChatBox = null;
         this.collisionChecker = new CollisionChecker();
     }
 
@@ -87,8 +85,6 @@ class GameScene extends Phaser.Scene {
                 if (isSelfInitiated) {
                     this.player = playerContainer;
                     this.cameraManager.smoothFollow(this.player);
-                    // this.ChatBox = new ChatBox(this, this.player);
-                    EventBus.emit("player-ready", this.player);
                     this.physics.add.collider(
                         this.player.hitBox,
                         this.backGround
@@ -389,5 +385,4 @@ class GameScene extends Phaser.Scene {
 }
 
 export default GameScene;
-
 

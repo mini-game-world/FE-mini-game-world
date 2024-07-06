@@ -1,11 +1,52 @@
-import { useState, useEffect, useRef } from "react";
-import PropTypes from "prop-types";
+import { useState, useEffect, useRef, useCallback } from "react";
+import styled from "styled-components";
 import SocketManager from "../utils/SocketManager";
 
-const ChatBox = ({ player }) => {
+const ChatContainer = styled.div`
+    display: ${({ isVisible }) => (isVisible ? "flex" : "none")};
+    position: fixed;
+    bottom: 0;
+    left: 20%;
+    width: 40%;
+    max-width: 400px;
+    background-color: rgba(255, 255, 255, 0.5);
+    border: 1px solid black;
+    flex-direction: column;
+    border-radius: 10px 10px 0 0;
+    font-family: "BMJUA", sans-serif;
+    padding: 10px;
+    box-sizing: border-box;
+`;
+
+const ChatInputWrapper = styled.div`
+    display: flex;
+    flex-direction: row;
+    background: lightblue;
+    border-radius: 10px;
+    font-family: "BMJUA", sans-serif;
+`;
+
+const ChatInput = styled.input`
+    flex: 1;
+    padding: 1em;
+    font-size: 1em;
+    border: none;
+    border-radius: 10px;
+    font-family: "BMJUA", sans-serif;
+`;
+
+const ChatBox = () => {
     const [isVisible, setIsVisible] = useState(false);
     const [message, setMessage] = useState("");
     const chatInputRef = useRef(null);
+
+    const sendMessage = useCallback(() => {
+        if (message.trim()) {
+            SocketManager.emitChatMessage(message.substring(0, 20));
+            setMessage("");
+        }
+        setIsVisible(false);
+    }, [message]);
 
     useEffect(() => {
         const handleKeyDown = (event) => {
@@ -15,8 +56,6 @@ const ChatBox = ({ player }) => {
                 } else {
                     setIsVisible(true);
                 }
-            } else if (event.key === "Escape") {
-                setIsVisible(false);
             }
         };
 
@@ -25,7 +64,7 @@ const ChatBox = ({ player }) => {
         return () => {
             document.removeEventListener("keydown", handleKeyDown);
         };
-    }, [isVisible]);
+    }, [isVisible, sendMessage]);
 
     useEffect(() => {
         if (isVisible) {
@@ -33,55 +72,12 @@ const ChatBox = ({ player }) => {
         }
     }, [isVisible]);
 
-    const sendMessage = () => {
-        if (message.trim() && player) {
-            SocketManager.emitChatMessage(message.substring(0, 20));
-            setMessage("");
-        }
-        setIsVisible(false);
-    };
-
     return (
-        <div
-            id="chat-container"
-            style={{
-                display: isVisible ? "flex" : "none",
-                position: "fixed",
-                top: "70%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                height: "auto",
-                width: "90%",
-                maxWidth: "1000px",
-                backgroundColor: "white",
-                border: "1px solid black",
-                flexDirection: "column",
-                borderRadius: "10px",
-                fontFamily: "'BMJUA', sans-serif",
-            }}
-        >
-            <div
-                id="chat-input-wrapper"
-                style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    background: "lightblue",
-                    borderRadius: "10px",
-                    fontFamily: "'BMJUA', sans-serif",
-                }}
-            >
-                <input
-                    id="chat-input"
+        <ChatContainer isVisible={isVisible}>
+            <ChatInputWrapper>
+                <ChatInput
                     type="text"
                     placeholder="대화를 입력해주세요"
-                    style={{
-                        flex: 1,
-                        padding: "1em",
-                        fontSize: "1em",
-                        border: "none",
-                        borderRadius: "10px",
-                        fontFamily: "'BMJUA', sans-serif",
-                    }}
                     ref={chatInputRef}
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
@@ -92,13 +88,9 @@ const ChatBox = ({ player }) => {
                         }
                     }}
                 />
-            </div>
-        </div>
+            </ChatInputWrapper>
+        </ChatContainer>
     );
-};
-
-ChatBox.propTypes = {
-    player: PropTypes.object,
 };
 
 export default ChatBox;
