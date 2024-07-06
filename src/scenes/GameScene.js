@@ -213,26 +213,22 @@ class GameScene extends Phaser.Scene {
 
     SocketManager.onWinnerPlayer((data) => {
       Item.clearEffects(this);
-
       this.gameStatusText.showResult();
       this.player.stopMove();
 
       if (data && data.gameWinner && this.players[data.gameWinner]) {
-        // this.players[data.gameWinner].body.checkCollision.none = false;
         const winPlayer = this.players[data.gameWinner];
-        this.players[data.gameWinner].choice();
+        winPlayer.choice();
         this.resultText.showWinner(winPlayer.player.nickname);
         this.cameraManager.smoothFollow(winPlayer);
       }
-
-      if (data && data.PunchingBag && data.PunchingBag.playerId) {
-        // this.players[data.PunchingBag.playerId].body.checkCollision.none = false;
+      if (data && data.PunchingBag && data.PunchingBag.playerId != '') {
         this.time.delayedCall(
           5000,
           () => {
             if (this.players[data.PunchingBag.playerId]) {
               const bagPlayer = this.players[data.PunchingBag.playerId];
-              this.players[data.PunchingBag.playerId].choice();
+              bagPlayer.choice();
               this.resultText.showPunchingBag(bagPlayer.player.nickname);
               this.cameraManager.smoothFollow(bagPlayer);
             }
@@ -242,14 +238,16 @@ class GameScene extends Phaser.Scene {
         );
       }
 
-      if (data && data.BombMaster && data.BombMaster.playerId) {
-        // this.players[data.BombMaster.playerId].body.checkCollision.none = false;
+      let timer = 5000;
+      if(data.PunchingBag.playerId != '') timer = 10000;
+      if (data && data.BombMaster && data.BombMaster.playerId != '') {
+        console.log(timer);
         this.time.delayedCall(
-          10000,
+          timer,
           () => {
             if (this.players[data.BombMaster.playerId]) {
               const bombMasterPlayer = this.players[data.BombMaster.playerId];
-              this.players[data.BombMaster.playerId].choice();
+              bombMasterPlayer.choice();
               this.resultText.showBombMaster(bombMasterPlayer.player.nickname);
               this.cameraManager.smoothFollow(bombMasterPlayer);
             }

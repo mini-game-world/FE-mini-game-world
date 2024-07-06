@@ -344,7 +344,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       onUpdate: () => {
         const { velocityX, velocityY } = this.getVelocity();
         if (velocityX !== 0 || velocityY !== 0) {
-          console.log(`move${this.player.avatar}`);
+          // console.log(`move${this.player.avatar}`);
           this.player.anims.play(`move${this.player.avatar}`, true);
           this.player.setFlipX(velocityX > 0);
         }
