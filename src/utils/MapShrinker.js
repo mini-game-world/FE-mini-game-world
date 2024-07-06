@@ -34,7 +34,7 @@ export default class MapShrinker {
   }
 
   start() {
-    console.log("MapShrinker start called");
+    // console.log("MapShrinker start called");
 
     setTimeout(() => {
       this.statusText.showText("맵이 줄어들기 시작합니다!", "64px", 3000, 1, 0);
@@ -95,7 +95,7 @@ export default class MapShrinker {
   }
 
   reset() {
-    console.log("MapShrinker reset called");
+    // console.log("MapShrinker reset called");
     this.stop();
     this.currentWidth = 3840;
     this.currentHeight = 2560;
@@ -112,7 +112,7 @@ export default class MapShrinker {
   }
 
   stop() {
-    console.log("MapShrinker stop called");
+    // console.log("MapShrinker stop called");
     if (this.timer) {
       clearInterval(this.timer);
     }

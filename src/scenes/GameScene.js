@@ -49,7 +49,6 @@ class GameScene extends Phaser.Scene {
         this.playerCountText = new PlayerCountText(this);
         this.gameStatusText = new GameStatusText(this);
 
-        console.log("Creating MapShrinker instance");
         this.mapShrinker = new MapShrinker(
             this,
             15000, // delay
@@ -313,7 +312,6 @@ class GameScene extends Phaser.Scene {
 
     setBackground() {
         const map = this.make.tilemap({ key: "map" });
-        const tileset = map.addTilesetImage("first_tileset", "first_tileset");
         const house_1 = map.addTilesetImage("house_1", "house_1");
         const logs = map.addTilesetImage("logs", "logs");
         const stump_2 = map.addTilesetImage("stump_2", "stump_2");
