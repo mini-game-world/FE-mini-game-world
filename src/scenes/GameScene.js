@@ -10,6 +10,7 @@ import ChatBox from "../components/ChatBox";
 import PlayerContainer from "../components/PlayerContainer";
 import Item from "../components/Item";
 import CollisionChecker from "../utils/CollisionChecker";
+import Player from "../components/Player";
 
 class GameScene extends Phaser.Scene {
   constructor() {
@@ -53,9 +54,9 @@ class GameScene extends Phaser.Scene {
     this.mapShrinker = new MapShrinker(
       this,
       15000, //delay
-      3000, //interval
-      1300, //min Width
-      1300, //min Height
+      1000, //interval
+      1400, //min Width
+      1400, //min Height
       3840, //initial Width
       2560, //initial Height
       32, //tile Width
@@ -221,7 +222,6 @@ class GameScene extends Phaser.Scene {
 
     SocketManager.onWinnerPlayer((data) => {
       Item.clearEffects(this);
-
       this.gameStatusText.showResult();
       this.player.stopMove();
 
@@ -231,8 +231,7 @@ class GameScene extends Phaser.Scene {
         this.resultText.showWinner(winPlayer.player.nickname);
         this.cameraManager.smoothFollow(winPlayer);
       }
-
-      if (data && data.PunchingBag && data.PunchingBag.playerId) {
+      if (data && data.PunchingBag && data.PunchingBag.playerId != '') {
         this.time.delayedCall(
           5000,
           () => {
@@ -248,9 +247,12 @@ class GameScene extends Phaser.Scene {
         );
       }
 
-      if (data && data.BombMaster && data.BombMaster.playerId) {
+      let timer = 5000;
+      if(data.PunchingBag.playerId != '') timer = 10000;
+      if (data && data.BombMaster && data.BombMaster.playerId != '') {
+        console.log(timer);
         this.time.delayedCall(
-          11000,
+          timer,
           () => {
             if (this.players[data.BombMaster.playerId]) {
               const bombMasterPlayer = this.players[data.BombMaster.playerId];
