@@ -10,6 +10,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.nickname = info.nickname;
 
     this.scene.add.existing(this);
+    console.log(this.scene);
     this.scene.physics.add.existing(this);
 
     this.setScale(1);
@@ -106,9 +107,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.setScale(1);
     
     // 물리 충돌을 활성화
+    
     this.body.checkCollision.none = false;
+    
   }
-
+  
   setPlayStatus() {
     this.isPlay = true;
     this.isDead = false;

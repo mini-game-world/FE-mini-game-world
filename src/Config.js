@@ -8,7 +8,7 @@ const Config = {
   width: 3840,
   height: 2560,
   scene: [BootScene, WaitingScene, GameScene],
-  initial: "WaitingScene",
+  // initial: "WaitingScene",
   pixelArt: true,
   scale: {
     mode: Phaser.Scale.FIT,

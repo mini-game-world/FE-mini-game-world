@@ -17,6 +17,7 @@ class SocketManager {
         return;
       }
       console.log("Connected to server");
+      console.log(this.channel);
     });
 
     this.channel.onDisconnect(() => {
@@ -112,6 +113,14 @@ class SocketManager {
 
   onItemPickedUp(callback) {
     this.channel.on("itemPickedUp", callback);
+  }
+
+  emitJoinRoom(data) {
+    this.channel.emit("joinRoom", data);
+  }
+
+  onLeavedRoom(callback) {
+    this.channel.on("leavedRoom", callback);
   }
 }
 

@@ -11,12 +11,13 @@ import Explosion from "./Explosion";
 import CollisionChecker from "../utils/CollisionChecker";
 
 class PlayerContainer extends Phaser.GameObjects.Container {
-  constructor(scene, x, y, texture, info) {
+  constructor(scene, x, y, texture, info, room) {
     super(scene, x, y);
     this.scene = scene;
     this.player = new Player(scene, 0, 0, texture, info);
     this.nickname = new Nickname(scene, this.player, info.nickname);
     this.chatBalloon = new ChatBalloon(this.scene, this.player);
+    this.room = room;
 
     this.add(this.player);
     this.add(this.nickname);
@@ -85,7 +86,9 @@ class PlayerContainer extends Phaser.GameObjects.Container {
 
   update() {
     if (!this.player.isDead) {
-      this.collisionChecker.checkCollisionAndMove(this);
+      if (this.room === 1) {
+        this.collisionChecker.checkCollisionAndMove(this);
+      }
     }
 
     if (!this.isWinner) {

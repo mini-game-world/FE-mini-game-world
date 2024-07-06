@@ -74,7 +74,8 @@ class GameScene extends Phaser.Scene {
           x,
           y,
           `player${avatar}`,
-          info
+          info,
+          1
         );
         this.players[id] = playerContainer;
 
