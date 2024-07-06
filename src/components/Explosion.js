@@ -22,22 +22,12 @@ class Explosion extends Phaser.GameObjects.Sprite {
     this.setOrigin(0.5, 1);
     this.setDepth(32);
 
-    this.createAnimations();
     this.play("explode");
 
     this.updatePosition();
 
     this.on("animationcomplete", () => {
       this.destroy();
-    });
-  }
-
-  createAnimations() {
-    this.scene.anims.create({
-      key: "explode",
-      frames: this.scene.anims.generateFrameNumbers("explosion"),
-      frameRate: 15,
-      repeat: 0,
     });
   }
 

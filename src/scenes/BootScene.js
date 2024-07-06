@@ -101,6 +101,34 @@ class BootScene extends Phaser.Scene {
 
     create() {
         this.anims.create({
+            key: "dead",
+            frames: this.anims.generateFrameNumbers("playerDead"),
+            frameRate: 6,
+            repeat: -1,
+        });
+
+        this.anims.create({
+            key: "stun_star",
+            frames: this.anims.generateFrameNumbers("star"),
+            frameRate: 20,
+            repeat: 2,
+        });
+
+        this.anims.create({
+            key: "bomb",
+            frames: this.anims.generateFrameNumbers("bomb"),
+            frameRate: 5,
+            repeat: -1,
+        });
+
+        this.anims.create({
+            key: "explode",
+            frames: this.anims.generateFrameNumbers("explosion"),
+            frameRate: 15,
+            repeat: 0,
+        });
+
+        this.anims.create({
             key: "claw_white",
             frames: this.anims.generateFrameNumbers("claw_white"),
             frameRate: 20,
@@ -114,4 +142,5 @@ class BootScene extends Phaser.Scene {
 }
 
 export default BootScene;
+
 
