@@ -3,14 +3,14 @@ import GameStatusText from "../components/GameStatusText";
 export default class MapShrinker {
     constructor(
         scene,
-        delay,
-        interval,
-        minWidth,
-        minHeight,
-        initialWidth,
-        initialHeight,
-        tileWidth,
-        tileHeight
+        delay = 15000,
+        interval = 1000,
+        minWidth = 1400,
+        minHeight = 1400,
+        initialWidth = 3840,
+        initialHeight = 2560,
+        tileWidth = 32,
+        tileHeight = 24
     ) {
         this.scene = scene;
         this.delay = delay;
@@ -22,6 +22,7 @@ export default class MapShrinker {
         this.tileWidth = tileWidth;
         this.tileHeight = tileHeight;
         this.timer = null;
+        this.shrinkTimeout = null;
 
         this.whiteGraphics = this.scene.add.graphics();
         this.whiteGraphics.fillStyle(0xffffff);
@@ -33,7 +34,7 @@ export default class MapShrinker {
     }
 
     start() {
-        setTimeout(() => {
+        this.shrinkTimeout = setTimeout(() => {
             this.statusText.showText(
                 "맵이 줄어들기 시작합니다!",
                 "64px",
@@ -80,10 +81,13 @@ export default class MapShrinker {
         this.currentWidth -= this.tileWidth * 2;
         this.currentHeight -= this.tileHeight * 2;
 
-        layer.setCollisionByExclusion([-1], true);
+        if (layer) {
+            layer.setCollisionByExclusion([-1], true);
+        }
     }
 
     overlayTile(layer, tileX, tileY) {
+        if (!layer) return;
         const tile = layer.getTileAt(tileX, tileY);
         const pixelX = tileX * this.tileWidth;
         const pixelY = tileY * this.tileHeight;
@@ -109,12 +113,19 @@ export default class MapShrinker {
         );
 
         const layer = this.scene.mapShrink;
-        layer.setCollisionByExclusion([-1], true);
+        if (layer) {
+            layer.setCollisionByExclusion([-1], true);
+        }
     }
 
     stop() {
         if (this.timer) {
             clearInterval(this.timer);
+            this.timer = null;
+        }
+        if (this.shrinkTimeout) {
+            clearTimeout(this.shrinkTimeout);
+            this.shrinkTimeout = null;
         }
     }
 }

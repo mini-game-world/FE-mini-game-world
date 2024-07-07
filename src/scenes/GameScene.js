@@ -9,7 +9,7 @@ import BGMManager from "../utils/BGMManager";
 import CameraManager from "../utils/CameraManager";
 import PlayerContainer from "../components/PlayerContainer";
 import Item from "../components/Item";
-import CollisionChecker from "../utils/CollisionChecker";
+import BackgroundManager from "../utils/BackgroundManager";
 
 class GameScene extends Phaser.Scene {
     constructor() {
@@ -32,13 +32,14 @@ class GameScene extends Phaser.Scene {
         this.bgmManager = null;
         this.cameraManager = null;
         this.mapShrinker = null;
-
-        this.collisionChecker = new CollisionChecker();
+        this.backgroundManager = null;
     }
 
     create() {
         SocketManager.connect();
-        this.setBackground();
+
+        this.backgroundManager = new BackgroundManager(this);
+        this.backgroundManager.setBackground();
 
         this.bgmManager = new BGMManager(this);
         this.cameraManager = new CameraManager(this);
@@ -47,17 +48,7 @@ class GameScene extends Phaser.Scene {
         this.playerCountText = new PlayerCountText(this);
         this.gameStatusText = new GameStatusText(this);
 
-        this.mapShrinker = new MapShrinker(
-            this,
-            15000, // delay
-            1000, // interval
-            1400, // min Width
-            1400, // min Height
-            3840, // initial Width
-            2560, // initial Height
-            32, // tile Width
-            24 // tile Height
-        );
+        this.mapShrinker = new MapShrinker(this);
 
         this.mapShrinker.reset();
         this.bgmManager.startWaitingBGM();
@@ -129,7 +120,6 @@ class GameScene extends Phaser.Scene {
             if (this.players[playerId]) {
                 this.players[playerId].moveTo(x, y);
             }
-            this.collisionChecker.checkCollisionAndMove(player);
         });
 
         SocketManager.onPlayerAttacked((ids) => {
@@ -314,57 +304,6 @@ class GameScene extends Phaser.Scene {
         });
     }
 
-    setBackground() {
-        const map = this.make.tilemap({ key: "map" });
-        const house_1 = map.addTilesetImage("house_1", "house_1");
-        const logs = map.addTilesetImage("logs", "logs");
-        const stump_2 = map.addTilesetImage("stump_2", "stump_2");
-        const Tileset_1 = map.addTilesetImage("Tileset_1", "Tileset_1");
-        const tree_1 = map.addTilesetImage("tree_1", "tree_1");
-        const tree_2 = map.addTilesetImage("tree_2", "tree_2");
-        const stone_1 = map.addTilesetImage("stone_1", "stone_1");
-        const stone_3 = map.addTilesetImage("stone_3", "stone_3");
-
-        this.backGround = map.createLayer("BackGround", Tileset_1, 0, 0);
-        this.backGround.setCollisionByProperty({ collides: true });
-        this.house = map.createLayer("House", house_1, 0, 0);
-        this.house.setCollisionByProperty({ collides: true });
-        this.object = map.createLayer(
-            "Object",
-            [Tileset_1, logs, stump_2, tree_1, tree_2, stone_1, stone_3],
-            0,
-            0
-        );
-        this.object.setCollisionByProperty({ collides: true });
-
-        this.mapShrink = map.createLayer("MapShrink", Tileset_1, 0, 0);
-        this.mapShrink.setCollisionByProperty({ collides: true });
-
-        this.debugGraphics = this.add.graphics();
-        this.backGround.renderDebug(this.debugGraphics, {
-            tileColor: null,
-            collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128),
-            faceColor: new Phaser.Display.Color(0, 255, 0, 128),
-        });
-        this.house.renderDebug(this.debugGraphics, {
-            tileColor: null,
-            collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128),
-            faceColor: new Phaser.Display.Color(0, 255, 0, 128),
-        });
-        this.object.renderDebug(this.debugGraphics, {
-            tileColor: null,
-            collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128),
-            faceColor: new Phaser.Display.Color(0, 255, 0, 128),
-        });
-        this.mapShrink.renderDebug(this.debugGraphics, {
-            tileColor: null,
-            collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128),
-            faceColor: new Phaser.Display.Color(0, 255, 0, 128),
-        });
-
-        this.physics.world.setBounds(0, 0, 3840, 2560);
-    }
-
     updatePlayerCountText() {
         const playerCount = Object.keys(this.players).length;
         this.playerCountText.update(playerCount);
@@ -374,20 +313,6 @@ class GameScene extends Phaser.Scene {
         if (this.player) {
             this.player.update();
         }
-        // for (const playerId in this.players) {
-        //     const player = this.players[playerId];
-        //     if (player.itemIcons) {
-        //         for (const itemId in player.itemIcons) {
-        //             const itemIcon = player.itemIcons[itemId];
-        //             if (itemIcon) {
-        //                 itemIcon.setPosition(
-        //                     player.x + player.displayWidth / 2 + 40,
-        //                     player.y - player.displayHeight / 2 - 10
-        //                 );
-        //             }
-        //         }
-        //     }
-        // }
     }
 }
 
