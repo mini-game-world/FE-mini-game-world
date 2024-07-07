@@ -43,11 +43,11 @@ export default class MainScene extends Phaser.Scene {
             repeat: -1
         });
 
-        this.player1 = this.physics.add.sprite(3156, 1936, "player_move1").setScale(2);
+        this.player1 = this.physics.add.sprite(2090, 1936, "player_move1").setScale(2);
         this.player1.setCollideWorldBounds(false); 
         this.player1.play('move1'); 
 
-        this.player2 = this.physics.add.sprite(1090, 1936, "player_move2").setScale(2);
+        this.player2 = this.physics.add.sprite(1290, 1936, "player_move2").setScale(2);
         this.player2.setCollideWorldBounds(false); 
         this.player2.play('move2'); 
 
@@ -62,8 +62,8 @@ export default class MainScene extends Phaser.Scene {
             this.scene.start('TutorialScene');
         });
 
-        this.player1.setVelocityX(-200);
-        this.player2.setVelocityX(-200); 
+        this.player1.setVelocityX(-400);
+        this.player2.setVelocityX(-400); 
     }
 
     update() {
