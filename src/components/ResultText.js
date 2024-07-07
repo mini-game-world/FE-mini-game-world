@@ -2,6 +2,7 @@ import Bomb_master from "./Bomb_master";
 import Crown from "./Crown";
 import Punching_bag from "./Punching_bag";
 import Item from "./Item";
+import Phaser from "phaser";
 
 class ResultText extends Phaser.GameObjects.Text {
   constructor(scene) {
@@ -43,26 +44,26 @@ class ResultText extends Phaser.GameObjects.Text {
     this.crownImage = new Crown(this.scene, this);
   }
 
-  createPunching_bagImage() {
-    if (this.punching_bagImage) {
-      this.punching_bagImage.destroy();
-      this.punching_bagImage = null;
+        this.winnerText = null;
+        this.crownImage = null;
+        this.punching_bagImage = null;
+        this.bomb_masterImage = null;
     }
-    this.punching_bagImage = new Punching_bag(this.scene, this);
-  }
 
-  createBomb_masterImage() {
-    if (this.bomb_masterImage) {
-      this.bomb_masterImage.destroy();
-      this.bomb_masterImage = null;
+    createCrownImage() {
+        if (this.crownImage) {
+            this.crownImage.destroy();
+            this.crownImage = null;
+        }
+        this.crownImage = new Crown(this.scene, this);
     }
-    this.bomb_masterImage = new Bomb_master(this.scene, this);
-  }
 
-  showWinner(name) {
-    Item.clearEffects(this.scene);
-    if (this.winnerText) {
-      this.winnerText.destroy();
+    createPunching_bagImage() {
+        if (this.punching_bagImage) {
+            this.punching_bagImage.destroy();
+            this.punching_bagImage = null;
+        }
+        this.punching_bagImage = new Punching_bag(this.scene, this);
     }
     this.createCrownImage();
 
@@ -90,7 +91,6 @@ class ResultText extends Phaser.GameObjects.Text {
     if (this.punchingbagText) {
       this.punchingbagText = null;
     }
-    this.createPunching_bagImage();
 
     this.winnerSound = this.scene.sound.add("winner_sound", { volume: 0.2 });
     this.winnerSound.play();
@@ -144,9 +144,10 @@ class ResultText extends Phaser.GameObjects.Text {
       5000,
       () => {
         this.setAlpha(0);
+
         if (this.bomb_masterImage) {
-          this.bomb_masterImage.destroy();
-          this.bomb_masterImage = null;
+            this.bomb_masterImage.destroy();
+            this.bomb_masterImage = null;
         }
         this.bombMasterText.setAlpha(0);
         this.bombMasterText.destroy();
@@ -183,3 +184,4 @@ class ResultText extends Phaser.GameObjects.Text {
 
 
 export default ResultText;
+
