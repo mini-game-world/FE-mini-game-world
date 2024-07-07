@@ -120,27 +120,80 @@ class GameScene extends Phaser.Scene {
 
             this.updatePlayerCountText();
         });
+        this.cameraManager.smoothFollow(this.player);
+        this.mapShrinker.reset();
+      }
+    });
 
-        SocketManager.onPlayerMoved((player) => {
-            const { playerId, x, y } = player;
-            if (this.players[playerId]) {
-                const playerContainer = this.players[playerId];
-                playerContainer.moveTo(x, y);
+    SocketManager.onBombUsers((players) => {
+      players.forEach((id) => {
+        if (this.players[id]) {
+          this.players[id].setBombUser();
+        }
+      });
+    });
+
+    SocketManager.onDeadUsers((players) => {
+      players.forEach((id) => {
+        if (this.players[id]) {
+          this.players[id].setDead();
+          this.deadPlayers[id] = this.players[id];
+          delete this.activePlayers[id];
+        }
+      });
+    });
+
+    SocketManager.onChangeBombUser((players) => {
+      const current = players[0];
+      const previous = players[1];
+      if (this.players[current]) {
+        this.players[current].receiveBomb();
+      }
+      if (this.players[previous]) {
+        this.players[previous].removeBomb();
+      }
+    });
+
+    SocketManager.onWinnerPlayer((data) => {
+      Item.clearEffects(this);
+      this.gameStatusText.showResult();
+      this.player.stopMove();
+
+      if (data && data.gameWinner && this.players[data.gameWinner]) {
+        const winPlayer = this.players[data.gameWinner];
+        winPlayer.choice();
+        this.resultText.showWinner(winPlayer.player.nickname);
+        this.cameraManager.smoothFollow(winPlayer);
+      }
+      if (data && data.PunchingBag && data.PunchingBag.playerId != '') {
+        this.time.delayedCall(
+          5000,
+          () => {
+            if (this.players[data.PunchingBag.playerId]) {
+              const bagPlayer = this.players[data.PunchingBag.playerId];
+              bagPlayer.choice();
+              this.resultText.showPunchingBag(bagPlayer.player.nickname);
+              this.cameraManager.smoothFollow(bagPlayer);
             }
-            this.collisionChecker.checkCollisionAndMove(player);
-        });
+          },
+          [],
+          this
+        );
+      }
 
-        SocketManager.onPlayerAttacked((ids) => {
-            ids.forEach((id) => {
-                if (this.players[id]) {
-                    this.players[id].stunPlayer();
-                }
-            });
-        });
+      let timer = 5000;
+      if(data.PunchingBag.playerId != '') timer = 10000;
+      if (data && data.BombMaster && data.BombMaster.playerId != '') {
+        console.log(timer);
+        this.time.delayedCall(
+          timer,
+          () => {
+            if (this.players[data.BombMaster.playerId]) {
+              const bombMasterPlayer = this.players[data.BombMaster.playerId];
+              bombMasterPlayer.choice();
+              this.resultText.showBombMaster(bombMasterPlayer.player.nickname);
+              this.cameraManager.smoothFollow(bombMasterPlayer);
 
-        SocketManager.onAttackPlayer((id) => {
-            if (this.players[id]) {
-                this.players[id].createClawAttack();
             }
         });
 

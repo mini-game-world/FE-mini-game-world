@@ -37,7 +37,7 @@ class Item extends Phaser.GameObjects.Image {
 
     switch (itemId) {
       case 0:
-        const originalSpeed = player.speed;
+        const originalSpeed = 600;
         scene.activeEffects[playerId].speed = originalSpeed;
         player.speed = 800; 
 
@@ -47,9 +47,9 @@ class Item extends Phaser.GameObjects.Image {
         scene.activeEffects[playerId].icon = itemIcon;
 
         setTimeout(() => {
-          if (scene.activeEffects[playerId] && scene.activeEffects[playerId].speed) {
+          if (scene.activeEffects[playerId] && scene.activeEffects[playerId].speed !== undefined) {
             player.speed = originalSpeed; 
-            if (player.itemIcons && player.itemIcons[0]) {
+            if (player.itemIcons[0]) {
               player.itemIcons[0].destroy(); 
               delete player.itemIcons[0];
             }
@@ -74,7 +74,7 @@ class Item extends Phaser.GameObjects.Image {
           if (scene.activeEffects[playerId] && scene.activeEffects[playerId].alpha !== undefined) {
             if (!player.isDead) player.setAlpha(originalAlpha);
             if (player.isDead) player.setAlpha(0.3);
-            if (player.itemIcons && player.itemIcons[1]) {
+            if (player.itemIcons[1]) {
               player.itemIcons[1].destroy(); 
               delete player.itemIcons[1];
             }
@@ -99,7 +99,7 @@ class Item extends Phaser.GameObjects.Image {
         setTimeout(() => {
           if (scene.activeEffects[playerId] && scene.activeEffects[playerId].scale) {
             player.setScale(originalScaleX, originalScaleY);
-            if (player.itemIcons && player.itemIcons[2]) {
+            if (player.itemIcons[2]) {
               player.itemIcons[2].destroy(); 
               delete player.itemIcons[2];
             }
