@@ -3,7 +3,7 @@ class Item extends Phaser.GameObjects.Image {
     super(scene, x, y, texture);
     scene.add.existing(this);
     scene.physics.world.enable(this);
-    this.setScale(3);
+    this.setScale(0.2);
   }
 
   static destroyItem(scene, x, y) {
