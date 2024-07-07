@@ -420,7 +420,10 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     }
 
     destroy() {
-        // Custom cleanup for PlayerContainer
+        if (this.scene) {
+            this.scene.tweens.killTweensOf(this.hitBox);
+        }
+
         if (this.player) {
             this.player.destroy();
             this.player = null;
@@ -446,7 +449,6 @@ class PlayerContainer extends Phaser.GameObjects.Container {
             this.hitBox = null;
         }
 
-        // Call the parent class's destroy method
         super.destroy();
     }
 }
