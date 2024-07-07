@@ -113,6 +113,10 @@ class SocketManager {
   onItemPickedUp(callback) {
     this.channel.on("itemPickedUp", callback);
   }
+
+  onMapShrink(callback) {
+    this.channel.on("mapShrink", callback);
+  }
 }
 
 export default new SocketManager();
