@@ -24,9 +24,15 @@ export default class ChatBalloon extends Phaser.GameObjects.Container {
         this.add(this.chatText);
 
         scene.add.existing(this);
+
+        this.hideTimer = null;
     }
 
     showChatMessage(message) {
+        if (this.hideTimer) {
+            this.hideTimer.remove(false);
+        }
+
         this.chatText.setText(message);
 
         const padding = 20;
@@ -52,7 +58,7 @@ export default class ChatBalloon extends Phaser.GameObjects.Container {
         );
 
         this.setVisible(true);
-        this.scene.time.addEvent({
+        this.hideTimer = this.scene.time.addEvent({
             delay: 3000,
             callback: () => {
                 this.setVisible(false);
@@ -62,6 +68,9 @@ export default class ChatBalloon extends Phaser.GameObjects.Container {
     }
 
     destroy() {
+        if (this.hideTimer) {
+            this.hideTimer.remove(false);
+        }
         super.destroy();
     }
 }

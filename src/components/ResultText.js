@@ -102,7 +102,6 @@ class ResultText extends Phaser.GameObjects.Text {
         this.punchingbagText = `동네북!! ${name}`;
         this.setText(this.punchingbagText);
         this.setAlpha(1);
-        console.log("showPunchingBag");
         this.scene.time.delayedCall(
             5000,
             () => {

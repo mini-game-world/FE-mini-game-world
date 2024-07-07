@@ -20,12 +20,13 @@ class PlayerContainer extends Phaser.GameObjects.Container {
 
         this.add(this.player);
         this.add(this.nickname);
-        this.add(this.chatBalloon);
 
         if (info.isSelfInitiated) {
             this.arrow = new Arrow(this.scene, this.player);
             this.add(this.arrow);
         }
+
+        this.add(this.chatBalloon); // 말풍선을 마지막에 추가
 
         const hitboxWidth = this.player.width / 4;
         const hitboxHeight = this.player.height / 4;
@@ -295,6 +296,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
         if (!this.bomb) {
             this.bomb = new Bomb(this.scene, this.player);
             this.add(this.bomb);
+            this.bringToTop(this.chatBalloon); // 말풍선을 맨 앞으로 가져옴
         }
     }
 
@@ -307,6 +309,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
         if (!this.bomb) {
             this.bomb = new Bomb(this.scene, this.player);
             this.add(this.bomb);
+            this.bringToTop(this.chatBalloon); // 말풍선을 맨 앞으로 가져옴
         }
 
         this.player.anims
@@ -348,7 +351,6 @@ class PlayerContainer extends Phaser.GameObjects.Container {
             onUpdate: () => {
                 const { velocityX, velocityY } = this.getVelocity();
                 if (velocityX !== 0 || velocityY !== 0) {
-                    // console.log(`move${this.player.avatar}`);
                     this.player.anims.play(`move${this.player.avatar}`, true);
                     this.player.setFlipX(velocityX > 0);
                 }

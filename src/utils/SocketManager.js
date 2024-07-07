@@ -27,13 +27,13 @@ class SocketManager {
             console.error("Channel error:", error);
         });
 
-        this.channel.on("iceConnectionStateChange", (state) => {
-            console.log("ICE Connection State Change:", state);
-        });
+        // this.channel.on("iceConnectionStateChange", (state) => {
+        //     console.log("ICE Connection State Change:", state);
+        // });
 
-        this.channel.on("connectionStateChange", (state) => {
-            console.log("Connection State Change:", state);
-        });
+        // this.channel.on("connectionStateChange", (state) => {
+        //     console.log("Connection State Change:", state);
+        // });
     }
 
     onCurrentPlayers(callback) {
