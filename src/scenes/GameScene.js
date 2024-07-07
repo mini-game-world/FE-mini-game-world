@@ -11,6 +11,7 @@ import PlayerContainer from "../components/PlayerContainer";
 import Item from "../components/Item";
 import CollisionChecker from "../utils/CollisionChecker";
 import Player from "../components/Player";
+import ChatDisplay from "../components/ChatDisplay"; // ChatDisplay 가져오기
 
 class GameScene extends Phaser.Scene {
   constructor() {
@@ -36,6 +37,8 @@ class GameScene extends Phaser.Scene {
 
     this.ChatBox = null;
     this.collisionChecker = new CollisionChecker();
+
+    this.chatDisplay = null; // ChatDisplay 인스턴스 생성
   }
 
   create() {
@@ -48,6 +51,8 @@ class GameScene extends Phaser.Scene {
     this.resultText = new ResultText(this);
     this.playerCountText = new PlayerCountText(this);
     this.gameStatusText = new GameStatusText(this);
+
+    this.chatDisplay = new ChatDisplay(this); // ChatDisplay 인스턴스 생성
 
     // MapShrinker 인스턴스 생성 및 시작
     console.log("Creating MapShrinker instance");
@@ -222,7 +227,7 @@ class GameScene extends Phaser.Scene {
         this.resultText.showWinner(winPlayer.player.nickname);
         this.cameraManager.smoothFollow(winPlayer);
       }
-      if (data && data.PunchingBag && data.PunchingBag.playerId != '') {
+      if (data && data.PunchingBag && data.PunchingBag.playerId != "") {
         this.time.delayedCall(
           5000,
           () => {
@@ -239,8 +244,8 @@ class GameScene extends Phaser.Scene {
       }
 
       let timer = 5000;
-      if(data.PunchingBag.playerId != '') timer = 10000;
-      if (data && data.BombMaster && data.BombMaster.playerId != '') {
+      if (data.PunchingBag.playerId != "") timer = 10000;
+      if (data && data.BombMaster && data.BombMaster.playerId != "") {
         console.log(timer);
         this.time.delayedCall(
           timer,
@@ -281,6 +286,10 @@ class GameScene extends Phaser.Scene {
     SocketManager.onChatMessage(({ playerId, message }) => {
       if (this.players[playerId]) {
         this.players[playerId].showChatMessage(message);
+        this.chatDisplay.addMessage(
+          this.players[playerId].player.nickname,
+          message
+        ); // 채팅 메시지를 ChatDisplay에 추가
       }
     });
 
@@ -374,13 +383,15 @@ class GameScene extends Phaser.Scene {
         for (const itemId in player.itemIcons) {
           const itemIcon = player.itemIcons[itemId];
           if (itemIcon) {
-            itemIcon.setPosition(player.x + player.displayWidth / 2 + 40, player.y - player.displayHeight / 2 - 10);
+            itemIcon.setPosition(
+              player.x + player.displayWidth / 2 + 40,
+              player.y - player.displayHeight / 2 - 10
+            );
           }
         }
       }
     }
-  }  
-
+  }
 }
 
 export default GameScene;
