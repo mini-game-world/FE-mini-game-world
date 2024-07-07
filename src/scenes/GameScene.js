@@ -81,10 +81,16 @@ class GameScene extends Phaser.Scene {
                     this.cameraManager.smoothFollow(this.player);
                     this.physics.add.collider(
                         this.player.hitBox,
-                        this.backGround
+                        this.backgroundManager.backGround
                     );
-                    this.physics.add.collider(this.player.hitBox, this.house);
-                    this.physics.add.collider(this.player.hitBox, this.object);
+                    this.physics.add.collider(
+                        this.player.hitBox,
+                        this.backgroundManager.house
+                    );
+                    this.physics.add.collider(
+                        this.player.hitBox,
+                        this.backgroundManager.object
+                    );
                 }
 
                 if (isPlay) {

@@ -46,9 +46,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.setTexture("playerDead");
         this.anims.play(`dead`, true);
         this.setAlpha(0.3);
-
-        // 물리 충돌을 비활성화
-        this.body.checkCollision.none = true;
     }
 
     setReadyStatus() {
@@ -58,18 +55,12 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.anims.play(`idle${this.avatar}`, true);
         this.setAlpha(0.5);
         this.setScale(1);
-
-        // 물리 충돌을 활성화
-        this.body.checkCollision.none = false;
     }
 
     setPlayStatus() {
         this.isPlay = true;
         this.isDead = false;
         this.setAlpha(1);
-
-        // 물리 충돌을 활성화
-        this.body.checkCollision.none = false;
     }
 }
 
