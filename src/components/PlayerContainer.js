@@ -332,6 +332,49 @@ class PlayerContainer extends Phaser.GameObjects.Container {
         }
     }
 
+    choice() {
+        if (this.player.isDead) {
+            this.player.isDead = false;
+            this.player.setTexture(`player${this.player.avatar}`);
+            this.player.anims.play(`idle${this.player.avatar}`, true);
+            this.player.setAlpha(1);
+            this.hitBox.body.checkCollision.none = false;
+        }
+        this.scene.tweens.add({
+            targets: this.player,
+            scale: 3,
+            duration: 2000,
+            ease: "Power1",
+            onUpdate: () => {
+                const { velocityX, velocityY } = this.getVelocity();
+                if (velocityX !== 0 || velocityY !== 0) {
+                    // console.log(`move${this.player.avatar}`);
+                    this.player.anims.play(`move${this.player.avatar}`, true);
+                    this.player.setFlipX(velocityX > 0);
+                }
+            },
+            onComplete: () => {
+                if (!this.scene) return;
+                this.scene.tweens.add({
+                    targets: this.player,
+                    scale: 1,
+                    duration: 2000,
+                    ease: "Power1",
+                    onUpdate: () => {
+                        const { velocityX, velocityY } = this.getVelocity();
+                        if (velocityX !== 0 || velocityY !== 0) {
+                            this.player.anims.play(
+                                `move${this.player.avatar}`,
+                                true
+                            );
+                            this.player.setFlipX(velocityX > 0);
+                        }
+                    },
+                });
+            },
+        });
+    }
+
     stopMove() {
         if (!this.player.isDead) {
             this.player.anims.play(`idle${this.player.avatar}`, true);
@@ -339,20 +382,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
             this.player.anims.play(`dead`, true);
         }
         this.isWinner = false;
-    }
-    this.scene.tweens.add({
-      targets: this.player,
-      scale: 3,
-      duration: 2000,
-      ease: "Power1",
-      onUpdate: () => {
-        const { velocityX, velocityY } = this.getVelocity();
-        if (velocityX !== 0 || velocityY !== 0) {
-          // console.log(`move${this.player.avatar}`);
-          this.player.anims.play(`move${this.player.avatar}`, true);
-          this.player.setFlipX(velocityX > 0);
 
-        }
         this.scene.tweens.add({
             targets: this.player,
             scale: 3,
