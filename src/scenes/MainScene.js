@@ -6,10 +6,18 @@ export default class MainScene extends Phaser.Scene {
     }
 
     create() {
-        this.add.text(this.scale.width / 2, 1000, '폭탄대소동', { fontSize: '320px', fill: '#fff' }).setOrigin(0.5);
+        // 배경 이미지 설정
+        this.add.image(this.scale.width / 2, this.scale.height / 2, 'background')
+            .setDisplaySize(this.scale.width, this.scale.height);
 
-        this.createButton(this.scale.width / 2, this.scale.height - 550, 'Start Game', () => this.scene.start('GameScene'));
-        this.createButton(this.scale.width / 2, this.scale.height - 350, 'View Tutorial', () => this.scene.start('TutorialScene'));
+        this.createButton(this.scale.width / 2, this.scale.height - 1050, '시작하기', () => {
+            this.scene.start('GameScene');
+            history.pushState(null, '', '/game');
+        });
+        this.createButton(this.scale.width / 2, this.scale.height - 850, '튜토리얼', () => {
+            this.scene.start('TutorialScene');
+            history.pushState(null, '', '/tutorial');
+        });
     }
 
     createButton(x, y, text, callback) {
