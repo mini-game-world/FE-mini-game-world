@@ -2,12 +2,13 @@ import Phaser from "phaser";
 import BootScene from "./scenes/BootScene";
 import MainScene from "./scenes/MainScene";
 import GameScene from "./scenes/GameScene";
+import TutorialScene from "./scenes/TutorialScene";
 
 const Config = {
   type: Phaser.AUTO,
   width: 3840,
   height: 2560,
-  scene: [BootScene, MainScene, GameScene],
+  scene: [BootScene, MainScene, TutorialScene, GameScene],
   pixelArt: true,
   scale: {
     mode: Phaser.Scale.FIT,
