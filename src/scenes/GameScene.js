@@ -9,9 +9,7 @@ import CameraManager from "../utils/CameraManager";
 import ChatBox from "../components/ChatBox";
 import PlayerContainer from "../components/PlayerContainer";
 import Item from "../components/Item";
-import CollisionChecker from "../utils/CollisionChecker";
-import Player from "../components/Player";
-import ChatDisplay from "../components/ChatDisplay"; // ChatDisplay 가져오기
+import ChatDisplay from "../components/ChatDisplay";
 
 class GameScene extends Phaser.Scene {
   constructor() {
@@ -35,39 +33,25 @@ class GameScene extends Phaser.Scene {
     this.cameraManager = null;
     this.mapShrinker = null;
 
-    this.ChatBox = null;
-    this.collisionChecker = new CollisionChecker();
-
-    this.chatDisplay = null; // ChatDisplay 인스턴스 생성
+    this.chatBox = null;
+    this.chatDisplay = null;
   }
 
   create() {
     SocketManager.connect();
     this.setBackground();
 
-    this.bgmManager = new BGMManager(this);
     this.cameraManager = new CameraManager(this);
+
+    this.bgmManager = new BGMManager(this);
+    this.bgmManager.startWaitingBGM();
 
     this.resultText = new ResultText(this);
     this.playerCountText = new PlayerCountText(this);
     this.gameStatusText = new GameStatusText(this);
 
-    this.chatDisplay = new ChatDisplay(this); // ChatDisplay 인스턴스 생성
-
-    // MapShrinker 인스턴스 생성 및 시작
-    console.log("Creating MapShrinker instance");
-    this.mapShrinker = new MapShrinker(
-      this,
-      15000, //delay
-      1000, //interval
-      1400, //min Width
-      1400, //min Height
-      3840, //initial Width
-      2560, //initial Height
-      32, //tile Width
-      24 //tile Height
-    );
-    // this.mapShrinker.start();
+    this.mapShrinker = new MapShrinker(this);
+    this.chatDisplay = new ChatDisplay(this);
 
     SocketManager.onCurrentPlayers((players) => {
       Object.keys(players).forEach((id) => {
@@ -86,7 +70,7 @@ class GameScene extends Phaser.Scene {
         if (isSelfInitiated) {
           this.player = playerContainer;
           this.cameraManager.smoothFollow(this.player);
-          this.ChatBox = new ChatBox(this, this.player);
+          this.chatBox = new ChatBox(this, this.player);
           this.physics.add.collider(this.player.hitBox, this.backGround);
           this.physics.add.collider(this.player.hitBox, this.house);
           this.physics.add.collider(this.player.hitBox, this.object);
@@ -126,7 +110,6 @@ class GameScene extends Phaser.Scene {
         const playerContainer = this.players[playerId];
         playerContainer.moveTo(x, y);
       }
-      this.collisionChecker.checkCollisionAndMove(player);
     });
 
     SocketManager.onPlayerAttacked((ids) => {
@@ -281,7 +264,6 @@ class GameScene extends Phaser.Scene {
         this.gameStatusText.showWait();
       }
     });
-    this.bgmManager.startWaitingBGM();
 
     SocketManager.onChatMessage(({ playerId, message }) => {
       if (this.players[playerId]) {
@@ -289,7 +271,7 @@ class GameScene extends Phaser.Scene {
         this.chatDisplay.addMessage(
           this.players[playerId].player.nickname,
           message
-        ); // 채팅 메시지를 ChatDisplay에 추가
+        );
       }
     });
 

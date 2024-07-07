@@ -4,14 +4,14 @@ import GameStatusText from "../components/GameStatusText";
 export default class MapShrinker {
   constructor(
     scene,
-    delay,
-    interval,
-    minWidth,
-    minHeight,
-    initialWidth,
-    initialHeight,
-    tileWidth,
-    tileHeight
+    delay = 15000,
+    interval = 1000,
+    minWidth = 1400,
+    minHeight = 1400,
+    initialWidth = 3840,
+    initialHeight = 2560,
+    tileWidth = 32,
+    tileHeight = 24
   ) {
     this.scene = scene;
     this.delay = delay;
@@ -53,7 +53,6 @@ export default class MapShrinker {
             this.currentWidth,
             this.currentHeight
           );
-
         } else {
           this.stop();
         }
