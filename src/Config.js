@@ -7,7 +7,7 @@ const Config = {
   type: Phaser.AUTO,
   width: 3840,
   height: 2560,
-  scene: [BootScene, MainScene, GameScene],
+  scene: [BootScene, MainScene, GameScene], // MainScene을 포함시키기 위해 두 버전을 합침
   pixelArt: true,
   scale: {
     mode: Phaser.Scale.FIT,
