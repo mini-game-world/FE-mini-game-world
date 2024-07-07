@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 
 import backgroundImg from "../assets/background.png";
+import tutorialImg from "../assets/tutorial.png";
 import arrowImg from "../assets/arrow.png";
 import crownImg from "../assets/crown.png";
 import punching_bagImg from "../assets/punching_bag.png";
@@ -174,6 +175,7 @@ class BootScene extends Phaser.Scene {
 
   preload() {
     this.load.image("background", backgroundImg);
+    this.load.image("tutorial", tutorialImg);
     this.load.image("arrow", arrowImg);
     this.load.image("crown", crownImg);
     this.load.image("punching_bag", punching_bagImg);
