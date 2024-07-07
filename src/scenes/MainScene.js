@@ -23,6 +23,12 @@ export default class MainScene extends Phaser.Scene {
             }
         ).setOrigin(0.5);
 
+        this.player1 = this.physics.add.sprite(3156, 1936, "player1").setScale(2); // 초기 위치 설정
+        this.player1.setCollideWorldBounds(true); // 화면 경계에서 플레이어가 튕기지 않도록 설정
+
+        this.player2 = this.physics.add.sprite(916, 1936, "player2").setScale(2); // 초기 위치 설정
+        this.player2.setCollideWorldBounds(true); // 화면 경계에서 플레이어가 튕기지 않도록 설정
+
         this.createButton(this.scale.width / 2, this.scale.height - 1450, '시작하기', () => {
             this.scene.start('GameScene');
         });
