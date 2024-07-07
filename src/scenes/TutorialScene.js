@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import Tutorial1 from "../components/Tutorial1";
+import Tutorial3 from "../components/Tutorial3";
 
 class TutorialScene extends Phaser.Scene {
   constructor() {
@@ -108,16 +109,34 @@ class TutorialScene extends Phaser.Scene {
     this.player4 = this.physics.add.sprite(1700, 1936, "player_stun2").setScale(2);
     this.player4.play('stun2'); 
     
-    // claw 스프라이트 추가
     this.claw = this.physics.add.sprite(1900, 1936, 'claw_white3').setScale(8);
     this.claw.setDepth(200);
-    this.claw.flipX = true; // X 방향 반전 설정
-    this.claw.anims.play('claw_white3', true); // 애니메이션 무한 반복 재생
+    this.claw.flipX = true; 
+    this.claw.anims.play('claw_white3', true);
 
-    // star 스프라이트 추가
     this.star = this.physics.add.sprite(this.player4.x, this.player4.y - this.player4.displayHeight / 2.5, 'star');
     this.star.setScale(2);
     this.star.anims.play('star', true);
+
+    // 튜토리얼 3
+    this.anims.create({
+        key: 'move1',
+        frames: this.anims.generateFrameNumbers('player_move1', { start: 0, end: 3 }),
+        frameRate: 5,
+        repeat: -1
+        });
+    
+    this.anims.create({
+        key: 'question',
+        frames: this.anims.generateFrameNumbers('question', { start: 0, end: 3 }),
+        frameRate: 5,
+        repeat: -1
+        });
+    
+    this.item = this.add.image(2800, 2050, 'item').setScale(2).setScale(0.3);
+    this.player5 = this.physics.add.sprite(3600, 1936, "player_move1").setScale(2);
+    this.player5.play('move1'); 
+    this.tutorial3 = new Tutorial3(this, this.player5);
   }
 }
 
