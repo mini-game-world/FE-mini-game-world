@@ -11,6 +11,7 @@ import clawSprite from "../assets/claw_white.png";
 import bombSprite from "../assets/bomb.png";
 import explosionSprite from "../assets/explosion.png";
 import starSprite from "../assets/star.png";
+import question from "../assets/question.png";
 
 // Import Item
 import itemImg from "../assets/item.png";
@@ -182,6 +183,7 @@ class BootScene extends Phaser.Scene {
     this.load.image("item0", itemImg0);
     this.load.image("item1", itemImg1);
     this.load.image("item2", itemImg2);
+    this.load.image("question", question);
 
     this.load.tilemapTiledJSON("map", map);
     this.load.image("first_tileset", first_tileset);
