@@ -32,6 +32,10 @@ class TutorialScene extends Phaser.Scene {
       lineSpacing: 20  
     };
 
+    this.createButton(this.scale.width - 300, 200, '시작하기', () => {
+      this.scene.start('GameScene');
+    });
+
     const text1 = this.add.text(this.scale.width * 0.2, this.scale.height * 0.3, "1\n\n폭탄이 터지기 전에\n방향키로 움직이며\n다른 플레이어에게 넘겨요!", textStyle)
                       .setOrigin(0.5, 0);  
 
@@ -137,6 +141,44 @@ class TutorialScene extends Phaser.Scene {
     this.player5 = this.physics.add.sprite(3600, 1936, "player_move1").setScale(2);
     this.player5.play('move1'); 
     this.tutorial3 = new Tutorial3(this, this.player5);
+  }
+
+  createButton(x, y, text, callback) {
+    const buttonWidth = 400;
+    const buttonHeight = 150;
+  
+    const button = this.add.graphics();
+    button.fillStyle(0xADD8E6, 1); 
+    button.fillRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, 40); 
+    button.lineStyle(8, 0xFFFFFF, 1); 
+    button.strokeRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, 40);
+  
+    const buttonText = this.add.text(0, 0, text, {
+        fontFamily: 'BMJUA',
+        fontSize: '64px', 
+        fill: '#000000'
+    }).setOrigin(0.5);
+  
+    const container = this.add.container(x, y, [button, buttonText]);
+  
+    container.setSize(buttonWidth, buttonHeight); 
+    container.setInteractive({ useHandCursor: true }).on('pointerdown', callback);
+  
+    container.on('pointerover', () => {
+        button.clear();
+        button.fillStyle(0xFFB6C1, 1);
+        button.fillRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, 40);
+        button.lineStyle(8, 0xFFFFFF, 1);
+        button.strokeRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, 40);
+    });
+  
+    container.on('pointerout', () => {
+        button.clear();
+        button.fillStyle(0xADD8E6, 1); 
+        button.fillRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, 40);
+        button.lineStyle(8, 0xFFFFFF, 1);
+        button.strokeRoundedRect(-buttonWidth / 2, -buttonHeight / 2, buttonWidth, buttonHeight, 40);
+    });  
   }
 }
 
