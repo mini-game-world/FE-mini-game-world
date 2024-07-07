@@ -1,5 +1,3 @@
-import Phaser from "phaser";
-
 export default class ChatDisplay {
   constructor(scene) {
     this.scene = scene;
