@@ -61,6 +61,44 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     this.statusIcon = null;
 
     this.collisionChecker = new CollisionChecker();
+
+    // 터치 이동 속성 추가
+    this.isMobile = /Mobi|Android/i.test(navigator.userAgent);
+    if (this.isMobile && this.player.isSelfInitiated) {
+      this.scene.input.on("pointerdown", this.handleTouch, this);
+    }
+
+    // For touch movement
+    this.targetX = null;
+    this.targetY = null;
+  }
+
+  handleTouch(pointer) {
+    if (this.player) {
+      const maxDistance = 300; // 최대 이동 거리 설정
+      let targetX = pointer.worldX;
+      let targetY = pointer.worldY;
+      const distance = Phaser.Math.Distance.Between(
+        this.hitBox.x,
+        this.hitBox.y,
+        targetX,
+        targetY
+      );
+
+      if (distance > maxDistance) {
+        const angle = Phaser.Math.Angle.Between(
+          this.hitBox.x,
+          this.hitBox.y,
+          targetX,
+          targetY
+        );
+        targetX = this.hitBox.x + Math.cos(angle) * maxDistance;
+        targetY = this.hitBox.y + Math.sin(angle) * maxDistance;
+      }
+
+      this.targetX = targetX;
+      this.targetY = targetY;
+    }
   }
 
   createInputKeyBoard() {
@@ -126,7 +164,33 @@ class PlayerContainer extends Phaser.GameObjects.Container {
         );
       }
     } else {
-      const { velocityX, velocityY } = this.getVelocity();
+      let { velocityX, velocityY } = this.getVelocity();
+
+      if (this.targetX !== null && this.targetY !== null) {
+        const angle = Phaser.Math.Angle.Between(
+          this.hitBox.x,
+          this.hitBox.y,
+          this.targetX,
+          this.targetY
+        );
+        velocityX = Math.cos(angle) * this.speed;
+        velocityY = Math.sin(angle) * this.speed;
+
+        const distance = Phaser.Math.Distance.Between(
+          this.hitBox.x,
+          this.hitBox.y,
+          this.targetX,
+          this.targetY
+        );
+
+        if (distance < 10) {
+          this.targetX = null;
+          this.targetY = null;
+          velocityX = 0;
+          velocityY = 0;
+        }
+      }
+
       this.hitBox.body.setVelocity(velocityX, velocityY);
 
       if (this.prevX !== this.x || this.prevY !== this.y) {
