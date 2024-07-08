@@ -11,6 +11,7 @@ import PlayerContainer from "../components/PlayerContainer";
 import Item from "../components/Item";
 import ChatDisplay from "../components/ChatDisplay";
 import ItemEffect from "../components/ItemEffect";
+import RankText from "../components/RankText";
 
 class GameScene extends Phaser.Scene {
   constructor() {
@@ -26,6 +27,7 @@ class GameScene extends Phaser.Scene {
     this.resultText = null;
     this.playerCountText = null;
     this.gameStatusText = null;
+    this.rankText = null;
 
     this.bgmManager = null;
     this.cameraManager = null;
@@ -49,6 +51,7 @@ class GameScene extends Phaser.Scene {
     this.resultText = new ResultText(this);
     this.playerCountText = new PlayerCountText(this);
     this.gameStatusText = new GameStatusText(this);
+    this.rankText = new RankText(this);
 
     this.mapShrinker = new MapShrinker(this);
     this.chatDisplay = new ChatDisplay(this);
@@ -298,6 +301,19 @@ class GameScene extends Phaser.Scene {
         itemEffect.applyEffect();
       }
     });
+
+    SocketManager.onCurrentBombRanker((data) => {
+      console.log("onCurrentBombRanker", data);
+      const nickname = this.players[data.playerId].player.nickname
+      console.log(nickname);
+      this.rankText.showBombRank(nickname, data.count);
+    });
+
+    SocketManager.onCurrentHitRanker((data) => {
+      console.log("onCurrentHitRanker", data)
+      const nickname = this.players[data.playerId].player.nickname
+      this.rankText.showHitRank(nickname, data.count);
+    });
   }
 
   setBackground() {
@@ -363,7 +379,7 @@ class GameScene extends Phaser.Scene {
     const playerCount = Object.keys(this.players).length;
     this.playerCountText.update(playerCount);
   }
-
+  
   update() {
     if (this.player) {
       this.player.update();

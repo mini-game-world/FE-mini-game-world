@@ -125,8 +125,6 @@ class SocketManager {
   onCurrentHitRanker(callback) {
     this.channel.on("currentHitRanker", callback);
   }
-
-
 }
 
 export default new SocketManager();
