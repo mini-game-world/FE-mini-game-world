@@ -10,6 +10,8 @@ class RankText extends Phaser.GameObjects.Text {
         fill: "#ffffff",
         padding: { x: 10, y: 5 },
         fontFamily: "BMJUA",
+        stroke: "#000000",
+        strokeThickness: 10,
       }
     );
     this.scene = scene;
@@ -28,6 +30,8 @@ class RankText extends Phaser.GameObjects.Text {
         fill: "#ffffff",
         padding: { x: 10, y: 5 },
         fontFamily: "BMJUA",
+        stroke: "#000000",
+        strokeThickness: 10,
       }
     );
     this.secondLine.setDepth(100);
