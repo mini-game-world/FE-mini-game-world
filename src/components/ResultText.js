@@ -1,7 +1,6 @@
 import Bomb_master from "./Bomb_master";
 import Crown from "./Crown";
 import Punching_bag from "./Punching_bag";
-import Item from "./Item";
 
 class ResultText extends Phaser.GameObjects.Text {
   constructor(scene) {
@@ -60,7 +59,6 @@ class ResultText extends Phaser.GameObjects.Text {
   }
 
   showWinner(name) {
-    Item.clearEffects(this.scene);
     if (this.winnerText) {
       this.winnerText.destroy();
     }
@@ -117,13 +115,14 @@ class ResultText extends Phaser.GameObjects.Text {
     this.clearText();
 
     this.createBomb_masterImage();
-    
+
     this.winnerSound = this.scene.sound.add("winner_sound", { volume: 0.2 });
     this.winnerSound.play();
-    
+
     this.bombMasterText = this.scene.add.text(
       this.scene.cameras.main.width / 2,
-      this.scene.cameras.main.height / 2 - this.scene.cameras.main.height / 4 / this.scene.cameras.main.zoom,
+      this.scene.cameras.main.height / 2 -
+        this.scene.cameras.main.height / 4 / this.scene.cameras.main.zoom,
       `폭탄돌리기왕 ${name}`,
       {
         fontFamily: "Arial Black",
@@ -139,7 +138,7 @@ class ResultText extends Phaser.GameObjects.Text {
     this.bombMasterText.setScrollFactor(0);
     this.bombMasterText.setOrigin(0.5, 0);
     this.bombMasterText.setAlpha(1);
-    
+
     this.scene.time.delayedCall(
       5000,
       () => {
@@ -180,6 +179,5 @@ class ResultText extends Phaser.GameObjects.Text {
     this.setText("");
   }
 }
-
 
 export default ResultText;

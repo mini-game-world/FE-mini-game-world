@@ -10,6 +10,7 @@ import ChatBox from "../components/ChatBox";
 import PlayerContainer from "../components/PlayerContainer";
 import Item from "../components/Item";
 import ChatDisplay from "../components/ChatDisplay";
+import ItemEffect from "../components/ItemEffect";
 
 class GameScene extends Phaser.Scene {
   constructor() {
@@ -21,9 +22,6 @@ class GameScene extends Phaser.Scene {
     this.activePlayers = {};
     this.deadPlayers = {};
     this.waitingPlayers = {};
-    this.activeEffects = {};
-
-    this.items = [];
 
     this.resultText = null;
     this.playerCountText = null;
@@ -35,6 +33,8 @@ class GameScene extends Phaser.Scene {
 
     this.chatBox = null;
     this.chatDisplay = null;
+
+    this.itemsGroup = null;
   }
 
   create() {
@@ -52,6 +52,8 @@ class GameScene extends Phaser.Scene {
 
     this.mapShrinker = new MapShrinker(this);
     this.chatDisplay = new ChatDisplay(this);
+
+    this.itemsGroup = this.physics.add.group();
 
     SocketManager.onCurrentPlayers((players) => {
       Object.keys(players).forEach((id) => {
@@ -158,7 +160,6 @@ class GameScene extends Phaser.Scene {
           delete this.waitingPlayers[player.id];
         });
       } else {
-        Item.clearAllItems(this);
         this.bgmManager.startWaitingBGM();
         this.gameStatusText.showEnd();
         Object.values(this.players).forEach((player) => {
@@ -168,6 +169,8 @@ class GameScene extends Phaser.Scene {
         });
         this.cameraManager.smoothFollow(this.player);
         this.mapShrinker.reset();
+
+        this.itemsGroup.clear(true, true);
       }
     });
 
@@ -201,7 +204,6 @@ class GameScene extends Phaser.Scene {
     });
 
     SocketManager.onWinnerPlayer((data) => {
-      Item.clearEffects(this);
       this.gameStatusText.showResult();
       this.player.stopMove();
 
@@ -230,7 +232,6 @@ class GameScene extends Phaser.Scene {
       let timer = 5000;
       if (data.PunchingBag.playerId != "") timer = 10000;
       if (data && data.BombMaster && data.BombMaster.playerId != "") {
-        console.log(timer);
         this.time.delayedCall(
           timer,
           () => {
@@ -277,18 +278,25 @@ class GameScene extends Phaser.Scene {
     });
 
     SocketManager.onNewItems((items) => {
-      console.log(items);
       items.forEach(({ x, y }) => {
-        const newItem = new Item(this, x, y, "item"); // 'itemTexture'는 preload된 아이템 이미지의 키입니다.
-        this.items.push(newItem);
-        console.log(this.items);
+        const newItem = Item.createItem(this, x, y, "item");
+        this.itemsGroup.add(newItem); // Add new item to the group
       });
     });
 
-    SocketManager.onItemPickedUp((arr) => {
-      console.log(arr.playerId, arr.item, arr.x, arr.y);
-      Item.destroyItem(this, arr.x, arr.y);
-      Item.applyItemEffect(this, arr.playerId, arr.item);
+    SocketManager.onItemPickedUp((data) => {
+      const { playerId, item, x, y } = data;
+      this.itemsGroup.getChildren().forEach((existingItem) => {
+        if (existingItem.x === x && existingItem.y === y) {
+          existingItem.destroy();
+          this.itemsGroup.remove(existingItem, true, true);
+        }
+      });
+
+      if (this.players[playerId]) {
+        const itemEffect = new ItemEffect(this, this.players[playerId], item);
+        itemEffect.applyEffect();
+      }
     });
   }
 
@@ -359,20 +367,6 @@ class GameScene extends Phaser.Scene {
   update() {
     if (this.player) {
       this.player.update();
-    }
-    for (const playerId in this.players) {
-      const player = this.players[playerId];
-      if (player.itemIcons) {
-        for (const itemId in player.itemIcons) {
-          const itemIcon = player.itemIcons[itemId];
-          if (itemIcon) {
-            itemIcon.setPosition(
-              player.x + player.displayWidth / 2 + 40,
-              player.y - player.displayHeight / 2 - 10
-            );
-          }
-        }
-      }
     }
   }
 }
