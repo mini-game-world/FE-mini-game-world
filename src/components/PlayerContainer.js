@@ -278,6 +278,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       duration: 100,
       ease: "Linear",
       onUpdate: () => {
+        if (!this.hitBox) return;
         this.setPosition(this.hitBox.x, this.hitBox.y);
         if (deltaX !== 0 || deltaY !== 0) {
           if (this.player.isDead) {
@@ -296,8 +297,10 @@ class PlayerContainer extends Phaser.GameObjects.Container {
         }
       },
       onComplete: () => {
+        if (!this.player) return;
         clearTimeout(this.player.idleTimeout);
         this.player.idleTimeout = setTimeout(() => {
+          if (!this.player) return;
           if (this.player.isDead) {
             this.player.anims.play(`dead`, true);
           } else {
