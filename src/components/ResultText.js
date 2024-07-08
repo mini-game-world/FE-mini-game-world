@@ -92,7 +92,7 @@ class ResultText extends Phaser.GameObjects.Text {
 
     this.winnerSound = this.scene.sound.add("winner_sound", { volume: 0.2 });
     this.winnerSound.play();
-    this.punchingbagText = `동네북!! ${name}`;
+    this.punchingbagText = `동 네 깡 패 !! ${name}`;
     this.setText(this.punchingbagText);
     this.setAlpha(1);
     console.log("showPunchingBag");
