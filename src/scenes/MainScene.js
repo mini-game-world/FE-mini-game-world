@@ -6,9 +6,9 @@ export default class MainScene extends Phaser.Scene {
         super({ key: 'MainScene' });
     }
 
-    init() {
-        this.time.delayedCall(10, this.create, [], this);
-    }
+    // init() {
+    //     this.time.delayedCall(1000, this.create, [], this);
+    // }
 
     create() {
         this.bgmManager = new BGMManager(this);
@@ -18,7 +18,7 @@ export default class MainScene extends Phaser.Scene {
 
         this.add.image(this.scale.width / 2, this.scale.height / 2, 'background')
             .setDisplaySize(this.scale.width, this.scale.height);
-
+        
         const title = this.add.text(
             this.scale.width / 2, this.scale.height / 2 - 850,
             "폭탄대소동",
