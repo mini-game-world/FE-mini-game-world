@@ -1,83 +1,79 @@
 import Phaser from "phaser";
 import GameStatusText from "../components/GameStatusText";
+import SocketManager from "./SocketManager"; // 경로는 실제 파일 위치에 따라 조정
 
 export default class MapShrinker {
   constructor(
     scene,
     delay = 15000,
-    interval = 1000,
     minWidth = 1400,
     minHeight = 1400,
     initialWidth = 3840,
     initialHeight = 2560,
     tileWidth = 32,
-    tileHeight = 24
+    tileHeight = 32
   ) {
     this.scene = scene;
     this.delay = delay;
-    this.interval = interval;
     this.minWidth = minWidth;
     this.minHeight = minHeight;
     this.currentWidth = initialWidth;
     this.currentHeight = initialHeight;
+    this.initialWidth = initialWidth;
+    this.initialHeight = initialHeight;
     this.tileWidth = tileWidth;
     this.tileHeight = tileHeight;
-    this.timer = null;
 
     this.whiteGraphics = this.scene.add.graphics();
-    this.whiteGraphics.fillStyle(0xffffff);
+    this.whiteGraphics.fillStyle(0x0000ff);
     this.whiteGraphics.setDepth(10);
+    this.whiteGraphics.setAlpha(0.5);
 
     this.statusText = new GameStatusText(this.scene);
 
-    this.onShrinkComplete = null;
+    this.socketManager = SocketManager;
+    this.socketManager.onMapShrink(this.handleMapShrink.bind(this));
   }
 
-  start() {
-    console.log("MapShrinker start called");
+  handleMapShrink(shrinkFactor) {
+    console.log(`Map is shrinking with factor ${shrinkFactor}`);
+    const layer = this.scene.mapShrink;
 
-    setTimeout(() => {
+    if (shrinkFactor === 0) {
       this.statusText.showText("맵이 줄어들기 시작합니다!", "64px", 3000, 1, 0);
-
-      this.timer = setInterval(() => {
-        const layer = this.scene.mapShrink;
-
-        if (
-          this.currentWidth > this.minWidth &&
-          this.currentHeight > this.minHeight
-        ) {
-          this.shrinkLayer(layer);
-          this.scene.physics.world.setBounds(
-            0,
-            0,
-            this.currentWidth,
-            this.currentHeight
-          );
-        } else {
-          this.stop();
-        }
-      }, this.interval);
-    }, this.delay);
-  }
-
-  shrinkLayer(layer) {
-    const tileXMax = Math.ceil(this.currentWidth / this.tileWidth);
-    const tileYMax = Math.ceil(this.currentHeight / this.tileHeight);
-
-    for (let x = -1; x < tileXMax; x++) {
-      this.overlayTile(layer, x, -1);
-      this.overlayTile(layer, x, tileYMax - 1);
     }
 
-    for (let y = -1; y < tileYMax; y++) {
-      this.overlayTile(layer, -1, y);
-      this.overlayTile(layer, tileXMax - 1, y);
+    if (
+      this.currentWidth > this.minWidth &&
+      this.currentHeight > this.minHeight
+    ) {
+      this.currentWidth = this.initialWidth - this.tileWidth * shrinkFactor;
+      this.currentHeight = this.initialHeight - this.tileHeight * shrinkFactor;
+
+      const tileXMax = Math.ceil(this.currentWidth / this.tileWidth);
+      const tileYMax = Math.ceil(this.currentHeight / this.tileHeight);
+
+      for (let x = -1; x < tileXMax; x++) {
+        this.overlayTile(layer, x, -1);
+        this.overlayTile(layer, x, tileYMax - 1);
+      }
+
+      for (let y = -1; y < tileYMax; y++) {
+        this.overlayTile(layer, -1, y);
+        this.overlayTile(layer, tileXMax - 1, y);
+      }
+
+      this.scene.physics.world.setBounds(
+        0,
+        0,
+        this.currentWidth,
+        this.currentHeight
+      );
+
+      layer.setCollisionByExclusion([-1], true);
+    } else {
+      console.log("Map has reached minimum size.");
     }
-
-    this.currentWidth -= this.tileWidth * 2;
-    this.currentHeight -= this.tileHeight * 2;
-
-    layer.setCollisionByExclusion([-1], true);
   }
 
   overlayTile(layer, tileX, tileY) {
@@ -95,9 +91,8 @@ export default class MapShrinker {
 
   reset() {
     console.log("MapShrinker reset called");
-    this.stop();
-    this.currentWidth = 3840;
-    this.currentHeight = 2560;
+    this.currentWidth = this.initialWidth;
+    this.currentHeight = this.initialHeight;
     this.whiteGraphics.clear();
     this.scene.physics.world.setBounds(
       0,
@@ -108,12 +103,5 @@ export default class MapShrinker {
 
     const layer = this.scene.mapShrink;
     layer.setCollisionByExclusion([-1], true);
-  }
-
-  stop() {
-    console.log("MapShrinker stop called");
-    if (this.timer) {
-      clearInterval(this.timer);
-    }
   }
 }
