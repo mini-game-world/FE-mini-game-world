@@ -33,7 +33,7 @@ class GameScene extends Phaser.Scene {
     this.chatBox = null;
     this.chatDisplay = null;
 
-    this.items = [];
+    this.itemsGroup = null;
   }
 
   create() {
@@ -51,6 +51,8 @@ class GameScene extends Phaser.Scene {
 
     this.mapShrinker = new MapShrinker(this);
     this.chatDisplay = new ChatDisplay(this);
+
+    this.itemsGroup = this.physics.add.group();
 
     SocketManager.onCurrentPlayers((players) => {
       Object.keys(players).forEach((id) => {
@@ -165,6 +167,8 @@ class GameScene extends Phaser.Scene {
         });
         this.cameraManager.smoothFollow(this.player);
         this.mapShrinker.reset();
+
+        this.itemsGroup.clear(true, true);
       }
     });
 
@@ -274,16 +278,16 @@ class GameScene extends Phaser.Scene {
     SocketManager.onNewItems((items) => {
       items.forEach(({ x, y }) => {
         const newItem = Item.createItem(this, x, y, "item");
-        this.items.push(newItem);
+        this.itemsGroup.add(newItem); // Add new item to the group
       });
     });
 
     SocketManager.onItemPickedUp((data) => {
       const { playerId, item, x, y } = data;
-      this.items.forEach((existingItem, index) => {
+      this.itemsGroup.getChildren().forEach((existingItem) => {
         if (existingItem.x === x && existingItem.y === y) {
           existingItem.destroy();
-          this.items.splice(index, 1);
+          this.itemsGroup.remove(existingItem, true, true);
         }
       });
     });
