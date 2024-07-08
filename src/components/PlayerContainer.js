@@ -247,8 +247,8 @@ class PlayerContainer extends Phaser.GameObjects.Container {
           this.isStunned = false;
         });
     } else {
-          this.player.anims.play(`dead`, true);
-          this.isStunned = false;
+      this.player.anims.play(`dead`, true);
+      this.isStunned = false;
     }
   }
 
@@ -330,11 +330,11 @@ class PlayerContainer extends Phaser.GameObjects.Container {
 
   choice() {
     if (this.player.isDead) {
-        this.player.isDead = false;
-        this.player.setTexture(`player${this.player.avatar}`);
-        this.player.anims.play(`idle${this.player.avatar}`, true);
-        this.player.setAlpha(1);
-        this.hitBox.body.checkCollision.none = false;
+      this.player.isDead = false;
+      this.player.setTexture(`player${this.player.avatar}`);
+      this.player.anims.play(`idle${this.player.avatar}`, true);
+      this.player.setAlpha(1);
+      this.hitBox.body.checkCollision.none = false;
     }
     this.scene.tweens.add({
       targets: this.player,
@@ -344,7 +344,6 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       onUpdate: () => {
         const { velocityX, velocityY } = this.getVelocity();
         if (velocityX !== 0 || velocityY !== 0) {
-          // console.log(`move${this.player.avatar}`);
           this.player.anims.play(`move${this.player.avatar}`, true);
           this.player.setFlipX(velocityX > 0);
         }
@@ -362,7 +361,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
               this.player.anims.play(`move${this.player.avatar}`, true);
               this.player.setFlipX(velocityX > 0);
             }
-          }
+          },
         });
       },
     });
