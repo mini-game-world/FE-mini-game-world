@@ -5,6 +5,10 @@ export default class MainScene extends Phaser.Scene {
         super({ key: 'MainScene' });
     }
 
+    init() {
+        this.time.delayedCall(10, this.create, [], this);
+    }
+
     create() {
         this.add.image(this.scale.width / 2, this.scale.height / 2, 'background')
             .setDisplaySize(this.scale.width, this.scale.height);
