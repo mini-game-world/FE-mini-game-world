@@ -290,6 +290,10 @@ class GameScene extends Phaser.Scene {
           this.itemsGroup.remove(existingItem, true, true);
         }
       });
+
+      if (this.players[playerId]) {
+        this.players[playerId].addStatusIcon(item);
+      }
     });
   }
 

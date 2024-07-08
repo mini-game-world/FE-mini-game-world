@@ -9,6 +9,7 @@ import ChatBalloon from "./ChatBalloon";
 import Bomb from "./Bomb";
 import Explosion from "./Explosion";
 import CollisionChecker from "../utils/CollisionChecker";
+import StatusIcon from "./StatusIcon";
 
 class PlayerContainer extends Phaser.GameObjects.Container {
   constructor(scene, x, y, texture, info) {
@@ -55,6 +56,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     this.isWinner = false;
 
     this.bomb = null;
+    this.statusIcon = null;
 
     this.collisionChecker = new CollisionChecker();
   }
@@ -367,6 +369,16 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     });
   }
 
+  addStatusIcon(item) {
+    if (this.statusIcon) {
+      this.statusIcon.destroy();
+    }
+    const iconX = this.player.x + this.player.width / 2 + 20; // 플레이어 오른쪽에 아이콘 위치
+    const iconY = this.player.y;
+    this.statusIcon = new StatusIcon(this.scene, iconX, iconY, item);
+    this.add(this.statusIcon);
+  }
+
   destroy() {
     // Custom cleanup for PlayerContainer
     if (this.player) {
@@ -393,7 +405,10 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       this.hitBox.destroy();
       this.hitBox = null;
     }
-
+    if (this.statusIcon) {
+      this.statusIcon.destroy();
+      this.statusIcon = null;
+    }
     // Call the parent class's destroy method
     super.destroy();
   }
