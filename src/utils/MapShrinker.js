@@ -55,7 +55,7 @@ export default class MapShrinker {
 
       for (let x = -1; x < tileXMax; x++) {
         this.overlayTile(layer, x, -1);
-        this.overlayTile(layer, x, tileYMax - 1);
+        this.overlayTile(layer, x, tileYMax);
       }
 
       for (let y = -1; y < tileYMax; y++) {
