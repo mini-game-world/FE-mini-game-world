@@ -2,7 +2,7 @@ class CameraManager {
   constructor(scene) {
     this.scene = scene;
     this.mainCamera = this.scene.cameras.main;
-    // this.mainCamera.setBounds(0, 0, 3840, 2560);
+    this.mainCamera.setBounds(0, 0, 3840, 2560);
     this.mainCamera.setZoom(1.5);
   }
 
