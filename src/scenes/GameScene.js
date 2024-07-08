@@ -172,7 +172,7 @@ class GameScene extends Phaser.Scene {
         });
         this.cameraManager.smoothFollow(this.player);
         this.mapShrinker.reset();
-
+        this.rankText.clearText();
         this.itemsGroup.clear(true, true);
       }
     });
@@ -379,7 +379,7 @@ class GameScene extends Phaser.Scene {
     const playerCount = Object.keys(this.players).length;
     this.playerCountText.update(playerCount);
   }
-  
+
   update() {
     if (this.player) {
       this.player.update();

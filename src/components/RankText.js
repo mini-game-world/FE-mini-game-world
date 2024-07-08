@@ -38,21 +38,19 @@ class RankText extends Phaser.GameObjects.Text {
 
   showBombRank(nickname, count) {
     console.log("showBombRank called");
+    this.setAlpha(1);
     this.setText(`폭탄돌리기왕 ${nickname} ${count}회`);
   }
 
   showHitRank(nickname, count) {
     console.log("showHitRank called");
+    this.secondLine.setAlpha(1);
     this.secondLine.setText(`스트라이커 ${nickname} ${count}회`);
   }
 
   clearText() {
-    if (this.currentTween) {
-      this.currentTween.stop(); // Stop the current tween
-    }
     this.setAlpha(0);
-    this.secondLine.setAlpha(0); // Clear the second line text
-    console.log('clearText called');
+    this.secondLine.setAlpha(0);
   }
 }
 
