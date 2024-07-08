@@ -1,6 +1,5 @@
 import Phaser from "phaser";
 import SocketManager from "../utils/SocketManager";
-import PlayerCountText from "../components/PlayerCountText";
 import ResultText from "../components/ResultText";
 import GameStatusText from "../components/GameStatusText";
 import MapShrinker from "../utils/MapShrinker";
@@ -11,17 +10,14 @@ import PlayerContainer from "../components/PlayerContainer";
 import Item from "../components/Item";
 import ChatDisplay from "../components/ChatDisplay";
 import ItemEffect from "../components/ItemEffect";
+import InfoText from "../components/InfoText";
 
 class GameScene extends Phaser.Scene {
   constructor() {
     super("GameScene");
 
-    this.player = null;
-
-    this.players = {};
-    this.activePlayers = {};
-    this.deadPlayers = {};
-    this.waitingPlayers = {};
+    this.player = null; // 내 캐릭터
+    this.players = {}; // 모든 접속자(플레이어)
 
     this.resultText = null;
     this.playerCountText = null;
@@ -47,7 +43,7 @@ class GameScene extends Phaser.Scene {
     this.bgmManager.startWaitingBGM();
 
     this.resultText = new ResultText(this);
-    this.playerCountText = new PlayerCountText(this);
+    this.infoText = new InfoText(this);
     this.gameStatusText = new GameStatusText(this);
 
     this.mapShrinker = new MapShrinker(this);
@@ -79,14 +75,6 @@ class GameScene extends Phaser.Scene {
 
           this.mapShrinker.applyPreviousShrinks();
         }
-
-        if (isPlay) {
-          this.activePlayers[id] = playerContainer;
-        } else if (isDead) {
-          this.deadPlayers[id] = playerContainer;
-        } else {
-          this.waitingPlayers[id] = playerContainer;
-        }
       });
       this.updatePlayerCountText();
     });
@@ -103,7 +91,6 @@ class GameScene extends Phaser.Scene {
         info
       );
       this.players[playerId] = newPlayer;
-      this.waitingPlayers[playerId] = newPlayer;
 
       this.updatePlayerCountText();
     });
@@ -135,42 +122,33 @@ class GameScene extends Phaser.Scene {
         this.players[id].destroy();
         delete this.players[id];
       }
-      if (this.activePlayers[id]) {
-        this.activePlayers[id].destroy();
-        delete this.activePlayers[id];
-      }
-      if (this.deadPlayers[id]) {
-        this.deadPlayers[id].destroy();
-        delete this.deadPlayers[id];
-      }
-      if (this.waitingPlayers[id]) {
-        this.waitingPlayers[id].destroy();
-        delete this.waitingPlayers[id];
-      }
       this.updatePlayerCountText();
     });
 
     SocketManager.onPlayingGame((isPlaying) => {
-      if (isPlaying == 1) {
+      if (isPlaying === 1) {
         this.bgmManager.startPlayingBGM();
         this.gameStatusText.showStart();
         Object.values(this.players).forEach((player) => {
           player.setPlay();
-          this.activePlayers[player.id] = player;
-          delete this.waitingPlayers[player.id];
         });
       } else {
         this.bgmManager.startWaitingBGM();
         this.gameStatusText.showEnd();
         Object.values(this.players).forEach((player) => {
           player.setReady();
-          this.waitingPlayers[player.id] = player;
-          delete this.activePlayers[player.id];
         });
         this.cameraManager.smoothFollow(this.player);
         this.mapShrinker.reset();
 
         this.itemsGroup.clear(true, true);
+      }
+      this.updatePlayerCountText();
+    });
+
+    SocketManager.onPlayInfo((survivorCount) => {
+      if (this.player.player.isPlay) {
+        this.updatePlayInfo(survivorCount);
       }
     });
 
@@ -186,8 +164,6 @@ class GameScene extends Phaser.Scene {
       players.forEach((id) => {
         if (this.players[id]) {
           this.players[id].setDead();
-          this.deadPlayers[id] = this.players[id];
-          delete this.activePlayers[id];
         }
       });
     });
@@ -360,8 +336,16 @@ class GameScene extends Phaser.Scene {
   }
 
   updatePlayerCountText() {
-    const playerCount = Object.keys(this.players).length;
-    this.playerCountText.update(playerCount);
+    if (!this.player.player.isPlay) {
+      const playerCount = Object.keys(this.players).length;
+      this.infoText.update(playerCount);
+    }
+  }
+
+  updatePlayInfo(survivorCount) {
+    if (this.player.player.isPlay) {
+      this.infoText.updatePlayInfo(survivorCount);
+    }
   }
 
   update() {

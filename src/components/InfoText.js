@@ -1,4 +1,4 @@
-class PlayerCountText extends Phaser.GameObjects.Text {
+class InfoText extends Phaser.GameObjects.Text {
   constructor(scene) {
     super(
       scene,
@@ -22,8 +22,12 @@ class PlayerCountText extends Phaser.GameObjects.Text {
   }
 
   update(count) {
-    this.setText(`접속자 수 : ${count}`);
+    this.setText(`접속자 ${count}명`);
+  }
+
+  updatePlayInfo(survivorCount) {
+    this.setText(`생존자 ${survivorCount}명`);
   }
 }
 
-export default PlayerCountText;
+export default InfoText;
