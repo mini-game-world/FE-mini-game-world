@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import BGMManager from "../utils/BGMManager";
 
 export default class MainScene extends Phaser.Scene {
     constructor() {
@@ -10,6 +11,11 @@ export default class MainScene extends Phaser.Scene {
     }
 
     create() {
+        this.bgmManager = new BGMManager(this);
+        this.bgmManager.startMainBGM();
+
+        this.data.set('bgmManager', this.bgmManager);
+
         this.add.image(this.scale.width / 2, this.scale.height / 2, 'background')
             .setDisplaySize(this.scale.width, this.scale.height);
 
@@ -68,6 +74,7 @@ export default class MainScene extends Phaser.Scene {
         this.bomb1.play('bomb');
 
         this.createButton(this.scale.width / 2, this.scale.height - 1450, '시작하기', () => {
+            this.bgmManager.stopMainBGM();
             this.scene.start('GameScene');
         });
 
