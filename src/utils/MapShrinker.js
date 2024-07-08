@@ -24,6 +24,8 @@ export default class MapShrinker {
     this.tileWidth = tileWidth;
     this.tileHeight = tileHeight;
 
+    this.currentShrinkFactor = 0;
+
     this.whiteGraphics = this.scene.add.graphics();
     this.whiteGraphics.fillStyle(0x0000ff);
     this.whiteGraphics.setDepth(10);
@@ -33,6 +35,8 @@ export default class MapShrinker {
 
     this.socketManager = SocketManager;
     this.socketManager.onMapShrink(this.handleMapShrink.bind(this));
+
+    this.overlayedTiles = {};
   }
 
   handleMapShrink(shrinkFactor) {
@@ -43,10 +47,12 @@ export default class MapShrinker {
       this.statusText.showText("맵이 줄어들기 시작합니다!", "64px", 3000, 1, 0);
     }
 
-    if (
-      this.currentWidth > this.minWidth &&
-      this.currentHeight > this.minHeight
-    ) {
+    
+
+    if (this.currentShrinkFactor !== shrinkFactor) {
+
+      this.currentShrinkFactor = shrinkFactor;
+
       this.currentWidth = this.initialWidth - this.tileWidth * shrinkFactor;
       this.currentHeight = this.initialHeight - this.tileHeight * shrinkFactor;
 
@@ -77,6 +83,12 @@ export default class MapShrinker {
   }
 
   overlayTile(layer, tileX, tileY) {
+
+    const key = `${tileX},${tileY}`;
+    if (this.overlayedTiles[key]) {
+      return; // 이미 덮어씌워진 타일은 무시
+    }
+
     const tile = layer.getTileAt(tileX, tileY);
     const pixelX = tileX * this.tileWidth;
     const pixelY = tileY * this.tileHeight;
@@ -87,6 +99,40 @@ export default class MapShrinker {
       this.tileWidth,
       this.tileHeight
     );
+
+    this.overlayedTiles[key] = true;
+  }
+
+  applyPreviousShrinks() {
+    const layer = this.scene.mapShrink;
+
+    const tileXMax = Math.ceil(this.currentWidth / this.tileWidth);
+    const tileYMax = Math.ceil(this.currentHeight / this.tileHeight);
+
+    for (let factor = 1; factor <= this.currentShrinkFactor; factor++) {
+      const width = this.initialWidth - this.tileWidth * factor;
+      const height = this.initialHeight - this.tileHeight * factor;
+
+      const tileXMax = Math.ceil(width / this.tileWidth);
+      const tileYMax = Math.ceil(height / this.tileHeight);
+
+      for (let x = -1; x < tileXMax; x++) {
+        for (let y = -1; y < tileYMax; y++) {
+          const key = `${x},${y}`;
+          if (this.overlayedTiles[key]) {
+            const pixelX = x * this.tileWidth;
+            const pixelY = y * this.tileHeight;
+
+            this.whiteGraphics.fillRect(
+              pixelX,
+              pixelY,
+              this.tileWidth,
+              this.tileHeight
+            );
+          }
+        }
+      }
+    }
   }
 
   reset() {
@@ -100,6 +146,7 @@ export default class MapShrinker {
       this.currentWidth,
       this.currentHeight
     );
+    this.overlayedTiles = {};
 
     const layer = this.scene.mapShrink;
     layer.setCollisionByExclusion([-1], true);

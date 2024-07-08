@@ -74,6 +74,8 @@ class GameScene extends Phaser.Scene {
           this.physics.add.collider(this.player.hitBox, this.backGround);
           this.physics.add.collider(this.player.hitBox, this.house);
           this.physics.add.collider(this.player.hitBox, this.object);
+
+          this.mapShrinker.applyPreviousShrinks();
         }
 
         if (isPlay) {
