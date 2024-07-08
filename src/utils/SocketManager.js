@@ -117,6 +117,10 @@ class SocketManager {
   onMapShrink(callback) {
     this.channel.on("mapShrink", callback);
   }
+
+  onPlayInfo(callback) {
+    this.channel.on("playInfo", callback);
+  }
 }
 
 export default new SocketManager();
