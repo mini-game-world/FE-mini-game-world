@@ -74,11 +74,13 @@ export default class MainScene extends Phaser.Scene {
         this.bomb1.play('bomb');
 
         this.createButton(this.scale.width / 2, this.scale.height - 1450, '시작하기', () => {
+            this.sound.play('click_sound');
             this.bgmManager.stopMainBGM();
             this.scene.start('GameScene');
         });
 
         this.createButton(this.scale.width / 2, this.scale.height - 1150, '튜토리얼', () => {
+            this.sound.play('click_sound');
             this.scene.start('TutorialScene');
         });
 
