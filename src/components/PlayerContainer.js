@@ -9,6 +9,7 @@ import ChatBalloon from "./ChatBalloon";
 import Bomb from "./Bomb";
 import Explosion from "./Explosion";
 import CollisionChecker from "../utils/CollisionChecker";
+import StatusIcon from "./StatusIcon";
 
 class PlayerContainer extends Phaser.GameObjects.Container {
   constructor(scene, x, y, texture, info) {
@@ -55,6 +56,9 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     this.isWinner = false;
 
     this.bomb = null;
+    this.speed = 600; // 기본 속도 추가
+
+    this.statusIcon = null;
 
     this.collisionChecker = new CollisionChecker();
   }
@@ -71,14 +75,20 @@ class PlayerContainer extends Phaser.GameObjects.Container {
   }
 
   getVelocity() {
-    const speed = this.bomb ? 700 : 600;
+    if (this.speed < 900) {
+      if (this.bomb) {
+        this.speed = 750;
+      } else {
+        this.speed = 600;
+      }
+    }
     let velocityX = 0;
     let velocityY = 0;
 
-    if (this.keys.up.isDown) velocityY = -speed;
-    if (this.keys.down.isDown) velocityY = speed;
-    if (this.keys.left.isDown) velocityX = -speed;
-    if (this.keys.right.isDown) velocityX = speed;
+    if (this.keys.up.isDown) velocityY = -this.speed;
+    if (this.keys.down.isDown) velocityY = this.speed;
+    if (this.keys.left.isDown) velocityX = -this.speed;
+    if (this.keys.right.isDown) velocityX = this.speed;
 
     return { velocityX, velocityY };
   }
@@ -247,8 +257,8 @@ class PlayerContainer extends Phaser.GameObjects.Container {
           this.isStunned = false;
         });
     } else {
-          this.player.anims.play(`dead`, true);
-          this.isStunned = false;
+      this.player.anims.play(`dead`, true);
+      this.isStunned = false;
     }
   }
 
@@ -330,11 +340,11 @@ class PlayerContainer extends Phaser.GameObjects.Container {
 
   choice() {
     if (this.player.isDead) {
-        this.player.isDead = false;
-        this.player.setTexture(`player${this.player.avatar}`);
-        this.player.anims.play(`idle${this.player.avatar}`, true);
-        this.player.setAlpha(1);
-        this.hitBox.body.checkCollision.none = false;
+      this.player.isDead = false;
+      this.player.setTexture(`player${this.player.avatar}`);
+      this.player.anims.play(`idle${this.player.avatar}`, true);
+      this.player.setAlpha(1);
+      this.hitBox.body.checkCollision.none = false;
     }
     this.scene.tweens.add({
       targets: this.player,
@@ -344,7 +354,6 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       onUpdate: () => {
         const { velocityX, velocityY } = this.getVelocity();
         if (velocityX !== 0 || velocityY !== 0) {
-          // console.log(`move${this.player.avatar}`);
           this.player.anims.play(`move${this.player.avatar}`, true);
           this.player.setFlipX(velocityX > 0);
         }
@@ -362,9 +371,26 @@ class PlayerContainer extends Phaser.GameObjects.Container {
               this.player.anims.play(`move${this.player.avatar}`, true);
               this.player.setFlipX(velocityX > 0);
             }
-          }
+          },
         });
       },
+    });
+  }
+
+  addStatusIcon(item) {
+    if (this.statusIcon) {
+      this.statusIcon.destroy();
+    }
+    const iconX = this.player.x + this.player.width / 2 + 20; // 플레이어 오른쪽에 아이콘 위치
+    const iconY = this.player.y;
+    this.statusIcon = new StatusIcon(this.scene, iconX, iconY, item);
+    this.add(this.statusIcon);
+
+    this.scene.time.delayedCall(5000, () => {
+      if (this.statusIcon) {
+        this.statusIcon.destroy();
+        this.statusIcon = null;
+      }
     });
   }
 
@@ -394,7 +420,10 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       this.hitBox.destroy();
       this.hitBox = null;
     }
-
+    if (this.statusIcon) {
+      this.statusIcon.destroy();
+      this.statusIcon = null;
+    }
     // Call the parent class's destroy method
     super.destroy();
   }
