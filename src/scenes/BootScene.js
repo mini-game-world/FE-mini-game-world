@@ -41,6 +41,7 @@ import playingBGM1 from "../assets/bgm/playingBGM1.mp3";
 import playingBGM2 from "../assets/bgm/playingBGM2.mp3";
 import waitingBGM1 from "../assets/bgm/waitingBGM1.mp3";
 import waitingBGM2 from "../assets/bgm/waitingBGM2.mp3";
+import mainBGM from "../assets/bgm/mainBGM.ogg";
 
 // Import player assets from player0 to player30
 import player0 from "../assets/players/player0.png";
@@ -206,6 +207,7 @@ class BootScene extends Phaser.Scene {
     this.load.audio("playingBGM2", playingBGM2);
     this.load.audio("waitingBGM1", waitingBGM1);
     this.load.audio("waitingBGM2", waitingBGM2);
+    this.load.audio("mainBGM", mainBGM);
 
     this.load.spritesheet("playerDead", playerDeadSprite, {
       frameWidth: 150,

@@ -3,6 +3,7 @@ class BGMManager {
     this.scene = scene;
     this.playingBGMs = [];
     this.waitingBGMs = [];
+    this.mainBGM = null;
     this.currentPlayingBGM = null;
     this.currentWaitingBGM = null;
 
@@ -18,15 +19,12 @@ class BGMManager {
       this.scene.sound.add("waitingBGM1", { loop: true, volume: 0.2 }),
       this.scene.sound.add("waitingBGM2", { loop: true, volume: 0.2 }),
     ];
+
+    this.mainBGM = this.scene.sound.add("mainBGM", { loop: true, volume: 0.2 });
   }
 
   startPlayingBGM() {
-    if (this.currentWaitingBGM && this.currentWaitingBGM.isPlaying) {
-      this.currentWaitingBGM.stop();
-    }
-    if (this.currentPlayingBGM && this.currentPlayingBGM.isPlaying) {
-      this.currentPlayingBGM.stop();
-    }
+    this.stopAllBGMs();
 
     const randomIndex = Phaser.Math.Between(0, this.playingBGMs.length - 1);
     this.currentPlayingBGM = this.playingBGMs[randomIndex];
@@ -34,16 +32,35 @@ class BGMManager {
   }
 
   startWaitingBGM() {
+    this.stopAllBGMs();
+
+    const randomIndex = Phaser.Math.Between(0, this.waitingBGMs.length - 1);
+    this.currentWaitingBGM = this.waitingBGMs[randomIndex];
+    this.currentWaitingBGM.play();
+  }
+
+  startMainBGM() {
+    this.stopAllBGMs();
+
+    this.mainBGM.play();
+  }
+
+  stopAllBGMs() {
     if (this.currentPlayingBGM && this.currentPlayingBGM.isPlaying) {
       this.currentPlayingBGM.stop();
     }
     if (this.currentWaitingBGM && this.currentWaitingBGM.isPlaying) {
       this.currentWaitingBGM.stop();
     }
+    if (this.mainBGM && this.mainBGM.isPlaying) {
+      this.mainBGM.stop();
+    }
+  }
 
-    const randomIndex = Phaser.Math.Between(0, this.waitingBGMs.length - 1);
-    this.currentWaitingBGM = this.waitingBGMs[randomIndex];
-    this.currentWaitingBGM.play();
+  stopMainBGM() {
+    if (this.mainBGM && this.mainBGM.isPlaying) {
+      this.mainBGM.stop();
+    }
   }
 }
 
