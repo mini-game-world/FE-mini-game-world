@@ -10,6 +10,7 @@ import ChatBox from "../components/ChatBox";
 import PlayerContainer from "../components/PlayerContainer";
 import Item from "../components/Item";
 import ChatDisplay from "../components/ChatDisplay";
+import ItemEffect from "../components/ItemEffect";
 
 class GameScene extends Phaser.Scene {
   constructor() {
@@ -292,7 +293,8 @@ class GameScene extends Phaser.Scene {
       });
 
       if (this.players[playerId]) {
-        this.players[playerId].addStatusIcon(item);
+        const itemEffect = new ItemEffect(this, this.players[playerId], item);
+        itemEffect.applyEffect();
       }
     });
   }

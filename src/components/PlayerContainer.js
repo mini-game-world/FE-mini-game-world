@@ -56,6 +56,8 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     this.isWinner = false;
 
     this.bomb = null;
+    this.speed = 600; // 기본 속도 추가
+
     this.statusIcon = null;
 
     this.collisionChecker = new CollisionChecker();
@@ -73,14 +75,13 @@ class PlayerContainer extends Phaser.GameObjects.Container {
   }
 
   getVelocity() {
-    const speed = this.bomb ? 700 : 600;
     let velocityX = 0;
     let velocityY = 0;
 
-    if (this.keys.up.isDown) velocityY = -speed;
-    if (this.keys.down.isDown) velocityY = speed;
-    if (this.keys.left.isDown) velocityX = -speed;
-    if (this.keys.right.isDown) velocityX = speed;
+    if (this.keys.up.isDown) velocityY = -this.speed;
+    if (this.keys.down.isDown) velocityY = this.speed;
+    if (this.keys.left.isDown) velocityX = -this.speed;
+    if (this.keys.right.isDown) velocityX = this.speed;
 
     return { velocityX, velocityY };
   }
@@ -377,6 +378,13 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     const iconY = this.player.y;
     this.statusIcon = new StatusIcon(this.scene, iconX, iconY, item);
     this.add(this.statusIcon);
+
+    this.scene.time.delayedCall(5000, () => {
+      if (this.statusIcon) {
+        this.statusIcon.destroy();
+        this.statusIcon = null;
+      }
+    });
   }
 
   destroy() {

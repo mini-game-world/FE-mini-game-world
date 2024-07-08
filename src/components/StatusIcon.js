@@ -1,6 +1,5 @@
 class StatusIcon extends Phaser.GameObjects.Image {
   constructor(scene, x, y, item) {
-    console.log(item);
     let texture;
     switch (item) {
       case 0:
