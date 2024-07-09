@@ -76,6 +76,14 @@ class PlayerContainer extends Phaser.GameObjects.Container {
 
   handleTouch(pointer) {
     if (this.player) {
+      // 공격 버튼 내부 터치 여부 확인
+      if (
+        this.attackButton &&
+        this.attackButton.getBounds().contains(pointer.worldX, pointer.worldY)
+      ) {
+        return; // 공격 버튼을 터치한 경우 이동 처리 안 함
+      }
+
       const maxDistance = 300; // 최대 이동 거리 설정
       let targetX = pointer.worldX;
       let targetY = pointer.worldY;
@@ -117,7 +125,8 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     this.attackButton.setScrollFactor(0); // Button stays in the same place on screen
 
     this.attackButton.setInteractive();
-    this.attackButton.on("pointerdown", () => {
+    this.attackButton.on("pointerdown", (pointer, localX, localY, event) => {
+      event.stopPropagation(); // 터치 이벤트 전파 방지
       if (this.player.isPlay && !this.isAttacking && !this.player.isDead) {
         // 버튼 시각적 반응 추가
         this.scene.tweens.add({
