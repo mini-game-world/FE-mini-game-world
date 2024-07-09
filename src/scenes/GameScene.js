@@ -286,15 +286,12 @@ class GameScene extends Phaser.Scene {
     });
 
     SocketManager.onCurrentBombRanker((data) => {
-      console.log("onCurrentBombRanker", data);
-      const nickname = this.players[data.playerId].player.nickname;
-      console.log(nickname);
+      const nickname = this.players[data.playerId].player.nickname
       this.rankText.showBombRank(nickname, data.count);
     });
 
     SocketManager.onCurrentHitRanker((data) => {
-      console.log("onCurrentHitRanker", data);
-      const nickname = this.players[data.playerId].player.nickname;
+      const nickname = this.players[data.playerId].player.nickname
       this.rankText.showHitRank(nickname, data.count);
     });
   }

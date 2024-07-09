@@ -40,7 +40,6 @@ export default class MapShrinker {
   }
 
   handleMapShrink(shrinkFactor) {
-    console.log(`Map is shrinking with factor ${shrinkFactor}`);
     const layer = this.scene.mapShrink;
 
     if (shrinkFactor === 0) {
@@ -52,51 +51,8 @@ export default class MapShrinker {
         this.applyShrinkFactor(factor);
       }
       this.currentShrinkFactor = shrinkFactor;
-    } else {
-      console.log("Map has reached minimum size.");
     }
   }
-
-  // handleMapShrink(shrinkFactor) {
-  //   console.log(`Map is shrinking with factor ${shrinkFactor}`);
-  //   const layer = this.scene.mapShrink;
-
-  //   if (shrinkFactor === 0) {
-  //     this.statusText.showText("맵이 줄어들기 시작합니다!", "64px", 3000, 1, 0);
-  //   }
-
-  //   if (this.currentShrinkFactor !== shrinkFactor) {
-
-  //     this.currentShrinkFactor = shrinkFactor;
-
-  //     this.currentWidth = this.initialWidth - this.tileWidth * shrinkFactor;
-  //     this.currentHeight = this.initialHeight - this.tileHeight * shrinkFactor;
-
-  //     const tileXMax = Math.ceil(this.currentWidth / this.tileWidth);
-  //     const tileYMax = Math.ceil(this.currentHeight / this.tileHeight);
-
-  //     for (let x = -1; x < tileXMax; x++) {
-  //       this.overlayTile(layer, x, -1);
-  //       this.overlayTile(layer, x, tileYMax);
-  //     }
-
-  //     for (let y = -1; y < tileYMax; y++) {
-  //       this.overlayTile(layer, -1, y);
-  //       this.overlayTile(layer, tileXMax - 1, y);
-  //     }
-
-  //     this.scene.physics.world.setBounds(
-  //       0,
-  //       0,
-  //       this.currentWidth,
-  //       this.currentHeight
-  //     );
-
-  //     layer.setCollisionByExclusion([-1], true);
-  //   } else {
-  //     console.log("Map has reached minimum size.");
-  //   }
-  // }
 
   overlayTile(layer, tileX, tileY) {
 
@@ -153,7 +109,6 @@ export default class MapShrinker {
   }
 
   reset() {
-    console.log("MapShrinker reset called");
     this.currentWidth = this.initialWidth;
     this.currentHeight = this.initialHeight;
     this.whiteGraphics.clear();
