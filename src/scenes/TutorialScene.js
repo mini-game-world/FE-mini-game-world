@@ -98,8 +98,8 @@ class TutorialScene extends Phaser.Scene {
 
     // star 애니메이션 생성
     this.anims.create({
-      key: 'star',
-      frames: this.anims.generateFrameNumbers('star', { start: 0, end: 3 }),
+      key: 'star1',
+      frames: this.anims.generateFrameNumbers('star'),
       frameRate: 3,
       repeat: -1
     });
@@ -117,19 +117,12 @@ class TutorialScene extends Phaser.Scene {
 
     this.star = this.physics.add.sprite(this.player4.x, this.player4.y - this.player4.displayHeight / 2.5, 'star');
     this.star.setScale(2);
-    this.star.anims.play('star', true);
+    this.star.anims.play('star1', true);
 
     // 튜토리얼 3
     this.anims.create({
         key: 'move1',
         frames: this.anims.generateFrameNumbers('player_move1', { start: 0, end: 3 }),
-        frameRate: 5,
-        repeat: -1
-        });
-    
-    this.anims.create({
-        key: 'question',
-        frames: this.anims.generateFrameNumbers('question', { start: 0, end: 3 }),
         frameRate: 5,
         repeat: -1
         });
