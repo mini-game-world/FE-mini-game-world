@@ -13,7 +13,6 @@ import ItemEffect from "../components/ItemEffect";
 import RankText from "../components/RankText";
 import InfoText from "../components/InfoText";
 
-
 class GameScene extends Phaser.Scene {
   constructor() {
     super("GameScene");
@@ -300,7 +299,6 @@ class GameScene extends Phaser.Scene {
   setBackground() {
     // 타일맵 설정
     const map = this.make.tilemap({ key: "map" });
-    const tileset = map.addTilesetImage("first_tileset", "first_tileset");
     const house_1 = map.addTilesetImage("house_1", "house_1");
     const logs = map.addTilesetImage("logs", "logs");
     const stump_2 = map.addTilesetImage("stump_2", "stump_2");
