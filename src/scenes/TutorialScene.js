@@ -63,14 +63,7 @@ class TutorialScene extends Phaser.Scene {
       frameRate: 5,
       repeat: -1
     });
-
-    this.anims.create({
-      key: 'bomb',
-      frames: this.anims.generateFrameNumbers('bomb', { start: 0, end: 3 }),
-      frameRate: 5,
-      repeat: -1
-    });
-
+    
     this.player1 = this.physics.add.sprite(1000, 1936, "player_move1").setScale(2);
     this.player1.setCollideWorldBounds(false); 
     this.player1.play('move1'); 

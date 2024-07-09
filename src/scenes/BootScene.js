@@ -399,6 +399,13 @@ class BootScene extends Phaser.Scene {
       hideOnComplete: true,
     });
 
+    this.anims.create({
+      key: "bomb",
+      frames: this.anims.generateFrameNumbers("bomb"),
+      frameRate: 5,
+      repeat: -1,
+    });
+
     this.scene.start("MainScene");
   }
 }
