@@ -264,7 +264,6 @@ class PlayerContainer extends Phaser.GameObjects.Container {
         });
       }
 
-      this.nickname.updatePosition(); // 닉네임 위치 업데이트
       if (this.arrow) {
         this.arrow.updatePosition(); // Arrow 위치 업데이트
       }
