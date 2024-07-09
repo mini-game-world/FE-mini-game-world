@@ -61,6 +61,93 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     this.statusIcon = null;
 
     this.collisionChecker = new CollisionChecker();
+
+    // 터치 이동 속성 추가
+    this.isMobile = /Mobi|Android/i.test(navigator.userAgent);
+    if (this.isMobile && this.player.isSelfInitiated) {
+      this.scene.input.on("pointerdown", this.handleTouch, this);
+      this.createTouchButton();
+    }
+
+    // For touch movement
+    this.targetX = null;
+    this.targetY = null;
+  }
+
+  handleTouch(pointer) {
+    if (this.player) {
+      // 공격 버튼 내부 터치 여부 확인
+      if (
+        this.attackButton &&
+        this.attackButton.getBounds().contains(pointer.worldX, pointer.worldY)
+      ) {
+        return; // 공격 버튼을 터치한 경우 이동 처리 안 함
+      }
+
+      const maxDistance = 300; // 최대 이동 거리 설정
+      let targetX = pointer.worldX;
+      let targetY = pointer.worldY;
+      const distance = Phaser.Math.Distance.Between(
+        this.hitBox.x,
+        this.hitBox.y,
+        targetX,
+        targetY
+      );
+
+      if (distance > maxDistance) {
+        const angle = Phaser.Math.Angle.Between(
+          this.hitBox.x,
+          this.hitBox.y,
+          targetX,
+          targetY
+        );
+        targetX = this.hitBox.x + Math.cos(angle) * maxDistance;
+        targetY = this.hitBox.y + Math.sin(angle) * maxDistance;
+      }
+
+      this.targetX = targetX;
+      this.targetY = targetY;
+    }
+  }
+
+  createTouchButton() {
+    const buttonSize = 100;
+    const buttonX = this.scene.cameras.main.width / 2 + 900;
+    const buttonY = this.scene.cameras.main.height / 2 + 500;
+
+    this.attackButton = this.scene.add.circle(
+      buttonX,
+      buttonY,
+      buttonSize * 2,
+      0xff0000,
+      10.5
+    );
+    this.attackButton.setScrollFactor(0); // Button stays in the same place on screen
+
+    this.attackButton.setInteractive();
+    this.attackButton.on("pointerdown", (pointer, localX, localY, event) => {
+      event.stopPropagation(); // 터치 이벤트 전파 방지
+      if (this.player.isPlay && !this.isAttacking && !this.player.isDead) {
+        // 버튼 시각적 반응 추가
+        this.scene.tweens.add({
+          targets: this.attackButton,
+          scaleX: 0.8,
+          scaleY: 0.8,
+          duration: 100,
+          yoyo: true,
+          ease: "Quad.easeInOut",
+        });
+
+        this.isAttacking = true;
+        this.player.anims.play(`attack${this.player.avatar}`, true);
+        this.createClawAttack();
+        this.player.on("animationcomplete", (anim) => {
+          if (anim.key === `attack${this.player.avatar}`) {
+            this.isAttacking = false;
+          }
+        });
+      }
+    });
   }
 
   createInputKeyBoard() {
@@ -126,7 +213,33 @@ class PlayerContainer extends Phaser.GameObjects.Container {
         );
       }
     } else {
-      const { velocityX, velocityY } = this.getVelocity();
+      let { velocityX, velocityY } = this.getVelocity();
+
+      if (this.targetX !== null && this.targetY !== null) {
+        const angle = Phaser.Math.Angle.Between(
+          this.hitBox.x,
+          this.hitBox.y,
+          this.targetX,
+          this.targetY
+        );
+        velocityX = Math.cos(angle) * this.speed;
+        velocityY = Math.sin(angle) * this.speed;
+
+        const distance = Phaser.Math.Distance.Between(
+          this.hitBox.x,
+          this.hitBox.y,
+          this.targetX,
+          this.targetY
+        );
+
+        if (distance < 10) {
+          this.targetX = null;
+          this.targetY = null;
+          velocityX = 0;
+          velocityY = 0;
+        }
+      }
+
       this.hitBox.body.setVelocity(velocityX, velocityY);
 
       if (this.prevX !== this.x || this.prevY !== this.y) {
@@ -214,6 +327,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       duration: 100,
       ease: "Linear",
       onUpdate: () => {
+        if (!this.hitBox) return;
         this.setPosition(this.hitBox.x, this.hitBox.y);
         if (deltaX !== 0 || deltaY !== 0) {
           if (this.player.isDead) {
@@ -232,8 +346,10 @@ class PlayerContainer extends Phaser.GameObjects.Container {
         }
       },
       onComplete: () => {
+        if (!this.player) return;
         clearTimeout(this.player.idleTimeout);
         this.player.idleTimeout = setTimeout(() => {
+          if (!this.player) return;
           if (this.player.isDead) {
             this.player.anims.play(`dead`, true);
           } else {
