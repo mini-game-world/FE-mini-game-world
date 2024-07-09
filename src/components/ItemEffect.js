@@ -6,7 +6,6 @@ class ItemEffect {
   }
 
   applyEffect() {
-    console.log(this.item);
     switch (this.item) {
       case 0:
         this.increaseSpeed();
