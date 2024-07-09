@@ -10,6 +10,7 @@ import playerDeadSprite from "../assets/playerDead.png";
 import clawSprite from "../assets/claw_white.png";
 import bombSprite from "../assets/bomb.png";
 import explosionSprite from "../assets/explosion.png";
+import BodyExplosionSprite from "../assets/bodyExplosion.png";
 import starSprite from "../assets/star.png";
 import question from "../assets/question.png";
 
@@ -229,6 +230,11 @@ class BootScene extends Phaser.Scene {
     this.load.spritesheet("explosion", explosionSprite, {
       frameWidth: 32,
       frameHeight: 32,
+    });
+
+    this.load.spritesheet("BodyExplosion", BodyExplosionSprite, {
+      frameWidth: 204,
+      frameHeight: 204,
     });
 
     this.load.spritesheet("star", starSprite, {
