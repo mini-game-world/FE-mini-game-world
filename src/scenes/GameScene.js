@@ -31,6 +31,7 @@ class GameScene extends Phaser.Scene {
     this.chatDisplay = null;
 
     this.itemsGroup = null;
+    this.isMobile = /Mobi|Android/i.test(navigator.userAgent);
   }
 
   create() {
@@ -47,7 +48,9 @@ class GameScene extends Phaser.Scene {
     this.gameStatusText = new GameStatusText(this);
 
     this.mapShrinker = new MapShrinker(this);
-    this.chatDisplay = new ChatDisplay(this);
+    if (!this.isMobile) {
+      this.chatDisplay = new ChatDisplay(this);
+    }
 
     this.itemsGroup = this.physics.add.group();
 
@@ -68,7 +71,9 @@ class GameScene extends Phaser.Scene {
         if (isSelfInitiated) {
           this.player = playerContainer;
           this.cameraManager.smoothFollow(this.player);
-          this.chatBox = new ChatBox(this, this.player);
+          if (!this.isMobile) {
+            this.chatBox = new ChatBox(this, this.player);
+          }
           this.physics.add.collider(this.player.hitBox, this.backGround);
           this.physics.add.collider(this.player.hitBox, this.house);
           this.physics.add.collider(this.player.hitBox, this.object);
@@ -246,10 +251,12 @@ class GameScene extends Phaser.Scene {
     SocketManager.onChatMessage(({ playerId, message }) => {
       if (this.players[playerId]) {
         this.players[playerId].showChatMessage(message);
-        this.chatDisplay.addMessage(
-          this.players[playerId].player.nickname,
-          message
-        );
+        if (!this.isMobile && this.chatDisplay) {
+          this.chatDisplay.addMessage(
+            this.players[playerId].player.nickname,
+            message
+          );
+        }
       }
     });
 
