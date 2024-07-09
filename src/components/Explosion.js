@@ -2,7 +2,7 @@ import Phaser from "phaser";
 
 class Explosion extends Phaser.GameObjects.Sprite {
   constructor(scene, player, container) {
-    super(scene, player.x, player.y, "explosion");
+    super(scene, player.x, player.y + player.height / 2 - 150, "explosion");
     this.scene = scene;
     this.player = player;
     this.container = container;
@@ -25,8 +25,6 @@ class Explosion extends Phaser.GameObjects.Sprite {
     this.createAnimations();
     this.play("explode");
 
-    this.updatePosition();
-
     this.on("animationcomplete", () => {
       this.destroy();
     });
@@ -39,10 +37,6 @@ class Explosion extends Phaser.GameObjects.Sprite {
       frameRate: 15,
       repeat: 0,
     });
-  }
-
-  updatePosition() {
-    this.setPosition(this.player.x, this.player.y - 50); // Adjust the Y offset as needed
   }
 }
 
