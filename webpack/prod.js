@@ -2,6 +2,8 @@ const merge = require("webpack-merge");
 const path = require("path");
 const base = require("./base");
 const TerserPlugin = require("terser-webpack-plugin");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 module.exports = merge(base, {
   mode: "production",
@@ -24,4 +26,16 @@ module.exports = merge(base, {
       }),
     ],
   },
+  plugins: [
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: path.resolve(__dirname, '../src/assets/logo.png'), to: 'assets' },
+      ],
+    }),
+    new HtmlWebpackPlugin({
+      template: path.resolve(__dirname, '../index.html'),
+      inject: 'body',
+      favicon: path.resolve(__dirname, '../src/assets/logo.png'), // Set favicon
+    }),
+  ],
 });
