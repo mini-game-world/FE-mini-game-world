@@ -8,6 +8,7 @@ import Arrow from "./Arrow";
 import ChatBalloon from "./ChatBalloon";
 import Bomb from "./Bomb";
 import Explosion from "./Explosion";
+import BodyExplosion from "./BodyExplosion";
 import CollisionChecker from "../utils/CollisionChecker";
 import StatusIcon from "./StatusIcon";
 
@@ -443,6 +444,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     if (this.bomb) {
       this.bomb.destroy();
       new Explosion(this.scene, this.player, this);
+      new BodyExplosion(this.scene, this.player, this);
       this.bomb = null;
     }
   }
