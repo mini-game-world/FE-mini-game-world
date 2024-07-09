@@ -6,7 +6,7 @@ class Nickname extends Phaser.GameObjects.Text {
       fontSize: "28px",
       fill: "#ffffff",
       align: "center",
-      fontFamily: "Bazzi",
+      fontFamily: "BMJUA",
       stroke: "#000000",
       strokeThickness: 2,
     });

@@ -35,6 +35,7 @@ class TutorialScene extends Phaser.Scene {
     };
 
     this.createButton(this.scale.width - 300, 200, '시작하기', () => {
+      this.sound.play('click_sound');
       this.bgmManager.stopMainBGM();
       this.scene.start('GameScene');
     });

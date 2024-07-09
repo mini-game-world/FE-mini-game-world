@@ -117,9 +117,16 @@ class SocketManager {
   onMapShrink(callback) {
     this.channel.on("mapShrink", callback);
   }
+  
+  onCurrentBombRanker(callback) {
+    this.channel.on("currentBombRanker", callback);
+
+  onCurrentHitRanker(callback) {
+    this.channel.on("currentHitRanker", callback);
 
   onPlayInfo(callback) {
     this.channel.on("playInfo", callback);
+
   }
 }
 

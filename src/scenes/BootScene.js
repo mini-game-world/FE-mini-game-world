@@ -37,6 +37,7 @@ import scratchSound from "../assets/sounds/scratch.ogg";
 import timerSound from "../assets/sounds/timer.ogg";
 import explosionSound from "../assets/sounds/explosion.ogg";
 import winnerSound from "../assets/sounds/winner.ogg";
+import buttonClickSound from "../assets/sounds/ButtonClick.ogg";
 import playingBGM1 from "../assets/bgm/playingBGM1.mp3";
 import playingBGM2 from "../assets/bgm/playingBGM2.mp3";
 import waitingBGM1 from "../assets/bgm/waitingBGM1.mp3";
@@ -203,6 +204,7 @@ class BootScene extends Phaser.Scene {
     this.load.audio("timer_sound", timerSound);
     this.load.audio("explosion_sound", explosionSound);
     this.load.audio("winner_sound", winnerSound);
+    this.load.audio("click_sound", buttonClickSound);
     this.load.audio("playingBGM1", playingBGM1);
     this.load.audio("playingBGM2", playingBGM2);
     this.load.audio("waitingBGM1", waitingBGM1);

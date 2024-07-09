@@ -6,9 +6,9 @@ export default class MainScene extends Phaser.Scene {
         super({ key: 'MainScene' });
     }
 
-    init() {
-        this.time.delayedCall(10, this.create, [], this);
-    }
+    // init() {
+    //     this.time.delayedCall(1000, this.create, [], this);
+    // }
 
     create() {
         this.bgmManager = new BGMManager(this);
@@ -18,7 +18,7 @@ export default class MainScene extends Phaser.Scene {
 
         this.add.image(this.scale.width / 2, this.scale.height / 2, 'background')
             .setDisplaySize(this.scale.width, this.scale.height);
-
+        
         const title = this.add.text(
             this.scale.width / 2, this.scale.height / 2 - 850,
             "폭탄대소동",
@@ -74,11 +74,13 @@ export default class MainScene extends Phaser.Scene {
         this.bomb1.play('bomb');
 
         this.createButton(this.scale.width / 2, this.scale.height - 1450, '시작하기', () => {
+            this.sound.play('click_sound');
             this.bgmManager.stopMainBGM();
             this.scene.start('GameScene');
         });
 
         this.createButton(this.scale.width / 2, this.scale.height - 1150, '튜토리얼', () => {
+            this.sound.play('click_sound');
             this.scene.start('TutorialScene');
         });
 
