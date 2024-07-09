@@ -33,7 +33,10 @@ class GameScene extends Phaser.Scene {
     this.chatDisplay = null;
 
     this.itemsGroup = null;
-    this.isMobile = /Mobi|Android/i.test(navigator.userAgent);
+    this.isMobile =
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      );
   }
 
   create() {

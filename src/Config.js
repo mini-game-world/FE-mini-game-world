@@ -5,7 +5,10 @@ import GameScene from "./scenes/GameScene";
 import TutorialScene from "./scenes/TutorialScene";
 
 // 모바일 기기 감지
-const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+const isMobile =
+  /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent
+  );
 
 const Config = {
   type: Phaser.AUTO,

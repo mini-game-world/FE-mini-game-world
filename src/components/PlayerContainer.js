@@ -63,7 +63,10 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     this.collisionChecker = new CollisionChecker();
 
     // 터치 이동 속성 추가
-    this.isMobile = /Mobi|Android/i.test(navigator.userAgent);
+    this.isMobile =
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      );
     if (this.isMobile && this.player.isSelfInitiated) {
       this.scene.input.on("pointerdown", this.handleTouch, this);
       this.createTouchButton();
