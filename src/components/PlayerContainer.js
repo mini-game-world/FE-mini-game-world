@@ -10,6 +10,8 @@ import Bomb from "./Bomb";
 import Explosion from "./Explosion";
 import CollisionChecker from "../utils/CollisionChecker";
 import StatusIcon from "./StatusIcon";
+import ChatBox from "./ChatBox";
+import ChatDisplay from "./ChatDisplay";
 
 class PlayerContainer extends Phaser.GameObjects.Container {
   constructor(scene, x, y, texture, info) {
@@ -62,14 +64,20 @@ class PlayerContainer extends Phaser.GameObjects.Container {
 
     this.collisionChecker = new CollisionChecker();
 
-    // 터치 이동 속성 추가
-    this.isMobile =
-      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-        navigator.userAgent
-      );
-    if (this.isMobile && this.player.isSelfInitiated) {
-      this.scene.input.on("pointerdown", this.handleTouch, this);
-      this.createTouchButton();
+    this.chatDisplay = null;
+
+    if (
+      this.scene.sys.game.device.os.android ||
+      this.scene.sys.game.device.os.iPhone ||
+      this.scene.sys.game.device.os.iPad
+    ) {
+      if (this.player.isSelfInitiated) {
+        this.scene.input.on("pointerdown", this.handleTouch, this);
+        this.createTouchButton();
+      }
+    } else {
+      this.chatBox = new ChatBox(this.scene, this);
+      this.chatDisplay = new ChatDisplay(this);
     }
 
     // For touch movement
@@ -490,6 +498,12 @@ class PlayerContainer extends Phaser.GameObjects.Container {
         });
       },
     });
+  }
+
+  addMessage(nickname, message) {
+    if (this.chatDisplay) {
+      this.chatDisplay.addMessage(nickname, message);
+    }
   }
 
   addStatusIcon(item) {

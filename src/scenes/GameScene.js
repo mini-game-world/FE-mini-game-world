@@ -5,7 +5,6 @@ import GameStatusText from "../components/GameStatusText";
 import MapShrinker from "../utils/MapShrinker";
 import BGMManager from "../utils/BGMManager";
 import CameraManager from "../utils/CameraManager";
-import ChatBox from "../components/ChatBox";
 import PlayerContainer from "../components/PlayerContainer";
 import Item from "../components/Item";
 import ChatDisplay from "../components/ChatDisplay";
@@ -29,14 +28,7 @@ class GameScene extends Phaser.Scene {
     this.cameraManager = null;
     this.mapShrinker = null;
 
-    this.chatBox = null;
-    this.chatDisplay = null;
-
     this.itemsGroup = null;
-    this.isMobile =
-      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-        navigator.userAgent
-      );
   }
 
   create() {
@@ -54,9 +46,6 @@ class GameScene extends Phaser.Scene {
     this.rankText = new RankText(this);
 
     this.mapShrinker = new MapShrinker(this);
-    if (!this.isMobile) {
-      this.chatDisplay = new ChatDisplay(this);
-    }
 
     this.itemsGroup = this.physics.add.group();
 
@@ -77,9 +66,6 @@ class GameScene extends Phaser.Scene {
         if (isSelfInitiated) {
           this.player = playerContainer;
           this.cameraManager.smoothFollow(this.player);
-          if (!this.isMobile) {
-            this.chatBox = new ChatBox(this, this.player);
-          }
           this.physics.add.collider(this.player.hitBox, this.backGround);
           this.physics.add.collider(this.player.hitBox, this.house);
           this.physics.add.collider(this.player.hitBox, this.object);
@@ -257,12 +243,10 @@ class GameScene extends Phaser.Scene {
     SocketManager.onChatMessage(({ playerId, message }) => {
       if (this.players[playerId]) {
         this.players[playerId].showChatMessage(message);
-        if (!this.isMobile && this.chatDisplay) {
-          this.chatDisplay.addMessage(
-            this.players[playerId].player.nickname,
-            message
-          );
-        }
+        this.players[playerId].addMessage(
+          this.players[playerId].player.nickname,
+          message
+        );
       }
     });
 
@@ -289,12 +273,12 @@ class GameScene extends Phaser.Scene {
     });
 
     SocketManager.onCurrentBombRanker((data) => {
-      const nickname = this.players[data.playerId].player.nickname
+      const nickname = this.players[data.playerId].player.nickname;
       this.rankText.showBombRank(nickname, data.count);
     });
 
     SocketManager.onCurrentHitRanker((data) => {
-      const nickname = this.players[data.playerId].player.nickname
+      const nickname = this.players[data.playerId].player.nickname;
       this.rankText.showHitRank(nickname, data.count);
     });
   }
