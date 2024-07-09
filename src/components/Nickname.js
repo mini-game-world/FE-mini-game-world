@@ -8,7 +8,7 @@ class Nickname extends Phaser.GameObjects.Text {
       align: "center",
       fontFamily: "BMJUA",
       stroke: "#000000",
-      strokeThickness: 2,
+      strokeThickness: 4,
     });
     this.scene = scene;
     this.player = player;
