@@ -17,7 +17,7 @@ export default class MainScene extends Phaser.Scene {
       .setDisplaySize(this.scale.width, this.scale.height);
 
     const title = this.add
-      .text(this.scale.width / 2, this.scale.height / 2 - 850, "폭탄대소동", {
+      .text(this.scale.width / 2, this.scale.height / 2, "폭탄대소동1", {
         fontFamily: "BMJUA",
         fontSize: "400px",
         color: "#ffffff",
