@@ -264,10 +264,6 @@ class PlayerContainer extends Phaser.GameObjects.Container {
         });
       }
 
-      if (this.arrow) {
-        this.arrow.updatePosition(); // Arrow 위치 업데이트
-      }
-
       // 컨테이너 위치 업데이트
       this.setPosition(this.hitBox.x, this.hitBox.y);
 
