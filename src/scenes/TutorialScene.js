@@ -8,7 +8,7 @@ class TutorialScene extends Phaser.Scene {
   }
 
   create() {
-    this.bgmManager = this.scene.get('MainScene').data.get('bgmManager');
+    // this.bgmManager = this.scene.get('MainScene').data.get('bgmManager');
 
     this.add.image(this.scale.width / 2, this.scale.height / 2, "background").setDisplaySize(this.scale.width, this.scale.height);
 
@@ -36,7 +36,7 @@ class TutorialScene extends Phaser.Scene {
 
     this.createButton(this.scale.width - 300, 200, '시작하기', () => {
       this.sound.play('click_sound');
-      this.bgmManager.stopMainBGM();
+      // this.bgmManager.stopMainBGM();
       this.scene.start('GameScene');
     });
 

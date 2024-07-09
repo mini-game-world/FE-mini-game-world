@@ -7,10 +7,10 @@ export default class MainScene extends Phaser.Scene {
   }
 
   create() {
-    this.bgmManager = new BGMManager(this);
-    this.bgmManager.startMainBGM();
+    // this.bgmManager = new BGMManager(this);
+    // this.bgmManager.startMainBGM();
 
-    this.data.set("bgmManager", this.bgmManager);
+    // this.data.set("bgmManager", this.bgmManager);
 
     this.add
       .image(this.scale.width / 2, this.scale.height / 2, "background")
@@ -87,9 +87,9 @@ export default class MainScene extends Phaser.Scene {
       () => {
         if (!this.scene) return;
         this.sound.play("click_sound");
-        if (this.bgmManager) {
-          this.bgmManager.stopMainBGM();
-        }
+        // if (this.bgmManager) {
+        //   this.bgmManager.stopMainBGM();
+        // }
         this.scene.start("GameScene");
       }
     );

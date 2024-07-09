@@ -7,7 +7,6 @@ import BGMManager from "../utils/BGMManager";
 import CameraManager from "../utils/CameraManager";
 import PlayerContainer from "../components/PlayerContainer";
 import Item from "../components/Item";
-import ChatDisplay from "../components/ChatDisplay";
 import ItemEffect from "../components/ItemEffect";
 import RankText from "../components/RankText";
 import InfoText from "../components/InfoText";
@@ -24,7 +23,7 @@ class GameScene extends Phaser.Scene {
     this.gameStatusText = null;
     this.rankText = null;
 
-    this.bgmManager = null;
+    // this.bgmManager = null;
     this.cameraManager = null;
     this.mapShrinker = null;
 
@@ -34,11 +33,10 @@ class GameScene extends Phaser.Scene {
   create() {
     SocketManager.connect();
     this.setBackground();
-
     this.cameraManager = new CameraManager(this);
 
-    this.bgmManager = new BGMManager(this);
-    this.bgmManager.startWaitingBGM();
+    // this.bgmManager = new BGMManager(this);
+    // this.bgmManager.startWaitingBGM();
 
     this.resultText = new ResultText(this);
     this.infoText = new InfoText(this);
@@ -124,13 +122,13 @@ class GameScene extends Phaser.Scene {
 
     SocketManager.onPlayingGame((isPlaying) => {
       if (isPlaying === 1) {
-        this.bgmManager.startPlayingBGM();
+        // this.bgmManager.startPlayingBGM();
         this.gameStatusText.showStart();
         Object.values(this.players).forEach((player) => {
           player.setPlay();
         });
       } else {
-        this.bgmManager.startWaitingBGM();
+        // this.bgmManager.startWaitingBGM();
         this.gameStatusText.showEnd();
         Object.values(this.players).forEach((player) => {
           player.setReady();
@@ -144,7 +142,7 @@ class GameScene extends Phaser.Scene {
     });
 
     SocketManager.onPlayInfo((survivorCount) => {
-      if (this.player.player.isPlay) {
+      if (this.player && this.player.player.isPlay) {
         this.updatePlayInfo(survivorCount);
       }
     });
@@ -282,7 +280,6 @@ class GameScene extends Phaser.Scene {
       this.rankText.showHitRank(nickname, data.count);
     });
   }
-
   setBackground() {
     // 타일맵 설정
     const map = this.make.tilemap({ key: "map" });
@@ -342,14 +339,14 @@ class GameScene extends Phaser.Scene {
   }
 
   updatePlayerCountText() {
-    if (!this.player.player.isPlay) {
+    if (this.player && !this.player.player.isPlay) {
       const playerCount = Object.keys(this.players).length;
       this.infoText.update(playerCount);
     }
   }
 
   updatePlayInfo(survivorCount) {
-    if (this.player.player.isPlay) {
+    if (this.player && this.player.player.isPlay) {
       this.infoText.updatePlayInfo(survivorCount);
     }
   }
