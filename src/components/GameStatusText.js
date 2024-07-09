@@ -14,6 +14,8 @@ class GameStatusText extends Phaser.GameObjects.Text {
         padding: { x: 10, y: 5 },
         align: "center",
         fontFamily: "BMJUA",
+        stroke: "#000000",
+        strokeThickness: 10,
       }
     );
     this.scene = scene;

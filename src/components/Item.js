@@ -3,7 +3,7 @@ import Phaser from "phaser";
 class Item extends Phaser.GameObjects.Image {
   constructor(scene, x, y, texture) {
     super(scene, x, y, texture);
-    this.setScale(0.5);
+    this.setScale(0.15);
 
     scene.add.existing(this);
   }
