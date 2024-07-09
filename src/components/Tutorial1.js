@@ -7,8 +7,10 @@ export default class Tutorial1 {
 
     this.bombWithPlayer1 = true;
 
-    this.bomb = this.scene.add.sprite(this.player1.x - 20, this.player1.y - 180, this.bombTexture).setScale(2);
-    this.bomb.play('bomb');
+    this.bomb = this.scene.add
+      .sprite(this.player1.x - 20, this.player1.y - 180, this.bombTexture)
+      .setScale(2);
+    this.bomb.play("bomb");
 
     this.tutorial1();
   }
@@ -20,8 +22,10 @@ export default class Tutorial1 {
 
         this.gotoPlayer1(() => {
           this.bombWithPlayer1 = true;
-          this.bomb.setPosition(this.player1.x - 20, this.player1.y - 180);
-          this.bomb.play('bomb');
+          if (this.bomb && this.player1) {
+            this.bomb.setPosition(this.player1.x - 20, this.player1.y - 180);
+            this.bomb.play("bomb");
+          }
           this.tutorial1();
         });
       });
@@ -29,34 +33,48 @@ export default class Tutorial1 {
   }
 
   gotoPlayer2(callback) {
-    this.player1.setFlipX(false);
-    this.scene.tweens.add({
-      targets: this.player1,
-      x: this.player2.x,
-      y: this.player2.y,
-      duration: 2000,
-      ease: 'Linear',
-      onComplete: callback
-    });
+    if (this.player1 && this.player2) {
+      this.player1.setFlipX(false);
+      this.scene.tweens.add({
+        targets: this.player1,
+        x: this.player2.x,
+        y: this.player2.y,
+        duration: 2000,
+        ease: "Linear",
+        onComplete: () => {
+          if (this.player1 && this.player2) {
+            callback();
+          }
+        },
+      });
 
-    this.scene.tweens.add({
-      targets: this.bomb,
-      x: this.player2.x - 20,
-      y: this.player2.y - 180,
-      duration: 2000,
-      ease: 'Linear'
-    });
+      if (this.bomb) {
+        this.scene.tweens.add({
+          targets: this.bomb,
+          x: this.player2.x - 20,
+          y: this.player2.y - 180,
+          duration: 2000,
+          ease: "Linear",
+        });
+      }
+    }
   }
 
   gotoPlayer1(callback) {
-    this.scene.tweens.add({
-      targets: this.player1,
-      x: 1000,
-      y: 1936,
-      duration: 2000,
-      ease: 'Linear',
-      onComplete: callback
-    });
-    this.player1.setFlipX(true);
+    if (this.player1) {
+      this.scene.tweens.add({
+        targets: this.player1,
+        x: 1000,
+        y: 1936,
+        duration: 2000,
+        ease: "Linear",
+        onComplete: () => {
+          if (this.player1) {
+            callback();
+          }
+        },
+      });
+      this.player1.setFlipX(true);
+    }
   }
 }

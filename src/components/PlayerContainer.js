@@ -327,7 +327,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       duration: 100,
       ease: "Linear",
       onUpdate: () => {
-        if (!this.hitBox) return;
+        if (!this.hitBox || !this.player) return;
         this.setPosition(this.hitBox.x, this.hitBox.y);
         if (deltaX !== 0 || deltaY !== 0) {
           if (this.player.isDead) {
@@ -369,6 +369,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       this.player.anims
         .play(`stun${this.player.avatar}`, true)
         .once("animationcomplete", () => {
+          if (!this.player) return;
           this.player.anims.play(`idle${this.player.avatar}`, true);
           this.isStunned = false;
         });
@@ -425,6 +426,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     this.player.anims
       .play(`stun${this.player.avatar}`, true)
       .once("animationcomplete", () => {
+        if (!this.player) return;
         this.player.anims.play(`idle${this.player.avatar}`, true);
         this.isStunned = false;
       });
@@ -468,6 +470,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       duration: 2000,
       ease: "Power1",
       onUpdate: () => {
+        if (!this.player) return;
         const { velocityX, velocityY } = this.getVelocity();
         if (velocityX !== 0 || velocityY !== 0) {
           this.player.anims.play(`move${this.player.avatar}`, true);
@@ -475,13 +478,14 @@ class PlayerContainer extends Phaser.GameObjects.Container {
         }
       },
       onComplete: () => {
-        if (!this.scene) return;
+        if (!this.scene || !this.player) return;
         this.scene.tweens.add({
           targets: this.player,
           scale: 1,
           duration: 2000,
           ease: "Power1",
           onUpdate: () => {
+            if (!this.player) return;
             const { velocityX, velocityY } = this.getVelocity();
             if (velocityX !== 0 || velocityY !== 0) {
               this.player.anims.play(`move${this.player.avatar}`, true);
