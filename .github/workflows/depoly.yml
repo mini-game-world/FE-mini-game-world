@@ -3,7 +3,7 @@ name: Deploy To S3
 on:
   push:
     branches:
-      - dev
+      - 68-bomb-win-fix
 
 jobs:
   Deploy:

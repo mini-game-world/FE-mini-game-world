@@ -396,6 +396,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     this.isWinner = false;
     this.isAttacking = false;
     this.player.setReadyStatus();
+    this.nickname.setColor("#ffffff");
     this.hitBox.body.checkCollision.none = false;
   }
 
@@ -406,8 +407,9 @@ class PlayerContainer extends Phaser.GameObjects.Container {
 
   setDead() {
     this.isAttacking = false;
-    this.explodeBomb();
     this.player.setDeadStatus();
+    this.nickname.setColor("#ff0000");
+    this.explodeBomb();
     this.hitBox.body.checkCollision.none = true;
   }
 
@@ -419,6 +421,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
   }
 
   receiveBomb() {
+    if (this.player.isPlay && this.player.isDead) return;
     this.isStunned = true;
     this.isAttacking = false;
 
@@ -429,6 +432,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       this.add(this.bomb);
     }
 
+    if (this.player.isPlay && this.player.isDead) return;
     this.player.anims
       .play(`stun${this.player.avatar}`, true)
       .once("animationcomplete", () => {
@@ -464,6 +468,8 @@ class PlayerContainer extends Phaser.GameObjects.Container {
   }
 
   choice() {
+    this.nickname.setColor("#FFD700");
+
     if (this.player.isDead) {
       this.player.isDead = false;
       this.player.setTexture(`player${this.player.avatar}`);
@@ -471,6 +477,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       this.player.setAlpha(1);
       this.hitBox.body.checkCollision.none = false;
     }
+
     this.scene.tweens.add({
       targets: this.player,
       scale: 3,
@@ -478,10 +485,12 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       ease: "Power1",
       onUpdate: () => {
         if (!this.player) return;
-        const { velocityX, velocityY } = this.getVelocity();
-        if (velocityX !== 0 || velocityY !== 0) {
-          this.player.anims.play(`move${this.player.avatar}`, true);
-          this.player.setFlipX(velocityX > 0);
+        if (this.player.isSelfInitiated) {
+          const { velocityX, velocityY } = this.getVelocity();
+          if (velocityX !== 0 || velocityY !== 0) {
+            this.player.anims.play(`move${this.player.avatar}`, true);
+            this.player.setFlipX(velocityX > 0);
+          }
         }
       },
       onComplete: () => {
@@ -493,10 +502,12 @@ class PlayerContainer extends Phaser.GameObjects.Container {
           ease: "Power1",
           onUpdate: () => {
             if (!this.player) return;
-            const { velocityX, velocityY } = this.getVelocity();
-            if (velocityX !== 0 || velocityY !== 0) {
-              this.player.anims.play(`move${this.player.avatar}`, true);
-              this.player.setFlipX(velocityX > 0);
+            if (this.player.isSelfInitiated) {
+              const { velocityX, velocityY } = this.getVelocity();
+              if (velocityX !== 0 || velocityY !== 0) {
+                this.player.anims.play(`move${this.player.avatar}`, true);
+                this.player.setFlipX(velocityX > 0);
+              }
             }
           },
         });

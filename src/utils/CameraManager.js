@@ -20,7 +20,9 @@ class CameraManager {
 
     this.mainCamera.once("camerapancomplete", () => {
       this.mainCamera.startFollow(target);
-      target.isWinner = true; // 카메라 포커싱 후 이동되게 수정
+      if (target.player.isSelfInitiated) {
+        target.isWinner = true;
+      } // 카메라 포커싱 후 이동되게 수정
     });
   }
 

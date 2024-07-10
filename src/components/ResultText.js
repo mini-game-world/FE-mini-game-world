@@ -1,6 +1,6 @@
 import Bomb_master from "./Bomb_master";
 import Crown from "./Crown";
-import Punching_bag from "./Punching_bag";
+import Boxing from "./Boxing";
 
 class ResultText extends Phaser.GameObjects.Text {
   constructor(scene) {
@@ -27,10 +27,10 @@ class ResultText extends Phaser.GameObjects.Text {
     this.scene.add.existing(this);
 
     this.winnerText = null;
-    this.punchingbagText = null;
+    this.punchKingText = null;
     this.bombmasterText = null;
     this.crownImage = null;
-    this.punching_bagImage = null;
+    this.punchKingImage = null;
     this.bomb_masterImage = null;
   }
 
@@ -42,12 +42,12 @@ class ResultText extends Phaser.GameObjects.Text {
     this.crownImage = new Crown(this.scene, this);
   }
 
-  createPunching_bagImage() {
-    if (this.punching_bagImage) {
-      this.punching_bagImage.destroy();
-      this.punching_bagImage = null;
+  createPunchKingImage() {
+    if (this.punchKingImage) {
+      this.punchKingImage.destroy();
+      this.punchKingImage = null;
     }
-    this.punching_bagImage = new Punching_bag(this.scene, this);
+    this.punchKingImage = new Boxing(this.scene, this);
   }
 
   createBomb_masterImage() {
@@ -59,13 +59,11 @@ class ResultText extends Phaser.GameObjects.Text {
   }
 
   showWinner(name) {
-    if (this.winnerText) {
-      this.winnerText.destroy();
-    }
     this.createCrownImage();
 
     this.winnerSound = this.scene.sound.add("winner_sound", { volume: 0.2 });
     this.winnerSound.play();
+
     this.winnerText = `최종 우승자!! ${name}`;
     this.setText(this.winnerText);
     this.setAlpha(1);
@@ -77,33 +75,35 @@ class ResultText extends Phaser.GameObjects.Text {
           this.crownImage.destroy();
           this.crownImage = null;
         }
-        this.winnerText = "";
+        if (this.winnerText) {
+          this.winnerText = null;
+        }
       },
       [],
       this.scene
     );
   }
 
-  showPunchingBag(name) {
-    if (this.punchingbagText) {
-      this.punchingbagText = null;
-    }
-    this.createPunching_bagImage();
+  showPunchKing(name) {
+    this.createPunchKingImage();
 
     this.winnerSound = this.scene.sound.add("winner_sound", { volume: 0.2 });
     this.winnerSound.play();
-    this.punchingbagText = `동 네 깡 패 !! ${name}`;
-    this.setText(this.punchingbagText);
+
+    this.punchKingText = `동 네 깡 패 !! ${name}`;
+    this.setText(this.punchKingText);
     this.setAlpha(1);
     this.scene.time.delayedCall(
       5000,
       () => {
         this.setAlpha(0);
-        if (this.punching_bagImage) {
-          this.punching_bagImage.destroy();
-          this.punching_bagImage = null;
+        if (this.punchKingImage) {
+          this.punchKingImage.destroy();
+          this.punchKingImage = null;
         }
-        this.punchingbagText = null;
+        if (this.punchKingText) {
+          this.punchKingText = null;
+        }
       },
       [],
       this.scene
@@ -111,32 +111,14 @@ class ResultText extends Phaser.GameObjects.Text {
   }
 
   showBombMaster(name) {
-    this.clearText();
-
     this.createBomb_masterImage();
 
     this.winnerSound = this.scene.sound.add("winner_sound", { volume: 0.2 });
     this.winnerSound.play();
 
-    this.bombMasterText = this.scene.add.text(
-      this.scene.cameras.main.width / 2,
-      this.scene.cameras.main.height / 2 -
-        this.scene.cameras.main.height / 4 / this.scene.cameras.main.zoom,
-      `폭탄돌리기왕 ${name}`,
-      {
-        fontFamily: "Arial Black",
-        fontSize: 100,
-        color: "#ffffff",
-        stroke: "#000000",
-        strokeThickness: 8,
-        align: "center",
-        fontFamily: "BMJUA",
-      }
-    );
-    this.bombMasterText.setDepth(101);
-    this.bombMasterText.setScrollFactor(0);
-    this.bombMasterText.setOrigin(0.5, 0);
-    this.bombMasterText.setAlpha(1);
+    this.bombMasterText = `폭탄돌리기왕 ${name}`;
+    this.setText(this.bombMasterText);
+    this.setAlpha(1);
 
     this.scene.time.delayedCall(
       5000,
@@ -146,10 +128,9 @@ class ResultText extends Phaser.GameObjects.Text {
           this.bomb_masterImage.destroy();
           this.bomb_masterImage = null;
         }
-        this.bombMasterText.setAlpha(0);
-        this.bombMasterText.destroy();
-        this.bombMasterText = null;
-        this.clearText();
+        if (this.bombMasterText) {
+          this.bombMasterText = null;
+        }
       },
       [],
       this.scene
@@ -161,21 +142,15 @@ class ResultText extends Phaser.GameObjects.Text {
       this.crownImage.destroy();
       this.crownImage = null;
     }
-    if (this.punching_bagImage) {
-      this.punching_bagImage.destroy();
-      this.punching_bagImage = null;
+    if (this.punchKingImage) {
+      this.punchKingImage.destroy();
+      this.punchKingImage = null;
     }
     if (this.bomb_masterImage) {
       this.bomb_masterImage.destroy();
       this.bomb_masterImage = null;
     }
-    this.scene.events.off("update", this.updatePosition, this);
     super.destroy();
-  }
-
-  clearText() {
-    this.setAlpha(0);
-    this.setText("");
   }
 }
 
