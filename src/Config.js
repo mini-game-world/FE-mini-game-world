@@ -4,10 +4,17 @@ import MainScene from "./scenes/MainScene";
 import GameScene from "./scenes/GameScene";
 import TutorialScene from "./scenes/TutorialScene";
 
+const platform = /iPhone|iPad|iPod/i.test(navigator.userAgent)
+  ? "ios"
+  : "other";
+
 const Config = {
   type: Phaser.AUTO,
   width: 3840,
   height: 2560,
+  audio: {
+    noAudio: platform === "ios",
+  },
   scene: [BootScene, MainScene, TutorialScene, GameScene],
   pixelArt: true,
   scale: {
