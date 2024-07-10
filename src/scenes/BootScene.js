@@ -39,10 +39,10 @@ import timerSound from "../assets/sounds/timer.ogg";
 import explosionSound from "../assets/sounds/explosion.ogg";
 import winnerSound from "../assets/sounds/winner.ogg";
 import buttonClickSound from "../assets/sounds/ButtonClick.ogg";
-import playingBGM1 from "../assets/bgm/playingBGM1.mp3";
-import playingBGM2 from "../assets/bgm/playingBGM2.mp3";
-import waitingBGM1 from "../assets/bgm/waitingBGM1.mp3";
-import waitingBGM2 from "../assets/bgm/waitingBGM2.mp3";
+import playingBGM1 from "../assets/bgm/playingBGM1.ogg";
+import playingBGM2 from "../assets/bgm/playingBGM2.ogg";
+import waitingBGM1 from "../assets/bgm/waitingBGM1.ogg";
+import waitingBGM2 from "../assets/bgm/waitingBGM2.ogg";
 import mainBGM from "../assets/bgm/mainBGM.ogg";
 
 // Import player assets from player0 to player30

@@ -37,7 +37,7 @@ class SocketManager {
 
     this.channel.on("ping", () => {
       this.channel.emit("pong");
-      });
+    });
   }
 
   onCurrentPlayers(callback) {
@@ -121,7 +121,7 @@ class SocketManager {
   onMapShrink(callback) {
     this.channel.on("mapShrink", callback);
   }
-  
+
   onCurrentBombRanker(callback) {
     this.channel.on("currentBombRanker", callback);
   }

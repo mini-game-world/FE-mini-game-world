@@ -11,6 +11,8 @@ import Explosion from "./Explosion";
 import BodyExplosion from "./BodyExplosion";
 import CollisionChecker from "../utils/CollisionChecker";
 import StatusIcon from "./StatusIcon";
+import ChatBox from "./ChatBox";
+import ChatDisplay from "./ChatDisplay";
 
 class PlayerContainer extends Phaser.GameObjects.Container {
   constructor(scene, x, y, texture, info) {
@@ -63,11 +65,22 @@ class PlayerContainer extends Phaser.GameObjects.Container {
 
     this.collisionChecker = new CollisionChecker();
 
-    // 터치 이동 속성 추가
-    this.isMobile = /Mobi|Android/i.test(navigator.userAgent);
-    if (this.isMobile && this.player.isSelfInitiated) {
-      this.scene.input.on("pointerdown", this.handleTouch, this);
-      this.createTouchButton();
+    this.chatDisplay = null;
+
+    if (
+      this.scene.sys.game.device.os.android ||
+      this.scene.sys.game.device.os.iPhone ||
+      this.scene.sys.game.device.os.iPad
+    ) {
+      if (this.player.isSelfInitiated) {
+        this.scene.input.on("pointerdown", this.handleTouch, this);
+        this.createTouchButton();
+      }
+    } else {
+      if (this.player.isSelfInitiated) {
+        this.chatBox = new ChatBox(this.scene);
+        this.chatDisplay = new ChatDisplay(this.scene);
+      }
     }
 
     // For touch movement
@@ -263,14 +276,6 @@ class PlayerContainer extends Phaser.GameObjects.Container {
             this.isAttacking = false;
           }
         });
-      }
-
-      this.nickname.updatePosition(); // 닉네임 위치 업데이트
-      if (this.arrow) {
-        this.arrow.updatePosition(); // Arrow 위치 업데이트
-      }
-      if (this.bomb) {
-        this.bomb.updatePosition();
       }
 
       // 컨테이너 위치 업데이트
@@ -497,6 +502,12 @@ class PlayerContainer extends Phaser.GameObjects.Container {
         });
       },
     });
+  }
+
+  addMessage(nickname, message) {
+    if (this.chatDisplay) {
+      this.chatDisplay.addMessage(nickname, message);
+    }
   }
 
   addStatusIcon(item) {
