@@ -247,10 +247,7 @@ class GameScene extends Phaser.Scene {
     SocketManager.onChatMessage(({ playerId, message }) => {
       if (this.players[playerId]) {
         this.players[playerId].showChatMessage(message);
-        this.players[playerId].addMessage(
-          this.players[playerId].player.nickname,
-          message
-        );
+        this.player.addMessage(this.players[playerId].player.nickname, message);
       }
     });
 

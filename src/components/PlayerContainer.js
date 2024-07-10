@@ -76,8 +76,10 @@ class PlayerContainer extends Phaser.GameObjects.Container {
         this.createTouchButton();
       }
     } else {
-      this.chatBox = new ChatBox(this.scene, this);
-      this.chatDisplay = new ChatDisplay(this);
+      if (this.player.isSelfInitiated) {
+        this.chatBox = new ChatBox(this.scene);
+        this.chatDisplay = new ChatDisplay(this.scene);
+      }
     }
 
     // For touch movement

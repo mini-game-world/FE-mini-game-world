@@ -1,9 +1,8 @@
 import SocketManager from "../utils/SocketManager";
 
 export default class ChatBox {
-  constructor(scene, player) {
+  constructor(scene) {
     this.scene = scene;
-    this.player = player;
 
     this.styles();
     this.setupKeyboard();
@@ -96,7 +95,7 @@ export default class ChatBox {
   sendMessage() {
     let message = this.chatInput.value.trim();
     message = message.substring(0, 20);
-    if (message && this.player) {
+    if (message) {
       SocketManager.emitChatMessage(message);
       this.chatInput.value = "";
     } else {
