@@ -23,9 +23,9 @@ class GameScene extends Phaser.Scene {
     this.gameStatusText = null;
     this.rankText = null;
 
-    // this.bgmManager = null;
     this.cameraManager = null;
     this.mapShrinker = null;
+    this.bgmManager = null;
 
     this.itemsGroup = null;
   }
@@ -35,12 +35,11 @@ class GameScene extends Phaser.Scene {
     this.setBackground();
     this.cameraManager = new CameraManager(this);
 
-    // this.bgmManager = new BGMManager(this);
-    // this.bgmManager.startWaitingBGM();
-
     this.resultText = new ResultText(this);
     this.infoText = new InfoText(this);
     this.gameStatusText = new GameStatusText(this);
+    this.bgmManager = new BGMManager(this);
+
     this.rankText = new RankText(this);
 
     this.mapShrinker = new MapShrinker(this);
@@ -122,13 +121,17 @@ class GameScene extends Phaser.Scene {
 
     SocketManager.onPlayingGame((isPlaying) => {
       if (isPlaying === 1) {
-        // this.bgmManager.startPlayingBGM();
+        if (this.bgmManager) {
+          this.bgmManager.playPlayingRandomBGM();
+        }
         this.gameStatusText.showStart();
         Object.values(this.players).forEach((player) => {
           player.setPlay();
         });
       } else {
-        // this.bgmManager.startWaitingBGM();
+        if (this.bgmManager) {
+          this.bgmManager.playWaitingRandomBGM();
+        }
         this.gameStatusText.showEnd();
         Object.values(this.players).forEach((player) => {
           player.setReady();
@@ -231,6 +234,9 @@ class GameScene extends Phaser.Scene {
 
     // 게임 접속 시 현재 상태 확인
     SocketManager.onGameStatus((status) => {
+      if (this.bgmManager) {
+        this.bgmManager.playWaitingRandomBGM();
+      }
       if (status === 1) {
         this.gameStatusText.showProceeding();
       } else {
