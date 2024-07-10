@@ -206,7 +206,7 @@ class GameScene extends Phaser.Scene {
       }
 
       let timer = 5000;
-      if (data.PunchingBag.playerId != "") timer = 10000;
+      if (data.PunchingBag.playerId != "") timer = 11000;
       if (data.BombMaster && data.BombMaster.playerId != "") {
         this.time.delayedCall(
           timer,
