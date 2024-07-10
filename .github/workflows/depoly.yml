@@ -3,7 +3,7 @@ name: Deploy To S3
 on:
   push:
     branches:
-      - 68-bomb-win-fix
+      - 71-joystick-sound
 
 jobs:
   Deploy:
