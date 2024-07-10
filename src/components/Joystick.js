@@ -4,11 +4,11 @@ class Joystick {
   constructor(scene) {
     this.scene = scene;
     this.joystick = new VirtualJoystick(this.scene, {
-      x: this.scene.cameras.main.width / 2 - 800,
-      y: this.scene.cameras.main.height / 2 + 300,
+      x: this.scene.cameras.main.width / 2 - 850,
+      y: this.scene.cameras.main.height / 2 + 450,
       radius: 150,
-      base: this.scene.add.circle(0, 0, 150, 0x888888),
-      thumb: this.scene.add.circle(0, 0, 100, 0xcccccc),
+      base: this.scene.add.circle(0, 0, 150, 0x888888, 0.5),
+      thumb: this.scene.add.circle(0, 0, 100, 0xcccccc, 0.5),
       dir: "8dir",
       forceMin: 16,
       enable: true,

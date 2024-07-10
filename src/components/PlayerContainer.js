@@ -89,15 +89,15 @@ class PlayerContainer extends Phaser.GameObjects.Container {
 
   createTouchButton() {
     const buttonSize = 100;
-    const buttonX = this.scene.cameras.main.width / 2 + 700;
-    const buttonY = this.scene.cameras.main.height / 2 + 300;
+    const buttonX = this.scene.cameras.main.width / 2 + 850;
+    const buttonY = this.scene.cameras.main.height / 2 + 450;
 
     this.attackButton = this.scene.add.circle(
       buttonX,
       buttonY,
       buttonSize,
       0xff0000,
-      0.8
+      0.4
     );
     this.attackButton.setScrollFactor(0); // Button stays in the same place on screen
 
