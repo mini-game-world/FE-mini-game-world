@@ -34,6 +34,10 @@ class SocketManager {
     this.channel.on("connectionStateChange", (state) => {
       console.log("Connection State Change:", state);
     });
+
+    this.channel.on("ping", () => {
+      this.channel.emit("pong");
+      });
   }
 
   onCurrentPlayers(callback) {

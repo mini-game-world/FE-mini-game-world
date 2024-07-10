@@ -33,7 +33,10 @@ class ItemEffect {
 
   hidePlayer() {
     if (this.player.player.isSelfInitiated) {
-      // Todo
+      this.player.setAlpha(0.7);
+      this.gameScene.time.delayedCall(5000, () => {
+        this.player.setAlpha(1);
+      });
     } else {
       this.player.setAlpha(0);
       this.gameScene.time.delayedCall(5000, () => {
