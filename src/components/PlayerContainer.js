@@ -392,6 +392,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
   }
 
   setReady() {
+    this.nickname.setColor("#ffffff");
     this.bomb = null;
     this.isWinner = false;
     this.isAttacking = false;
@@ -405,6 +406,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
   }
 
   setDead() {
+    this.nickname.setColor("#ff0000");
     this.isAttacking = false;
     this.explodeBomb();
     this.player.setDeadStatus();
@@ -464,6 +466,8 @@ class PlayerContainer extends Phaser.GameObjects.Container {
   }
 
   choice() {
+    this.nickname.setColor("#FFD700");
+
     if (this.player.isDead) {
       this.player.isDead = false;
       this.player.setTexture(`player${this.player.avatar}`);
