@@ -13,6 +13,7 @@ import CollisionChecker from "../utils/CollisionChecker";
 import StatusIcon from "./StatusIcon";
 import ChatBox from "./ChatBox";
 import ChatDisplay from "./ChatDisplay";
+import Joystick from "./Joystick"; // Joystick 클래스 추가
 
 class PlayerContainer extends Phaser.GameObjects.Container {
   constructor(scene, x, y, texture, info) {
@@ -73,7 +74,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       this.scene.sys.game.device.os.iPad
     ) {
       if (this.player.isSelfInitiated) {
-        this.scene.input.on("pointerdown", this.handleTouch, this);
+        this.joystick = new Joystick(this.scene);
         this.createTouchButton();
       }
     } else {
@@ -82,52 +83,12 @@ class PlayerContainer extends Phaser.GameObjects.Container {
         this.chatDisplay = new ChatDisplay(this.scene);
       }
     }
-
-    // For touch movement
-    this.targetX = null;
-    this.targetY = null;
-  }
-
-  handleTouch(pointer) {
-    if (this.player) {
-      // 공격 버튼 내부 터치 여부 확인
-      if (
-        this.attackButton &&
-        this.attackButton.getBounds().contains(pointer.worldX, pointer.worldY)
-      ) {
-        return; // 공격 버튼을 터치한 경우 이동 처리 안 함
-      }
-
-      const maxDistance = 300; // 최대 이동 거리 설정
-      let targetX = pointer.worldX;
-      let targetY = pointer.worldY;
-      const distance = Phaser.Math.Distance.Between(
-        this.hitBox.x,
-        this.hitBox.y,
-        targetX,
-        targetY
-      );
-
-      if (distance > maxDistance) {
-        const angle = Phaser.Math.Angle.Between(
-          this.hitBox.x,
-          this.hitBox.y,
-          targetX,
-          targetY
-        );
-        targetX = this.hitBox.x + Math.cos(angle) * maxDistance;
-        targetY = this.hitBox.y + Math.sin(angle) * maxDistance;
-      }
-
-      this.targetX = targetX;
-      this.targetY = targetY;
-    }
   }
 
   createTouchButton() {
     const buttonSize = 100;
-    const buttonX = this.scene.cameras.main.width / 2 + 900;
-    const buttonY = this.scene.cameras.main.height / 2 + 500;
+    const buttonX = this.scene.cameras.main.width / 2 + 700;
+    const buttonY = this.scene.cameras.main.height / 2 + 300;
 
     this.attackButton = this.scene.add.circle(
       buttonX,
@@ -191,6 +152,15 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     if (this.keys.left.isDown) velocityX = -this.speed;
     if (this.keys.right.isDown) velocityX = this.speed;
 
+    if (this.joystick) {
+      const force = this.joystick.getForce();
+      if (force > 0) {
+        const angle = Phaser.Math.DegToRad(this.joystick.getAngle()); // 각도를 라디안으로 변환
+        velocityX = Math.cos(angle) * this.speed;
+        velocityY = Math.sin(angle) * this.speed;
+      }
+    }
+
     return { velocityX, velocityY };
   }
 
@@ -228,31 +198,6 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       }
     } else {
       let { velocityX, velocityY } = this.getVelocity();
-
-      if (this.targetX !== null && this.targetY !== null) {
-        const angle = Phaser.Math.Angle.Between(
-          this.hitBox.x,
-          this.hitBox.y,
-          this.targetX,
-          this.targetY
-        );
-        velocityX = Math.cos(angle) * this.speed;
-        velocityY = Math.sin(angle) * this.speed;
-
-        const distance = Phaser.Math.Distance.Between(
-          this.hitBox.x,
-          this.hitBox.y,
-          this.targetX,
-          this.targetY
-        );
-
-        if (distance < 10) {
-          this.targetX = null;
-          this.targetY = null;
-          velocityX = 0;
-          velocityY = 0;
-        }
-      }
 
       this.hitBox.body.setVelocity(velocityX, velocityY);
 
@@ -567,6 +512,10 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     if (this.statusIcon) {
       this.statusIcon.destroy();
       this.statusIcon = null;
+    }
+    if (this.joystick) {
+      this.joystick.destroy();
+      this.joystick = null;
     }
     // Call the parent class's destroy method
     super.destroy();
