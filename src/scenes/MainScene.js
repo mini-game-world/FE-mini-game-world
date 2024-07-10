@@ -7,10 +7,8 @@ export default class MainScene extends Phaser.Scene {
   }
 
   create() {
-    // this.bgmManager = new BGMManager(this);
-    // this.bgmManager.startMainBGM();
-
-    // this.data.set("bgmManager", this.bgmManager);
+    this.bgmManager = new BGMManager(this);
+    this.bgmManager.playMainBGM();
 
     this.add
       .image(this.scale.width / 2, this.scale.height / 2, "background")
@@ -56,13 +54,6 @@ export default class MainScene extends Phaser.Scene {
       repeat: -1,
     });
 
-    // this.anims.create({
-    //   key: "bomb",
-    //   frames: this.anims.generateFrameNumbers("bomb", { start: 0, end: 3 }),
-    //   frameRate: 5,
-    //   repeat: -1,
-    // });
-
     this.player1 = this.physics.add
       .sprite(2090, 1936, "player_move1")
       .setScale(2);
@@ -87,9 +78,9 @@ export default class MainScene extends Phaser.Scene {
       () => {
         if (!this.scene) return;
         this.sound.play("click_sound");
-        // if (this.bgmManager) {
-        //   this.bgmManager.stopMainBGM();
-        // }
+        if (this.bgmManager) {
+          this.bgmManager.stop();
+        }
         this.scene.start("GameScene");
       }
     );
@@ -101,6 +92,9 @@ export default class MainScene extends Phaser.Scene {
       () => {
         if (!this.scene) return;
         this.sound.play("click_sound");
+        if (this.bgmManager) {
+          this.bgmManager.stop();
+        }
         this.scene.start("TutorialScene");
       }
     );
