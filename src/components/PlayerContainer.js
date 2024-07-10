@@ -477,6 +477,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       this.player.setAlpha(1);
       this.hitBox.body.checkCollision.none = false;
     }
+
     this.scene.tweens.add({
       targets: this.player,
       scale: 3,
@@ -484,10 +485,12 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       ease: "Power1",
       onUpdate: () => {
         if (!this.player) return;
-        const { velocityX, velocityY } = this.getVelocity();
-        if (velocityX !== 0 || velocityY !== 0) {
-          this.player.anims.play(`move${this.player.avatar}`, true);
-          this.player.setFlipX(velocityX > 0);
+        if (this.player.isSelfInitiated) {
+          const { velocityX, velocityY } = this.getVelocity();
+          if (velocityX !== 0 || velocityY !== 0) {
+            this.player.anims.play(`move${this.player.avatar}`, true);
+            this.player.setFlipX(velocityX > 0);
+          }
         }
       },
       onComplete: () => {
@@ -499,10 +502,12 @@ class PlayerContainer extends Phaser.GameObjects.Container {
           ease: "Power1",
           onUpdate: () => {
             if (!this.player) return;
-            const { velocityX, velocityY } = this.getVelocity();
-            if (velocityX !== 0 || velocityY !== 0) {
-              this.player.anims.play(`move${this.player.avatar}`, true);
-              this.player.setFlipX(velocityX > 0);
+            if (this.player.isSelfInitiated) {
+              const { velocityX, velocityY } = this.getVelocity();
+              if (velocityX !== 0 || velocityY !== 0) {
+                this.player.anims.play(`move${this.player.avatar}`, true);
+                this.player.setFlipX(velocityX > 0);
+              }
             }
           },
         });
