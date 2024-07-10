@@ -188,39 +188,41 @@ class GameScene extends Phaser.Scene {
         this.resultText.showWinner(winner.player.nickname);
       }
 
-      // if (data.PunchingBag && data.PunchingBag.playerId != "") {
-      //   this.time.delayedCall(
-      //     5000,
-      //     () => {
-      //       if (this.players[data.PunchingBag.playerId]) {
-      //         const bagPlayer = this.players[data.PunchingBag.playerId];
-      //         bagPlayer.choice();
-      //         this.resultText.showPunchingBag(bagPlayer.player.nickname);
-      //         this.cameraManager.smoothFollow(bagPlayer);
-      //       }
-      //     },
-      //     [],
-      //     this
-      //   );
-      // }
+      if (data.PunchingBag && data.PunchingBag.playerId != "") {
+        this.time.delayedCall(
+          5000,
+          () => {
+            this.player.stopMove();
+            if (this.players[data.PunchingBag.playerId]) {
+              const punchKing = this.players[data.PunchingBag.playerId];
+              this.cameraManager.smoothFollow(punchKing);
+              punchKing.choice();
+              this.resultText.showPunchKing(punchKing.player.nickname);
+            }
+          },
+          [],
+          this
+        );
+      }
 
-      // let timer = 5000;
-      // if (data.PunchingBag.playerId != "") timer = 10000;
-      // if (data.BombMaster && data.BombMaster.playerId != "") {
-      //   this.time.delayedCall(
-      //     timer,
-      //     () => {
-      //       if (this.players[data.BombMaster.playerId]) {
-      //         const bombMasterPlayer = this.players[data.BombMaster.playerId];
-      //         bombMasterPlayer.choice();
-      //         this.resultText.showBombMaster(bombMasterPlayer.player.nickname);
-      //         this.cameraManager.smoothFollow(bombMasterPlayer);
-      //       }
-      //     },
-      //     [],
-      //     this
-      //   );
-      // }
+      let timer = 5000;
+      if (data.PunchingBag.playerId != "") timer = 10000;
+      if (data.BombMaster && data.BombMaster.playerId != "") {
+        this.time.delayedCall(
+          timer,
+          () => {
+            this.player.stopMove();
+            if (this.players[data.BombMaster.playerId]) {
+              const bombMasterPlayer = this.players[data.BombMaster.playerId];
+              this.cameraManager.smoothFollow(bombMasterPlayer);
+              bombMasterPlayer.choice();
+              this.resultText.showBombMaster(bombMasterPlayer.player.nickname);
+            }
+          },
+          [],
+          this
+        );
+      }
     });
 
     SocketManager.onBombGameReady((count) => {

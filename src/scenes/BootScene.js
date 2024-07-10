@@ -3,7 +3,7 @@ import Phaser from "phaser";
 import backgroundImg from "../assets/background.png";
 import arrowImg from "../assets/arrow.png";
 import crownImg from "../assets/crown.png";
-import punching_bagImg from "../assets/punching_bag.png";
+import boxingImg from "../assets/boxing.png";
 import bomb_masterImg from "../assets/bomb_master.png";
 
 import playerDeadSprite from "../assets/playerDead.png";
@@ -180,7 +180,7 @@ class BootScene extends Phaser.Scene {
     this.load.image("background", backgroundImg);
     this.load.image("arrow", arrowImg);
     this.load.image("crown", crownImg);
-    this.load.image("punching_bag", punching_bagImg);
+    this.load.image("boxing", boxingImg);
     this.load.image("bomb_master", bomb_masterImg);
     this.load.image("item", itemImg);
     this.load.image("speed", speedImg);
