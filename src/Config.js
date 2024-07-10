@@ -27,6 +27,9 @@ const Config = {
       debug: false,
     },
   },
+  input: {
+    activePointers: 3,
+  },
 };
 
 export default Config;

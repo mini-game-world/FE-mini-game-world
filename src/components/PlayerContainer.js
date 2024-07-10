@@ -76,6 +76,8 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       if (this.player.isSelfInitiated) {
         this.joystick = new Joystick(this.scene);
         this.createTouchButton();
+        // Add extra pointers
+        this.scene.input.addPointer(2); // Adding two more pointers for a total of three
       }
     } else {
       if (this.player.isSelfInitiated) {
@@ -93,36 +95,46 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     this.attackButton = this.scene.add.circle(
       buttonX,
       buttonY,
-      buttonSize * 2,
+      buttonSize,
       0xff0000,
-      10.5
+      0.8
     );
     this.attackButton.setScrollFactor(0); // Button stays in the same place on screen
 
     this.attackButton.setInteractive();
-    this.attackButton.on("pointerdown", (pointer, localX, localY, event) => {
-      event.stopPropagation(); // 터치 이벤트 전파 방지
-      if (this.player.isPlay && !this.isAttacking && !this.player.isDead) {
-        // 버튼 시각적 반응 추가
-        this.scene.tweens.add({
-          targets: this.attackButton,
-          scaleX: 0.8,
-          scaleY: 0.8,
-          duration: 100,
-          yoyo: true,
-          ease: "Quad.easeInOut",
-        });
-
-        this.isAttacking = true;
-        this.player.anims.play(`attack${this.player.avatar}`, true);
-        this.createClawAttack();
-        this.player.on("animationcomplete", (anim) => {
-          if (anim.key === `attack${this.player.avatar}`) {
-            this.isAttacking = false;
-          }
-        });
-      }
+    this.attackButton.on("pointerdown", () => {
+      this.handleAttack();
     });
+
+    this.attackButtonText = this.scene.add.text(buttonX, buttonY, "Attack", {
+      fontSize: "32px",
+      fill: "#fff",
+    });
+    this.attackButtonText.setOrigin(0.5);
+    this.attackButtonText.setScrollFactor(0); // Text stays in the same place on screen
+  }
+
+  handleAttack() {
+    if (this.player.isPlay && !this.isAttacking && !this.player.isDead) {
+      // 버튼 시각적 반응 추가
+      this.scene.tweens.add({
+        targets: this.attackButton,
+        scaleX: 0.8,
+        scaleY: 0.8,
+        duration: 100,
+        yoyo: true,
+        ease: "Quad.easeInOut",
+      });
+
+      this.isAttacking = true;
+      this.player.anims.play(`attack${this.player.avatar}`, true);
+      this.createClawAttack();
+      this.player.on("animationcomplete", (anim) => {
+        if (anim.key === `attack${this.player.avatar}`) {
+          this.isAttacking = false;
+        }
+      });
+    }
   }
 
   createInputKeyBoard() {
@@ -137,13 +149,6 @@ class PlayerContainer extends Phaser.GameObjects.Container {
   }
 
   getVelocity() {
-    if (this.speed < 900) {
-      if (this.bomb) {
-        this.speed = 800;
-      } else {
-        this.speed = 700;
-      }
-    }
     let velocityX = 0;
     let velocityY = 0;
 
@@ -213,20 +218,13 @@ class PlayerContainer extends Phaser.GameObjects.Container {
         Phaser.Input.Keyboard.JustDown(this.keys.attack) &&
         !this.isAttacking
       ) {
-        this.isAttacking = true;
-        this.player.anims.play(`attack${this.player.avatar}`, true);
-        this.createClawAttack();
-        this.player.on("animationcomplete", (anim) => {
-          if (anim.key === `attack${this.player.avatar}`) {
-            this.isAttacking = false;
-          }
-        });
+        this.handleAttack();
       }
 
-      // 컨테이너 위치 업데이트
+      // Update container position
       this.setPosition(this.hitBox.x, this.hitBox.y);
 
-      // 플레이어 애니메이션 처리
+      // Handle player animations
       if (velocityX !== 0 || velocityY !== 0) {
         if (!this.isAttacking) {
           this.player.anims.play(
