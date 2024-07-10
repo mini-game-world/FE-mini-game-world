@@ -392,11 +392,11 @@ class PlayerContainer extends Phaser.GameObjects.Container {
   }
 
   setReady() {
-    this.nickname.setColor("#ffffff");
     this.bomb = null;
     this.isWinner = false;
     this.isAttacking = false;
     this.player.setReadyStatus();
+    this.nickname.setColor("#ffffff");
     this.hitBox.body.checkCollision.none = false;
   }
 
@@ -406,10 +406,10 @@ class PlayerContainer extends Phaser.GameObjects.Container {
   }
 
   setDead() {
-    this.nickname.setColor("#ff0000");
     this.isAttacking = false;
-    this.explodeBomb();
     this.player.setDeadStatus();
+    this.nickname.setColor("#ff0000");
+    this.explodeBomb();
     this.hitBox.body.checkCollision.none = true;
   }
 
@@ -421,6 +421,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
   }
 
   receiveBomb() {
+    if (this.player.isPlay && this.player.isDead) return;
     this.isStunned = true;
     this.isAttacking = false;
 
@@ -431,6 +432,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       this.add(this.bomb);
     }
 
+    if (this.player.isPlay && this.player.isDead) return;
     this.player.anims
       .play(`stun${this.player.avatar}`, true)
       .once("animationcomplete", () => {
