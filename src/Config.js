@@ -4,8 +4,8 @@ import MainScene from "./scenes/MainScene";
 import GameScene from "./scenes/GameScene";
 import TutorialScene from "./scenes/TutorialScene";
 
-const platform = /iPhone|iPad|iPod/i.test(navigator.userAgent)
-  ? "ios"
+const platform = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+  ? "mobile"
   : "other";
 
 const Config = {
@@ -13,7 +13,7 @@ const Config = {
   width: 3840,
   height: 2560,
   audio: {
-    noAudio: platform === "ios",
+    noAudio: platform === "mobile",
   },
   scene: [BootScene, MainScene, TutorialScene, GameScene],
   pixelArt: true,
