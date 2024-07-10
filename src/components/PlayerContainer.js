@@ -245,24 +245,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
   }
 
   createClawAttack() {
-    const offset = -110; // Claw의 오프셋을 조정합니다
-    const clawX = this.hitBox.x + (this.player.flipX ? -offset : offset);
-    const clawY = this.hitBox.y;
-    const isHeadingRight = this.player.flipX;
-    const startingPosition = [clawX, clawY];
-    const damage = 10;
-    const scale = 1.5;
-    new Claw(
-      this.scene,
-      startingPosition,
-      isHeadingRight,
-      damage,
-      scale,
-      this.player.isSelfInitiated
-    );
-    if (this.player.isSelfInitiated) {
-      SocketManager.emitPlayerAttack({ x: clawX, y: clawY });
-    }
+    this.claw = new Claw(this.scene, this.hitBox, this.player);
   }
 
   moveTo(x, y) {
