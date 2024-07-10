@@ -2,7 +2,7 @@ import Phaser from "phaser";
 
 class Bomb extends Phaser.GameObjects.Sprite {
   constructor(scene, player) {
-    super(scene, player.x, player.y, "bomb");
+    super(scene, player.x, player.y + player.height / 2 - 150, "bomb");
     this.scene = scene;
     this.player = player;
     this.isSelfInitiated = this.player.isSelfInitiated;
@@ -19,12 +19,6 @@ class Bomb extends Phaser.GameObjects.Sprite {
     this.setDepth(31); // Ensure the bomb is above the player sprite
 
     this.play("bomb");
-
-    this.updatePosition();
-  }
-
-  updatePosition() {
-    this.setPosition(this.player.x, this.player.y - 50); // Adjust the Y offset as needed
   }
 
   destroy() {
