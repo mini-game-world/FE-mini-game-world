@@ -11,7 +11,6 @@ import Explosion from "./Explosion";
 import BodyExplosion from "./BodyExplosion";
 import CollisionChecker from "../utils/CollisionChecker";
 import StatusIcon from "./StatusIcon";
-import ChatBox from "./ChatBox";
 import ChatDisplay from "./ChatDisplay";
 import Joystick from "./Joystick"; // Joystick 클래스 추가
 
@@ -81,7 +80,6 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       }
     } else {
       if (this.player.isSelfInitiated) {
-        this.chatBox = new ChatBox(this.scene);
         this.chatDisplay = new ChatDisplay(this.scene);
       }
     }

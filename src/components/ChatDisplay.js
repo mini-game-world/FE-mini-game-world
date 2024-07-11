@@ -1,3 +1,5 @@
+import SocketManager from "../utils/SocketManager";
+
 export default class ChatDisplay {
   constructor(scene) {
     this.scene = scene;
@@ -5,6 +7,7 @@ export default class ChatDisplay {
     this.styles();
     this.makeDraggable();
     this.makeResizable();
+    this.setupKeyboard();
   }
 
   styles() {
@@ -14,7 +17,9 @@ export default class ChatDisplay {
     this.chatContainer.style.bottom = "10px"; // Bottom left corner
     this.chatContainer.style.left = "10px"; // Bottom left corner
     this.chatContainer.style.height = "200px"; // Initial square size
-    this.chatContainer.style.width = "200px"; // Initial square size
+    this.chatContainer.style.width = "300px"; // Initial width
+    this.chatContainer.style.minWidth = "100px"; // Minimum width
+    this.chatContainer.style.minHeight = "100px"; // Minimum height
     this.chatContainer.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
     this.chatContainer.style.color = "white";
     this.chatContainer.style.border = "1px solid black";
@@ -28,6 +33,35 @@ export default class ChatDisplay {
     document.body.appendChild(this.chatContainer);
 
     this.chatContainer.style.fontFamily = "'BMJUA', sans-serif";
+
+    this.chatDisplay = document.createElement("div");
+    this.chatDisplay.id = "chat-display";
+    this.chatDisplay.style.flex = "1";
+    this.chatDisplay.style.overflowY = "auto";
+    this.chatDisplay.style.marginBottom = "10px";
+    this.chatContainer.appendChild(this.chatDisplay);
+
+    this.chatInputWrapper = document.createElement("div");
+    this.chatInputWrapper.id = "chat-input-wrapper";
+    this.chatInputWrapper.style.display = "none"; // Initially hidden
+    this.chatInputWrapper.style.flexDirection = "row";
+    this.chatInputWrapper.style.background = "lightblue";
+    this.chatInputWrapper.style.borderRadius = "10px";
+    this.chatContainer.appendChild(this.chatInputWrapper);
+
+    this.chatInput = document.createElement("input");
+    this.chatInput.id = "chat-input";
+    this.chatInput.type = "text";
+    this.chatInput.placeholder = "대화를 입력해주세요";
+    this.chatInput.style.flex = "1";
+    this.chatInput.style.padding = "1em";
+    this.chatInput.style.fontSize = "1em";
+    this.chatInput.style.border = "none";
+    this.chatInput.style.borderRadius = "10px";
+    this.chatInputWrapper.appendChild(this.chatInput);
+
+    this.chatInputWrapper.style.fontFamily = "'BMJUA', sans-serif";
+    this.chatInput.style.fontFamily = "'BMJUA', sans-serif";
   }
 
   makeDraggable() {
@@ -83,7 +117,7 @@ export default class ChatDisplay {
     let resizeDirection = "";
 
     const minWidth = 100; // Minimum width of the chat container
-    const minHeight = 50; // Minimum height of the chat container (enough for one line of text)
+    const minHeight = 100; // Minimum height of the chat container
 
     this.chatContainer.addEventListener("mousedown", (e) => {
       const rect = this.chatContainer.getBoundingClientRect();
@@ -219,18 +253,72 @@ export default class ChatDisplay {
     return "default";
   }
 
+  setupKeyboard() {
+    this.chatInput.addEventListener("keydown", (event) => {
+      event.stopPropagation();
+      if (event.key === "Enter") {
+        this.sendMessage();
+      }
+    });
+
+    this.scene.input.keyboard.on("keydown", (event) => {
+      if (event.key === "Enter") {
+        this.toggleChatInput();
+      } else if (event.key === "Escape") {
+        this.hideChatInput();
+      }
+    });
+
+    this.scene.input.keyboard.removeCapture(
+      Phaser.Input.Keyboard.KeyCodes.SPACE
+    );
+    this.scene.input.keyboard.removeCapture(
+      Phaser.Input.Keyboard.KeyCodes.ENTER
+    );
+  }
+
+  toggleChatInput() {
+    if (this.chatInputWrapper.style.display === "none") {
+      this.showChatInput();
+    } else {
+      this.hideChatInput();
+    }
+  }
+
+  showChatInput() {
+    this.chatInputWrapper.style.display = "flex";
+    this.chatInput.focus();
+  }
+
+  hideChatInput() {
+    this.chatInputWrapper.style.display = "none";
+    this.chatInput.value = "";
+  }
+
+  sendMessage() {
+    let message = this.chatInput.value.trim();
+    message = message.substring(0, 20);
+    if (message) {
+      SocketManager.emitChatMessage(message);
+      this.chatInput.value = "";
+    } else {
+      this.chatInput.value = "";
+    }
+    this.hideChatInput();
+  }
+
   addMessage(playerId, message) {
     const logEntry = document.createElement("div");
     logEntry.textContent = `${playerId}: ${message}`;
     logEntry.style.margin = "5px 0";
-    this.chatContainer.appendChild(logEntry);
+    this.chatDisplay.appendChild(logEntry);
 
     // Scroll to the bottom
-    this.chatContainer.scrollTop = this.chatContainer.scrollHeight;
+    this.chatDisplay.scrollTop = this.chatDisplay.scrollHeight;
 
     // Remove old messages
-    while (this.chatContainer.children.length > 5) {
-      this.chatContainer.removeChild(this.chatContainer.firstChild);
+    while (this.chatDisplay.children.length > 5) {
+      this.chatDisplay.removeChild(this.chatDisplay.firstChild);
     }
   }
 }
