@@ -22,24 +22,29 @@ class CameraManager {
       this.mainCamera.startFollow(target);
       if (target.player.isSelfInitiated) {
         target.isWinner = true;
-      } // 카메라 포커싱 후 이동되게 수정
+      }
     });
   }
 
-  // 카메라의 현재 위치를 반환하는 메소드
   getCurrentCameraPosition() {
     return { x: this.mainCamera.scrollX, y: this.mainCamera.scrollY };
   }
 
-  // 카메라의 현재 줌 레벨을 반환하는 메소드
   getCurrentZoom() {
     return this.mainCamera.zoom;
   }
 
-  // 카메라를 특정 위치로 즉시 이동시키는 메소드
   moveTo(x, y) {
     this.mainCamera.stopFollow();
     this.mainCamera.setScroll(x, y);
+  }
+
+  getCameraBounds(margin = 200) {
+    const x = this.mainCamera.worldView.x - margin;
+    const y = this.mainCamera.worldView.y - margin;
+    const width = this.mainCamera.worldView.width + 2 * margin;
+    const height = this.mainCamera.worldView.height + 2 * margin;
+    return { x, y, width, height };
   }
 }
 

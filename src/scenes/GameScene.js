@@ -92,8 +92,22 @@ class GameScene extends Phaser.Scene {
     SocketManager.onPlayerMoved((player) => {
       const { playerId, x, y } = player;
       if (this.players[playerId]) {
-        const playerContainer = this.players[playerId];
-        playerContainer.moveTo(x, y);
+        const {
+          x: camX,
+          y: camY,
+          width: camWidth,
+          height: camHeight,
+        } = this.cameraManager.getCameraBounds();
+        const isInCameraView =
+          x >= camX &&
+          x <= camX + camWidth &&
+          y >= camY &&
+          y <= camY + camHeight;
+
+        if (isInCameraView) {
+          const playerContainer = this.players[playerId];
+          playerContainer.moveTo(x, y);
+        }
       }
     });
 
