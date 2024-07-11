@@ -1,12 +1,11 @@
 import Phaser from "phaser";
 import SocketManager from "../utils/SocketManager";
 
-export default class Claw extends Phaser.Physics.Arcade.Sprite {
+export default class Claw extends Phaser.GameObjects.Sprite {
   constructor(scene, hitBox, player) {
     const offsetX = player.flipX ? 150 : -150; // 플레이어 방향에 따른 오프셋 설정
-    const clawX = hitBox.x + offsetX;
-    const clawY = hitBox.y;
-
+    const clawX = player.x + offsetX;
+    const clawY = player.y;
     super(scene, clawX, clawY, "claw_white");
 
     this.scene = scene;
@@ -15,8 +14,11 @@ export default class Claw extends Phaser.Physics.Arcade.Sprite {
 
     this.scene.add.existing(this);
 
+    const realX = hitBox.x + offsetX;
+    const realY = hitBox.y;
+
     if (this.isSelfInitiated) {
-      SocketManager.emitPlayerAttack({ x: clawX, y: clawY });
+      SocketManager.emitPlayerAttack({ x: realX, y: realY });
       this.scratch_sound = scene.sound.add("scratch_sound", { volume: 0.5 });
       this.scratch_sound.play();
     }

@@ -245,7 +245,8 @@ class PlayerContainer extends Phaser.GameObjects.Container {
   }
 
   createClawAttack() {
-    this.claw = new Claw(this.scene, this.hitBox, this.player);
+    const claw = new Claw(this.scene, this.hitBox, this.player);
+    this.add(claw);
   }
 
   moveTo(x, y) {

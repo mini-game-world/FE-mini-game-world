@@ -404,7 +404,6 @@ class BootScene extends Phaser.Scene {
       frames: this.anims.generateFrameNumbers("claw_white"),
       frameRate: 20,
       repeat: 0,
-      hideOnComplete: true,
     });
 
     this.anims.create({
