@@ -82,6 +82,9 @@ export default class ChatDisplay {
     let resizeOffsetY = 0;
     let resizeDirection = "";
 
+    const minWidth = 100; // Minimum width of the chat container
+    const minHeight = 50; // Minimum height of the chat container (enough for one line of text)
+
     this.chatContainer.addEventListener("mousedown", (e) => {
       const rect = this.chatContainer.getBoundingClientRect();
       if (this.isInResizeArea(e)) {
@@ -115,12 +118,14 @@ export default class ChatDisplay {
           if (newLeft + newWidth > viewportWidth) {
             newWidth = viewportWidth - newLeft;
           }
+          if (newWidth < minWidth) newWidth = minWidth;
         }
         if (resizeDirection.includes("s")) {
           newHeight = initialHeight + dy;
           if (newTop + newHeight > viewportHeight) {
             newHeight = viewportHeight - newTop;
           }
+          if (newHeight < minHeight) newHeight = minHeight;
         }
         if (resizeDirection.includes("w")) {
           newWidth = initialWidth - dx;
@@ -129,6 +134,10 @@ export default class ChatDisplay {
             newWidth = initialWidth + initialLeft;
             newLeft = 0;
           }
+          if (newWidth < minWidth) {
+            newLeft = initialLeft + (initialWidth - minWidth);
+            newWidth = minWidth;
+          }
         }
         if (resizeDirection.includes("n")) {
           newHeight = initialHeight - dy;
@@ -136,6 +145,10 @@ export default class ChatDisplay {
           if (newTop < 0) {
             newHeight = initialHeight + initialTop;
             newTop = 0;
+          }
+          if (newHeight < minHeight) {
+            newTop = initialTop + (initialHeight - minHeight);
+            newHeight = minHeight;
           }
         }
 
