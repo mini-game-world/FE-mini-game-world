@@ -3,7 +3,7 @@ name: Deploy To S3
 on:
   push:
     branches:
-      - 71-joystick-sound
+      - dev
 
 jobs:
   Deploy:
