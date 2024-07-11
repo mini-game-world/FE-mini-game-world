@@ -18,7 +18,7 @@ export default class ChatDisplay {
     this.chatContainer.style.left = "10px"; // Bottom left corner
     this.chatContainer.style.height = "200px"; // Initial height
     this.chatContainer.style.width = "300px"; // Initial width
-    this.chatContainer.style.minWidth = "200px"; // Minimum width
+    this.chatContainer.style.minWidth = "300px"; // Minimum width
     this.chatContainer.style.backgroundColor = "rgba(0, 0, 0, 0.5)"; // Increased transparency
     this.chatContainer.style.color = "white";
     this.chatContainer.style.border = "1px solid black";
@@ -27,6 +27,8 @@ export default class ChatDisplay {
     this.chatContainer.style.borderRadius = "10px";
     this.chatContainer.style.pointerEvents = "auto"; // To allow pointer events
     this.chatContainer.style.overflow = "hidden"; // Ensures content stays within bounds
+    this.chatContainer.style.padding = "10px";
+    this.chatContainer.style.boxSizing = "border-box"; // Ensure padding is included in the height
 
     document.body.appendChild(this.chatContainer);
 
@@ -39,6 +41,7 @@ export default class ChatDisplay {
     this.chatDisplay.style.backgroundColor = "rgba(0, 0, 0, 0.5)"; // Increased transparency
     this.chatDisplay.style.borderRadius = "10px";
     this.chatDisplay.style.padding = "10px";
+    this.chatDisplay.style.marginBottom = "10px"; // Gap between display and input
     this.chatContainer.appendChild(this.chatDisplay);
 
     this.chatInputWrapper = document.createElement("div");
@@ -48,6 +51,8 @@ export default class ChatDisplay {
     this.chatInputWrapper.style.background = "rgba(0, 0, 0, 0.5)"; // Increased transparency
     this.chatInputWrapper.style.borderRadius = "10px";
     this.chatInputWrapper.style.padding = "10px";
+    this.chatInputWrapper.style.height = "50px"; // Fixed height for input box
+    this.chatInputWrapper.style.boxSizing = "border-box"; // Ensure padding is included in the height
     this.chatContainer.appendChild(this.chatInputWrapper);
 
     this.chatInput = document.createElement("input");
@@ -119,8 +124,8 @@ export default class ChatDisplay {
     let resizeOffsetY = 0;
     let resizeDirection = "";
 
-    const minWidth = 200; // Minimum width of the chat container
-    const minHeight = 100; // Minimum height of the chat container
+    const minWidth = 300; // Minimum width of the chat container
+    const minHeight = 150; // Minimum height of the chat container
 
     this.chatContainer.addEventListener("mousedown", (e) => {
       const rect = this.chatContainer.getBoundingClientRect();
@@ -298,14 +303,26 @@ export default class ChatDisplay {
   }
 
   showChatInput() {
-    this.chatInputWrapper.style.display = "flex";
-    this.chatContainer.style.minHeight = `${150 + this.getChatInputHeight()}px`;
+    const chatInputHeight = this.getChatInputHeight();
+    if (chatInputHeight === 0) {
+      this.chatInputWrapper.style.display = "flex";
+      this.chatContainer.style.height = `${
+        parseInt(this.chatContainer.style.height) + 50
+      }px`; // Adjust height only once
+      this.chatContainer.style.minHeight = `${200 + 50}px`;
+    }
     this.chatInput.focus();
   }
 
   hideChatInput() {
-    this.chatInputWrapper.style.display = "none";
-    this.chatContainer.style.minHeight = "150px";
+    const chatInputHeight = this.getChatInputHeight();
+    if (chatInputHeight !== 0) {
+      this.chatInputWrapper.style.display = "none";
+      this.chatContainer.style.height = `${
+        parseInt(this.chatContainer.style.height) - 50
+      }px`; // Adjust height only once
+      this.chatContainer.style.minHeight = "200px";
+    }
     this.chatInput.value = "";
   }
 
@@ -331,7 +348,7 @@ export default class ChatDisplay {
     this.chatDisplay.scrollTop = this.chatDisplay.scrollHeight;
 
     // Remove old messages
-    while (this.chatDisplay.children.length > 5) {
+    while (this.chatDisplay.children.length > 100) {
       this.chatDisplay.removeChild(this.chatDisplay.firstChild);
     }
   }
