@@ -46,8 +46,21 @@ export default class ChatDisplay {
 
     document.addEventListener("mousemove", (e) => {
       if (isDragging) {
-        const newX = e.clientX - dragOffsetX;
-        const newY = e.clientY - dragOffsetY;
+        let newX = e.clientX - dragOffsetX;
+        let newY = e.clientY - dragOffsetY;
+
+        // Prevent the container from moving outside the viewport
+        const containerRect = this.chatContainer.getBoundingClientRect();
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+
+        if (newX < 0) newX = 0;
+        if (newY < 0) newY = 0;
+        if (newX + containerRect.width > viewportWidth)
+          newX = viewportWidth - containerRect.width;
+        if (newY + containerRect.height > viewportHeight)
+          newY = viewportHeight - containerRect.height;
+
         this.chatContainer.style.left = `${newX}px`;
         this.chatContainer.style.top = `${newY}px`;
       }
@@ -89,20 +102,47 @@ export default class ChatDisplay {
         const dx = e.clientX - resizeOffsetX;
         const dy = e.clientY - resizeOffsetY;
 
+        let newWidth = initialWidth;
+        let newHeight = initialHeight;
+        let newLeft = initialLeft;
+        let newTop = initialTop;
+
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+
         if (resizeDirection.includes("e")) {
-          this.chatContainer.style.width = `${initialWidth + dx}px`;
+          newWidth = initialWidth + dx;
+          if (newLeft + newWidth > viewportWidth) {
+            newWidth = viewportWidth - newLeft;
+          }
         }
         if (resizeDirection.includes("s")) {
-          this.chatContainer.style.height = `${initialHeight + dy}px`;
+          newHeight = initialHeight + dy;
+          if (newTop + newHeight > viewportHeight) {
+            newHeight = viewportHeight - newTop;
+          }
         }
         if (resizeDirection.includes("w")) {
-          this.chatContainer.style.width = `${initialWidth - dx}px`;
-          this.chatContainer.style.left = `${initialLeft + dx}px`;
+          newWidth = initialWidth - dx;
+          newLeft = initialLeft + dx;
+          if (newLeft < 0) {
+            newWidth = initialWidth + initialLeft;
+            newLeft = 0;
+          }
         }
         if (resizeDirection.includes("n")) {
-          this.chatContainer.style.height = `${initialHeight - dy}px`;
-          this.chatContainer.style.top = `${initialTop + dy}px`;
+          newHeight = initialHeight - dy;
+          newTop = initialTop + dy;
+          if (newTop < 0) {
+            newHeight = initialHeight + initialTop;
+            newTop = 0;
+          }
         }
+
+        this.chatContainer.style.width = `${newWidth}px`;
+        this.chatContainer.style.height = `${newHeight}px`;
+        this.chatContainer.style.left = `${newLeft}px`;
+        this.chatContainer.style.top = `${newTop}px`;
       }
     });
 
