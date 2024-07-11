@@ -16,19 +16,17 @@ export default class ChatDisplay {
     this.chatContainer.style.position = "fixed";
     this.chatContainer.style.bottom = "10px"; // Bottom left corner
     this.chatContainer.style.left = "10px"; // Bottom left corner
-    this.chatContainer.style.height = "200px"; // Initial square size
+    this.chatContainer.style.height = "200px"; // Initial height
     this.chatContainer.style.width = "300px"; // Initial width
-    this.chatContainer.style.minWidth = "100px"; // Minimum width
-    this.chatContainer.style.minHeight = "100px"; // Minimum height
-    this.chatContainer.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
+    this.chatContainer.style.minWidth = "200px"; // Minimum width
+    this.chatContainer.style.backgroundColor = "rgba(0, 0, 0, 0.5)"; // Increased transparency
     this.chatContainer.style.color = "white";
     this.chatContainer.style.border = "1px solid black";
     this.chatContainer.style.display = "flex";
     this.chatContainer.style.flexDirection = "column";
     this.chatContainer.style.borderRadius = "10px";
-    this.chatContainer.style.padding = "10px";
     this.chatContainer.style.pointerEvents = "auto"; // To allow pointer events
-    this.chatContainer.style.overflow = "auto"; // Ensures content stays within bounds
+    this.chatContainer.style.overflow = "hidden"; // Ensures content stays within bounds
 
     document.body.appendChild(this.chatContainer);
 
@@ -38,15 +36,18 @@ export default class ChatDisplay {
     this.chatDisplay.id = "chat-display";
     this.chatDisplay.style.flex = "1";
     this.chatDisplay.style.overflowY = "auto";
-    this.chatDisplay.style.marginBottom = "10px";
+    this.chatDisplay.style.backgroundColor = "rgba(0, 0, 0, 0.5)"; // Increased transparency
+    this.chatDisplay.style.borderRadius = "10px";
+    this.chatDisplay.style.padding = "10px";
     this.chatContainer.appendChild(this.chatDisplay);
 
     this.chatInputWrapper = document.createElement("div");
     this.chatInputWrapper.id = "chat-input-wrapper";
     this.chatInputWrapper.style.display = "none"; // Initially hidden
     this.chatInputWrapper.style.flexDirection = "row";
-    this.chatInputWrapper.style.background = "lightblue";
+    this.chatInputWrapper.style.background = "rgba(0, 0, 0, 0.5)"; // Increased transparency
     this.chatInputWrapper.style.borderRadius = "10px";
+    this.chatInputWrapper.style.padding = "10px";
     this.chatContainer.appendChild(this.chatInputWrapper);
 
     this.chatInput = document.createElement("input");
@@ -58,6 +59,8 @@ export default class ChatDisplay {
     this.chatInput.style.fontSize = "1em";
     this.chatInput.style.border = "none";
     this.chatInput.style.borderRadius = "10px";
+    this.chatInput.style.backgroundColor = "rgba(255, 255, 255, 0.3)"; // Increased transparency
+    this.chatInput.style.color = "white"; // White text color
     this.chatInputWrapper.appendChild(this.chatInput);
 
     this.chatInputWrapper.style.fontFamily = "'BMJUA', sans-serif";
@@ -116,7 +119,7 @@ export default class ChatDisplay {
     let resizeOffsetY = 0;
     let resizeDirection = "";
 
-    const minWidth = 100; // Minimum width of the chat container
+    const minWidth = 200; // Minimum width of the chat container
     const minHeight = 100; // Minimum height of the chat container
 
     this.chatContainer.addEventListener("mousedown", (e) => {
@@ -159,7 +162,8 @@ export default class ChatDisplay {
           if (newTop + newHeight > viewportHeight) {
             newHeight = viewportHeight - newTop;
           }
-          if (newHeight < minHeight) newHeight = minHeight;
+          if (newHeight < minHeight + this.getChatInputHeight())
+            newHeight = minHeight + this.getChatInputHeight();
         }
         if (resizeDirection.includes("w")) {
           newWidth = initialWidth - dx;
@@ -180,9 +184,11 @@ export default class ChatDisplay {
             newHeight = initialHeight + initialTop;
             newTop = 0;
           }
-          if (newHeight < minHeight) {
-            newTop = initialTop + (initialHeight - minHeight);
-            newHeight = minHeight;
+          if (newHeight < minHeight + this.getChatInputHeight()) {
+            newTop =
+              initialTop +
+              (initialHeight - (minHeight + this.getChatInputHeight()));
+            newHeight = minHeight + this.getChatInputHeight();
           }
         }
 
@@ -253,6 +259,12 @@ export default class ChatDisplay {
     return "default";
   }
 
+  getChatInputHeight() {
+    return this.chatInputWrapper.style.display === "none"
+      ? 0
+      : this.chatInputWrapper.getBoundingClientRect().height;
+  }
+
   setupKeyboard() {
     this.chatInput.addEventListener("keydown", (event) => {
       event.stopPropagation();
@@ -287,11 +299,13 @@ export default class ChatDisplay {
 
   showChatInput() {
     this.chatInputWrapper.style.display = "flex";
+    this.chatContainer.style.minHeight = `${150 + this.getChatInputHeight()}px`;
     this.chatInput.focus();
   }
 
   hideChatInput() {
     this.chatInputWrapper.style.display = "none";
+    this.chatContainer.style.minHeight = "150px";
     this.chatInput.value = "";
   }
 
