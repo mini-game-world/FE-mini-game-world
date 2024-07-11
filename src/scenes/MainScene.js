@@ -76,7 +76,6 @@ export default class MainScene extends Phaser.Scene {
       this.scale.height - 1450,
       "시작하기",
       () => {
-        if (!this.scene) return;
         this.sound.play("click_sound");
         if (this.bgmManager) {
           this.bgmManager.stop();
@@ -90,7 +89,6 @@ export default class MainScene extends Phaser.Scene {
       this.scale.height - 1150,
       "튜토리얼",
       () => {
-        if (!this.scene) return;
         this.sound.play("click_sound");
         if (this.bgmManager) {
           this.bgmManager.stop();
@@ -118,43 +116,27 @@ export default class MainScene extends Phaser.Scene {
   }
 
   createButton(x, y, text, callback) {
-    const button = this.add.graphics();
-    button.fillStyle(0xadd8e6, 1);
-    button.fillRoundedRect(-500, -100, 1000, 200, 40);
-    button.lineStyle(8, 0xffffff, 1);
-    button.strokeRoundedRect(-500, -100, 1000, 200, 40);
+    const buttonWidth = 1000;
+    const buttonHeight = 200;
+
+    const button = this.add
+      .rectangle(x, y, buttonWidth, buttonHeight, 0xadd8e6, 1)
+      .setStrokeStyle(8, 0xffffff, 1)
+      .setInteractive({ useHandCursor: true })
+      .on("pointerdown", callback)
+      .on("pointerover", () => this.updateButtonColor(button, 0xffb6c1))
+      .on("pointerout", () => this.updateButtonColor(button, 0xadd8e6));
 
     const buttonText = this.add
-      .text(0, 0, text, {
+      .text(x, y, text, {
         fontFamily: "BMJUA",
         fontSize: "74px",
         fill: "#000000",
       })
       .setOrigin(0.5);
+  }
 
-    const container = this.add.container(x, y, [button, buttonText]);
-
-    container.setSize(1000, 200);
-    container
-      .setInteractive({ useHandCursor: true })
-      .on("pointerdown", callback);
-
-    container.on("pointerover", () => {
-      if (!button) return;
-      button.clear();
-      button.fillStyle(0xffb6c1, 1);
-      button.fillRoundedRect(-500, -100, 1000, 200, 40);
-      button.lineStyle(8, 0xffffff, 1);
-      button.strokeRoundedRect(-500, -100, 1000, 200, 40);
-    });
-
-    container.on("pointerout", () => {
-      if (!button) return;
-      button.clear();
-      button.fillStyle(0xadd8e6, 1);
-      button.fillRoundedRect(-500, -100, 1000, 200, 40);
-      button.lineStyle(8, 0xffffff, 1);
-      button.strokeRoundedRect(-500, -100, 1000, 200, 40);
-    });
+  updateButtonColor(button, color) {
+    button.setFillStyle(color, 1);
   }
 }
