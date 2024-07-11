@@ -3,6 +3,8 @@ export default class ChatDisplay {
     this.scene = scene;
 
     this.styles();
+    this.makeDraggable();
+    this.makeResizable();
   }
 
   styles() {
@@ -11,8 +13,8 @@ export default class ChatDisplay {
     this.chatContainer.style.position = "fixed";
     this.chatContainer.style.bottom = "10px"; // Bottom left corner
     this.chatContainer.style.left = "10px"; // Bottom left corner
-    this.chatContainer.style.height = "auto";
-    this.chatContainer.style.width = "300px"; // Fixed width
+    this.chatContainer.style.height = "200px"; // Initial square size
+    this.chatContainer.style.width = "200px"; // Initial square size
     this.chatContainer.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
     this.chatContainer.style.color = "white";
     this.chatContainer.style.border = "1px solid black";
@@ -20,11 +22,148 @@ export default class ChatDisplay {
     this.chatContainer.style.flexDirection = "column";
     this.chatContainer.style.borderRadius = "10px";
     this.chatContainer.style.padding = "10px";
-    this.chatContainer.style.pointerEvents = "none"; // To prevent it from blocking mouse events
+    this.chatContainer.style.pointerEvents = "auto"; // To allow pointer events
+    this.chatContainer.style.overflow = "auto"; // Ensures content stays within bounds
 
     document.body.appendChild(this.chatContainer);
 
     this.chatContainer.style.fontFamily = "'BMJUA', sans-serif";
+  }
+
+  makeDraggable() {
+    let isDragging = false;
+    let dragOffsetX = 0;
+    let dragOffsetY = 0;
+
+    this.chatContainer.addEventListener("mousedown", (e) => {
+      if (!this.isInResizeArea(e)) {
+        isDragging = true;
+        dragOffsetX = e.clientX - this.chatContainer.offsetLeft;
+        dragOffsetY = e.clientY - this.chatContainer.offsetTop;
+        this.chatContainer.style.cursor = "move"; // Change cursor on drag
+      }
+    });
+
+    document.addEventListener("mousemove", (e) => {
+      if (isDragging) {
+        const newX = e.clientX - dragOffsetX;
+        const newY = e.clientY - dragOffsetY;
+        this.chatContainer.style.left = `${newX}px`;
+        this.chatContainer.style.top = `${newY}px`;
+      }
+    });
+
+    document.addEventListener("mouseup", () => {
+      isDragging = false;
+      this.chatContainer.style.cursor = "default"; // Reset cursor
+    });
+  }
+
+  makeResizable() {
+    let isResizing = false;
+    let initialWidth = 0;
+    let initialHeight = 0;
+    let initialLeft = 0;
+    let initialTop = 0;
+    let resizeOffsetX = 0;
+    let resizeOffsetY = 0;
+    let resizeDirection = "";
+
+    this.chatContainer.addEventListener("mousedown", (e) => {
+      const rect = this.chatContainer.getBoundingClientRect();
+      if (this.isInResizeArea(e)) {
+        isResizing = true;
+        initialWidth = rect.width;
+        initialHeight = rect.height;
+        initialLeft = rect.left;
+        initialTop = rect.top;
+        resizeOffsetX = e.clientX;
+        resizeOffsetY = e.clientY;
+        resizeDirection = this.getResizeDirection(e, rect);
+        this.chatContainer.style.cursor = resizeDirection; // Change cursor on resize
+      }
+    });
+
+    document.addEventListener("mousemove", (e) => {
+      if (isResizing) {
+        const dx = e.clientX - resizeOffsetX;
+        const dy = e.clientY - resizeOffsetY;
+
+        if (resizeDirection.includes("e")) {
+          this.chatContainer.style.width = `${initialWidth + dx}px`;
+        }
+        if (resizeDirection.includes("s")) {
+          this.chatContainer.style.height = `${initialHeight + dy}px`;
+        }
+        if (resizeDirection.includes("w")) {
+          this.chatContainer.style.width = `${initialWidth - dx}px`;
+          this.chatContainer.style.left = `${initialLeft + dx}px`;
+        }
+        if (resizeDirection.includes("n")) {
+          this.chatContainer.style.height = `${initialHeight - dy}px`;
+          this.chatContainer.style.top = `${initialTop + dy}px`;
+        }
+      }
+    });
+
+    document.addEventListener("mouseup", () => {
+      isResizing = false;
+      this.chatContainer.style.cursor = "default"; // Reset cursor
+    });
+
+    this.chatContainer.addEventListener("mouseover", (e) => {
+      const rect = this.chatContainer.getBoundingClientRect();
+      if (this.isInResizeArea(e)) {
+        this.chatContainer.style.cursor = this.getResizeDirection(e, rect); // Change cursor on resize area
+      } else {
+        this.chatContainer.style.cursor = "default"; // Default cursor otherwise
+      }
+    });
+  }
+
+  isInResizeArea(e) {
+    const rect = this.chatContainer.getBoundingClientRect();
+    const resizeMargin = 10; // Pixels from edge to consider resize area
+    return (
+      e.clientX >= rect.right - resizeMargin || // Right edge
+      e.clientX <= rect.left + resizeMargin || // Left edge
+      e.clientY >= rect.bottom - resizeMargin || // Bottom edge
+      e.clientY <= rect.top + resizeMargin // Top edge
+    );
+  }
+
+  getResizeDirection(e, rect) {
+    const resizeMargin = 10; // Pixels from edge to consider resize area
+    if (
+      e.clientX >= rect.right - resizeMargin &&
+      e.clientY >= rect.bottom - resizeMargin
+    ) {
+      return "se-resize"; // Bottom-right corner
+    } else if (
+      e.clientX >= rect.right - resizeMargin &&
+      e.clientY <= rect.top + resizeMargin
+    ) {
+      return "ne-resize"; // Top-right corner
+    } else if (
+      e.clientX <= rect.left + resizeMargin &&
+      e.clientY >= rect.bottom - resizeMargin
+    ) {
+      return "sw-resize"; // Bottom-left corner
+    } else if (
+      e.clientX <= rect.left + resizeMargin &&
+      e.clientY <= rect.top + resizeMargin
+    ) {
+      return "nw-resize"; // Top-left corner
+    } else if (e.clientX >= rect.right - resizeMargin) {
+      return "e-resize"; // Right edge
+    } else if (e.clientX <= rect.left + resizeMargin) {
+      return "w-resize"; // Left edge
+    } else if (e.clientY >= rect.bottom - resizeMargin) {
+      return "s-resize"; // Bottom edge
+    } else if (e.clientY <= rect.top + resizeMargin) {
+      return "n-resize"; // Top edge
+    }
+    return "default";
   }
 
   addMessage(playerId, message) {
