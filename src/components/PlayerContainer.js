@@ -60,7 +60,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     this.isWinner = false;
 
     this.bomb = null;
-    this.speed = 600; // 기본 속도 추가
+    this.speed = 700; // 기본 속도 추가
 
     this.statusIcon = null;
 
@@ -149,6 +149,14 @@ class PlayerContainer extends Phaser.GameObjects.Container {
   }
 
   getVelocity() {
+    if (this.speed < 900) {
+      if (this.bomb) {
+        this.speed = 800;
+      } else {
+        this.speed = 700;
+      }
+    }
+
     let velocityX = 0;
     let velocityY = 0;
 
