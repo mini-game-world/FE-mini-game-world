@@ -306,10 +306,7 @@ export default class ChatDisplay {
     const chatInputHeight = this.getChatInputHeight();
     if (chatInputHeight === 0) {
       this.chatInputWrapper.style.display = "flex";
-      this.chatContainer.style.height = `${
-        parseInt(this.chatContainer.style.height) + 50
-      }px`; // Adjust height only once
-      this.chatContainer.style.minHeight = `${200 + 50}px`;
+      this.adjustContainerHeightAndPosition(50); // Adjust height and position to fit input
     }
     this.chatInput.focus();
   }
@@ -318,12 +315,24 @@ export default class ChatDisplay {
     const chatInputHeight = this.getChatInputHeight();
     if (chatInputHeight !== 0) {
       this.chatInputWrapper.style.display = "none";
-      this.chatContainer.style.height = `${
-        parseInt(this.chatContainer.style.height) - 50
-      }px`; // Adjust height only once
-      this.chatContainer.style.minHeight = "200px";
+      this.adjustContainerHeightAndPosition(-50); // Adjust height and position to fit input
     }
     this.chatInput.value = "";
+  }
+
+  adjustContainerHeightAndPosition(adjustment) {
+    const newHeight = parseInt(this.chatContainer.style.height) + adjustment;
+    const rect = this.chatContainer.getBoundingClientRect();
+    const viewportHeight = window.innerHeight;
+
+    if (rect.bottom + adjustment > viewportHeight) {
+      this.chatContainer.style.top = `${
+        parseInt(this.chatContainer.style.top) - adjustment
+      }px`;
+    }
+
+    this.chatContainer.style.height = `${newHeight}px`;
+    this.chatContainer.style.minHeight = `${200 + adjustment}px`;
   }
 
   sendMessage() {
