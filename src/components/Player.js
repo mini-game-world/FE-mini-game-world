@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 
-class Player extends Phaser.Physics.Arcade.Sprite {
+class Player extends Phaser.GameObjects.Sprite {
   constructor(scene, x, y, texture, info) {
     super(scene, x, y, texture);
     this.scene = scene;

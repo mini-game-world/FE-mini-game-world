@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 
+import faviconIco from "../assets/favicon.png";
 import backgroundImg from "../assets/background.png";
 import arrowImg from "../assets/arrow.png";
 import crownImg from "../assets/crown.png";
@@ -177,6 +178,7 @@ class BootScene extends Phaser.Scene {
   }
 
   preload() {
+    this.load.image("favicon", faviconIco);
     this.load.image("background", backgroundImg);
     this.load.image("arrow", arrowImg);
     this.load.image("crown", crownImg);
@@ -402,7 +404,6 @@ class BootScene extends Phaser.Scene {
       frames: this.anims.generateFrameNumbers("claw_white"),
       frameRate: 20,
       repeat: 0,
-      hideOnComplete: true,
     });
 
     this.anims.create({
