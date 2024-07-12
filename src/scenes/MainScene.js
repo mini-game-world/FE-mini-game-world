@@ -77,9 +77,6 @@ export default class MainScene extends Phaser.Scene {
       "시작하기",
       () => {
         this.sound.play("click_sound");
-        if (this.bgmManager) {
-          this.bgmManager.stop();
-        }
         this.scene.start("GameScene");
       }
     );
@@ -90,15 +87,15 @@ export default class MainScene extends Phaser.Scene {
       "튜토리얼",
       () => {
         this.sound.play("click_sound");
-        if (this.bgmManager) {
-          this.bgmManager.stop();
-        }
         this.scene.start("TutorialScene");
       }
     );
 
     this.player1.setVelocityX(-400);
     this.player2.setVelocityX(-400);
+
+    // Listen for the shutdown event
+    this.events.on("shutdown", this.shutdown, this);
   }
 
   update() {
@@ -138,5 +135,21 @@ export default class MainScene extends Phaser.Scene {
 
   updateButtonColor(button, color) {
     button.setFillStyle(color, 1);
+  }
+
+  shutdown() {
+    // 씬이 파괴되기 전에 리스너 제거
+    this.input.off("pointerdown");
+    this.input.off("pointerover");
+    this.input.off("pointerout");
+
+    // BGMManager 정리
+    if (this.bgmManager) {
+      this.bgmManager.stop();
+      this.bgmManager = null;
+    }
+
+    // Stop and remove all tweens
+    this.tweens.killAll();
   }
 }

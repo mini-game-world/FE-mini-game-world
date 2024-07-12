@@ -37,9 +37,6 @@ class TutorialScene extends Phaser.Scene {
 
     this.createButton(this.scale.width - 300, 200, "시작하기", () => {
       this.sound.play("click_sound");
-      if (this.bgmManager) {
-        this.bgmManager.stop();
-      }
       this.scene.start("GameScene");
     });
 
@@ -174,6 +171,9 @@ class TutorialScene extends Phaser.Scene {
       .setScale(2);
     this.player5.play("move1");
     this.tutorial3 = new Tutorial3(this, this.player5);
+
+    // Listen for the shutdown event
+    this.events.on("shutdown", this.shutdown, this);
   }
 
   createButton(x, y, text, callback) {
@@ -199,6 +199,31 @@ class TutorialScene extends Phaser.Scene {
 
   updateButtonColor(button, color) {
     button.setFillStyle(color, 1);
+  }
+
+  shutdown() {
+    // 씬이 파괴되기 전에 리스너 제거
+    this.input.off("pointerdown");
+    this.input.off("pointerover");
+    this.input.off("pointerout");
+
+    // BGMManager 정리
+    if (this.bgmManager) {
+      this.bgmManager.stop();
+      this.bgmManager = null;
+    }
+
+    // 모든 물리 객체 정리
+    // this.physics.world.colliders.destroy();
+
+    // 모든 게임 객체 정리
+    this.children.removeAll();
+
+    // Stop and remove all tweens
+    this.tweens.killAll();
+
+    // Remove all listeners
+    this.events.off();
   }
 }
 
