@@ -51,24 +51,28 @@ class GameScene extends Phaser.Scene {
         const { x, y, avatar, isPlay, isDead, nickname } = players[id];
         const isSelfInitiated = id === SocketManager.channel.id;
         const info = { avatar, isPlay, isDead, nickname, isSelfInitiated };
-        const playerContainer = new PlayerContainer(
-          this,
-          x,
-          y,
-          `player${avatar}`,
-          info
-        );
-        this.players[id] = playerContainer;
 
-        if (isSelfInitiated) {
-          this.player = playerContainer;
-          this.cameraManager.smoothFollow(this.player);
-          this.physics.add.collider(this.player.hitBox, this.backGround);
-          this.physics.add.collider(this.player.hitBox, this.fence);
-          this.physics.add.collider(this.player.hitBox, this.house);
-          this.physics.add.collider(this.player.hitBox, this.object);
+        // 이미 플레이어 객체가 존재하면 무시
+        if (!this.players[id]) {
+          const playerContainer = new PlayerContainer(
+            this,
+            x,
+            y,
+            `player${avatar}`,
+            info
+          );
+          this.players[id] = playerContainer;
 
-          this.mapShrinker.applyPreviousShrinks();
+          if (!this.player && isSelfInitiated) {
+            this.player = playerContainer;
+            this.cameraManager.smoothFollow(this.player);
+            this.physics.add.collider(this.player.hitBox, this.backGround);
+            this.physics.add.collider(this.player.hitBox, this.fence);
+            this.physics.add.collider(this.player.hitBox, this.house);
+            this.physics.add.collider(this.player.hitBox, this.object);
+
+            this.mapShrinker.applyPreviousShrinks();
+          }
         }
       });
       this.updatePlayerCountText();
@@ -78,37 +82,26 @@ class GameScene extends Phaser.Scene {
       const { playerId, x, y, avatar, nickname } = player;
       const isSelfInitiated = false;
       const info = { avatar, nickname, isSelfInitiated };
-      const newPlayer = new PlayerContainer(
-        this,
-        x,
-        y,
-        `player${avatar}`,
-        info
-      );
-      this.players[playerId] = newPlayer;
 
-      this.updatePlayerCountText();
+      // 이미 플레이어 객체가 존재하면 무시
+      if (!this.players[playerId]) {
+        const newPlayer = new PlayerContainer(
+          this,
+          x,
+          y,
+          `player${avatar}`,
+          info
+        );
+        this.players[playerId] = newPlayer;
+
+        this.updatePlayerCountText();
+      }
     });
 
     SocketManager.onPlayerMoved((player) => {
       const { playerId, x, y } = player;
       if (this.players[playerId]) {
-        const {
-          x: camX,
-          y: camY,
-          width: camWidth,
-          height: camHeight,
-        } = this.cameraManager.getCameraBounds();
-        const isInCameraView =
-          x >= camX &&
-          x <= camX + camWidth &&
-          y >= camY &&
-          y <= camY + camHeight;
-
-        if (isInCameraView) {
-          const playerContainer = this.players[playerId];
-          playerContainer.moveTo(x, y);
-        }
+        this.players[playerId].moveTo(x, y);
       }
     });
 
@@ -122,25 +115,7 @@ class GameScene extends Phaser.Scene {
 
     SocketManager.onAttackPlayer((id) => {
       if (this.players[id]) {
-        const playerContainer = this.players[id];
-        const { x, y } = playerContainer;
-
-        const {
-          x: camX,
-          y: camY,
-          width: camWidth,
-          height: camHeight,
-        } = this.cameraManager.getCameraBounds(60);
-
-        const isInCameraView =
-          x >= camX &&
-          x <= camX + camWidth &&
-          y >= camY &&
-          y <= camY + camHeight;
-
-        if (isInCameraView) {
-          this.players[id].createClawAttack();
-        }
+        this.players[id].createClawAttack();
       }
     });
 
@@ -181,7 +156,7 @@ class GameScene extends Phaser.Scene {
     });
 
     SocketManager.onPlayInfo((survivorCount) => {
-      if (this.player && this.player.player.isPlay) {
+      if (this.player && this.player.player && this.player.player.isPlay) {
         this.updatePlayInfo(survivorCount);
       }
     });
@@ -393,14 +368,14 @@ class GameScene extends Phaser.Scene {
   }
 
   updatePlayerCountText() {
-    if (this.player && !this.player.player.isPlay) {
+    if (this.player && this.player.player && !this.player.player.isPlay) {
       const playerCount = Object.keys(this.players).length;
       this.infoText.update(playerCount);
     }
   }
 
   updatePlayInfo(survivorCount) {
-    if (this.player && this.player.player.isPlay) {
+    if (this.player && this.player.player && this.player.player.isPlay) {
       this.infoText.updatePlayInfo(survivorCount);
     }
   }

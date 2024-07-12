@@ -4,6 +4,7 @@ class CameraManager {
     this.mainCamera = this.scene.cameras.main;
     this.setCameraBounds(bounds.width, bounds.height);
     this.setCameraZoom(zoom);
+    this.isPanning = false; // 플래그 변수 추가
   }
 
   setCameraBounds(width, height) {
@@ -15,12 +16,16 @@ class CameraManager {
   }
 
   smoothFollow(target, duration = 2000, easing = "Sine.easeInOut") {
+    if (this.isPanning) return; // 이미 pan 작업 중이면 리턴
+
+    this.isPanning = true; // 플래그 설정
     this.mainCamera.stopFollow();
     this.mainCamera.pan(target.x, target.y, duration, easing);
 
     this.mainCamera.once("camerapancomplete", () => {
       this.mainCamera.startFollow(target);
-      if (target.player.isSelfInitiated) {
+      this.isPanning = false; // 플래그 해제
+      if (target && target.player && target.player.isSelfInitiated) {
         target.isWinner = true;
       }
     });
