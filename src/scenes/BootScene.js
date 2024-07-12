@@ -14,6 +14,7 @@ import explosionSprite from "../assets/explosion.png";
 import BodyExplosionSprite from "../assets/bodyExplosion.png";
 import starSprite from "../assets/star.png";
 import question from "../assets/question.png";
+import bang from "../assets/bang.png";
 
 // Import Item
 import itemImg from "../assets/item.png";
@@ -193,6 +194,7 @@ class BootScene extends Phaser.Scene {
       stealth: stealthImg,
       big: bigImg,
       question: question,
+      bang: bang,
       first_tileset: first_tileset,
       chest_2: chest_2,
       house_1: house_1,
