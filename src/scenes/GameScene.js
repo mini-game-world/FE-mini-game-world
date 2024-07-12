@@ -121,7 +121,25 @@ class GameScene extends Phaser.Scene {
 
     SocketManager.onAttackPlayer((id) => {
       if (this.players[id]) {
-        this.players[id].createClawAttack();
+        const playerContainer = this.players[id];
+        const { x, y } = playerContainer;
+
+        const {
+          x: camX,
+          y: camY,
+          width: camWidth,
+          height: camHeight,
+        } = this.cameraManager.getCameraBounds(60);
+
+        const isInCameraView =
+          x >= camX &&
+          x <= camX + camWidth &&
+          y >= camY &&
+          y <= camY + camHeight;
+
+        if (isInCameraView) {
+          this.players[id].createClawAttack();
+        }
       }
     });
 
