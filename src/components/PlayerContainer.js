@@ -350,6 +350,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     if (!this.bomb) {
       this.bomb = new Bomb(this.scene, this.player);
       this.add(this.bomb);
+      this.bringToTop(this.chatBalloon);
     }
   }
 
@@ -363,6 +364,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     if (!this.bomb) {
       this.bomb = new Bomb(this.scene, this.player);
       this.add(this.bomb);
+      this.bringToTop(this.chatBalloon);
     }
 
     if (this.player.isPlay && this.player.isDead) return;
