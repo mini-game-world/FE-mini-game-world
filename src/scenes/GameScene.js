@@ -79,8 +79,8 @@ class GameScene extends Phaser.Scene {
             this.chatBox = new ChatBox(this, this.player);
           }
           this.physics.add.collider(this.player.hitBox, this.backGround);
-          this.physics.add.collider(this.player.hitBox, this.house);
           this.physics.add.collider(this.player.hitBox, this.fence);
+          this.physics.add.collider(this.player.hitBox, this.house);
           this.physics.add.collider(this.player.hitBox, this.object);
 
           this.mapShrinker.applyPreviousShrinks();
@@ -301,7 +301,6 @@ class GameScene extends Phaser.Scene {
   setBackground() {
     // 타일맵 설정
     const map = this.make.tilemap({ key: "map" });
-    const tileset = map.addTilesetImage("first_tileset", "first_tileset");
     const house_1 = map.addTilesetImage("house_1", "house_1");
     const logs = map.addTilesetImage("logs", "logs");
     const stump_2 = map.addTilesetImage("stump_2", "stump_2");
@@ -314,15 +313,13 @@ class GameScene extends Phaser.Scene {
     const fence_3 = map.addTilesetImage("fence_3", "fence_3");
 
     // 레이어 생성 (Tiled에서 설정한 레이어 이름 사용)
-    // map.createLayer("Tile Layer 1", tileset, 0, 0);
-    // this.blocklayer = map.createLayer("block", tileset, 0, 0);
-    // this.blocklayer.setCollisionByProperty({ collides: true });
+
     this.backGround = map.createLayer("BackGround", Tileset_1, 0, 0);
     this.backGround.setCollisionByProperty({ collides: true });
-    this.house = map.createLayer("House", house_1, 0, 0);
-    this.house.setCollisionByProperty({ collides: true });
     this.fence = map.createLayer("Fence", [fence_1, fence_3], 0, 0);
     this.fence.setCollisionByProperty({ collides: true });
+    this.house = map.createLayer("House", house_1, 0, 0);
+    this.house.setCollisionByProperty({ collides: true });
     this.object = map.createLayer(
       "Object",
       [Tileset_1, logs, stump_2, tree_1, tree_2, stone_1, stone_3],
@@ -335,32 +332,32 @@ class GameScene extends Phaser.Scene {
     this.mapShrink.setCollisionByProperty({ collides: true });
 
     // 충돌 디버그 그래픽 추가
-    this.debugGraphics = this.add.graphics();
-    this.backGround.renderDebug(this.debugGraphics, {
-      tileColor: null, // 충돌하지 않는 타일은 표시하지 않음
-      collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
-      faceColor: new Phaser.Display.Color(0, 255, 0, 128), // 충돌하는 면은 반투명 녹색으로 표시
-    });
-    this.house.renderDebug(this.debugGraphics, {
-      tileColor: null, // 충돌하지 않는 타일은 표시하지 않음
-      collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
-      faceColor: new Phaser.Display.Color(0, 255, 0, 128), // 충돌하는 면은 반투명 녹색으로 표시
-    });
-    this.object.renderDebug(this.debugGraphics, {
-      tileColor: null, // 충돌하지 않는 타일은 표시하지 않음
-      collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
-      faceColor: new Phaser.Display.Color(0, 255, 0, 128), // 충돌하는 면은 반투명 녹색으로 표시
-    });
-    this.fence.renderDebug(this.debugGraphics, {
-      tileColor: null, // 충돌하지 않는 타일은 표시하지 않음
-      collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
-      faceColor: new Phaser.Display.Color(0, 255, 0, 128), // 충돌하는 면은 반투명 녹색으로 표시
-    });
-    this.mapShrink.renderDebug(this.debugGraphics, {
-      tileColor: null, // 충돌하지 않는 타일은 표시하지 않음
-      collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
-      faceColor: new Phaser.Display.Color(0, 255, 0, 128), // 충돌하는 면은 반투명 녹색으로 표시
-    });
+    // this.debugGraphics = this.add.graphics();
+    // this.backGround.renderDebug(this.debugGraphics, {
+    //   tileColor: null, // 충돌하지 않는 타일은 표시하지 않음
+    //   collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
+    //   faceColor: new Phaser.Display.Color(0, 255, 0, 128), // 충돌하는 면은 반투명 녹색으로 표시
+    // });
+    // this.house.renderDebug(this.debugGraphics, {
+    //   tileColor: null, // 충돌하지 않는 타일은 표시하지 않음
+    //   collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
+    //   faceColor: new Phaser.Display.Color(0, 255, 0, 128), // 충돌하는 면은 반투명 녹색으로 표시
+    // });
+    // this.object.renderDebug(this.debugGraphics, {
+    //   tileColor: null, // 충돌하지 않는 타일은 표시하지 않음
+    //   collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
+    //   faceColor: new Phaser.Display.Color(0, 255, 0, 128), // 충돌하는 면은 반투명 녹색으로 표시
+    // });
+    // this.fence.renderDebug(this.debugGraphics, {
+    //   tileColor: null, // 충돌하지 않는 타일은 표시하지 않음
+    //   collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
+    //   faceColor: new Phaser.Display.Color(0, 255, 0, 128), // 충돌하는 면은 반투명 녹색으로 표시
+    // });
+    // this.mapShrink.renderDebug(this.debugGraphics, {
+    //   tileColor: null, // 충돌하지 않는 타일은 표시하지 않음
+    //   collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
+    //   faceColor: new Phaser.Display.Color(0, 255, 0, 128), // 충돌하는 면은 반투명 녹색으로 표시
+    // });
 
     // Set world bounds
     this.physics.world.setBounds(0, 0, 4160, 3200);
