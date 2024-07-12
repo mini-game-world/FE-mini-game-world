@@ -8,8 +8,11 @@ import Arrow from "./Arrow";
 import ChatBalloon from "./ChatBalloon";
 import Bomb from "./Bomb";
 import Explosion from "./Explosion";
+import BodyExplosion from "./BodyExplosion";
 import CollisionChecker from "../utils/CollisionChecker";
 import StatusIcon from "./StatusIcon";
+import ChatDisplay from "./ChatDisplay";
+import Joystick from "./Joystick"; // Joystick 클래스 추가
 
 class PlayerContainer extends Phaser.GameObjects.Container {
   constructor(scene, x, y, texture, info) {
@@ -62,92 +65,74 @@ class PlayerContainer extends Phaser.GameObjects.Container {
 
     this.collisionChecker = new CollisionChecker();
 
-    // 터치 이동 속성 추가
-    this.isMobile = /Mobi|Android/i.test(navigator.userAgent);
-    if (this.isMobile && this.player.isSelfInitiated) {
-      this.scene.input.on("pointerdown", this.handleTouch, this);
-      this.createTouchButton();
-    }
+    this.chatDisplay = null;
 
-    // For touch movement
-    this.targetX = null;
-    this.targetY = null;
-  }
-
-  handleTouch(pointer) {
-    if (this.player) {
-      // 공격 버튼 내부 터치 여부 확인
-      if (
-        this.attackButton &&
-        this.attackButton.getBounds().contains(pointer.worldX, pointer.worldY)
-      ) {
-        return; // 공격 버튼을 터치한 경우 이동 처리 안 함
+    if (
+      this.scene.sys.game.device.os.android ||
+      this.scene.sys.game.device.os.iPhone ||
+      this.scene.sys.game.device.os.iPad
+    ) {
+      if (this.player.isSelfInitiated) {
+        this.joystick = new Joystick(this.scene);
+        this.createTouchButton();
+        // Add extra pointers
+        this.scene.input.addPointer(2); // Adding two more pointers for a total of three
       }
-
-      const maxDistance = 300; // 최대 이동 거리 설정
-      let targetX = pointer.worldX;
-      let targetY = pointer.worldY;
-      const distance = Phaser.Math.Distance.Between(
-        this.hitBox.x,
-        this.hitBox.y,
-        targetX,
-        targetY
-      );
-
-      if (distance > maxDistance) {
-        const angle = Phaser.Math.Angle.Between(
-          this.hitBox.x,
-          this.hitBox.y,
-          targetX,
-          targetY
-        );
-        targetX = this.hitBox.x + Math.cos(angle) * maxDistance;
-        targetY = this.hitBox.y + Math.sin(angle) * maxDistance;
+    } else {
+      if (this.player.isSelfInitiated) {
+        this.chatDisplay = new ChatDisplay(this.scene);
       }
-
-      this.targetX = targetX;
-      this.targetY = targetY;
     }
   }
 
   createTouchButton() {
     const buttonSize = 100;
-    const buttonX = this.scene.cameras.main.width / 2 + 900;
-    const buttonY = this.scene.cameras.main.height / 2 + 500;
+    const buttonX = this.scene.cameras.main.width / 2 + 850;
+    const buttonY = this.scene.cameras.main.height / 2 + 450;
 
     this.attackButton = this.scene.add.circle(
       buttonX,
       buttonY,
-      buttonSize * 2,
+      buttonSize,
       0xff0000,
-      10.5
+      0.4
     );
     this.attackButton.setScrollFactor(0); // Button stays in the same place on screen
 
     this.attackButton.setInteractive();
-    this.attackButton.on("pointerdown", (pointer, localX, localY, event) => {
-      event.stopPropagation(); // 터치 이벤트 전파 방지
-      if (this.player.isPlay && !this.isAttacking && !this.player.isDead) {
-        // 버튼 시각적 반응 추가
-        this.scene.tweens.add({
-          targets: this.attackButton,
-          scaleX: 0.8,
-          scaleY: 0.8,
-          duration: 100,
-          yoyo: true,
-          ease: "Quad.easeInOut",
-        });
-
-        this.isAttacking = true;
-        this.player.anims.play(`attack${this.player.avatar}`, true);
-        this.createClawAttack();
-        this.player.on("animationcomplete", (anim) => {
-          if (anim.key === `attack${this.player.avatar}`) {
-            this.isAttacking = false;
-          }
-        });
-      }
+    this.attackButton.on("pointerdown", () => {
+      this.handleAttack();
     });
+
+    this.attackButtonText = this.scene.add.text(buttonX, buttonY, "Attack", {
+      fontSize: "32px",
+      fill: "#fff",
+    });
+    this.attackButtonText.setOrigin(0.5);
+    this.attackButtonText.setScrollFactor(0); // Text stays in the same place on screen
+  }
+
+  handleAttack() {
+    if (this.player.isPlay && !this.isAttacking && !this.player.isDead) {
+      // 버튼 시각적 반응 추가
+      this.scene.tweens.add({
+        targets: this.attackButton,
+        scaleX: 0.8,
+        scaleY: 0.8,
+        duration: 100,
+        yoyo: true,
+        ease: "Quad.easeInOut",
+      });
+
+      this.isAttacking = true;
+      this.player.anims.play(`attack${this.player.avatar}`, true);
+      this.createClawAttack();
+      this.player.on("animationcomplete", (anim) => {
+        if (anim.key === `attack${this.player.avatar}`) {
+          this.isAttacking = false;
+        }
+      });
+    }
   }
 
   createInputKeyBoard() {
@@ -162,13 +147,14 @@ class PlayerContainer extends Phaser.GameObjects.Container {
   }
 
   getVelocity() {
-    if (this.speed < 900) {
+    if (this.speed < 800) {
       if (this.bomb) {
-        this.speed = 800;
-      } else {
         this.speed = 700;
+      } else {
+        this.speed = 600;
       }
     }
+
     let velocityX = 0;
     let velocityY = 0;
 
@@ -176,6 +162,15 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     if (this.keys.down.isDown) velocityY = this.speed;
     if (this.keys.left.isDown) velocityX = -this.speed;
     if (this.keys.right.isDown) velocityX = this.speed;
+
+    if (this.joystick) {
+      const force = this.joystick.getForce();
+      if (force > 0) {
+        const angle = Phaser.Math.DegToRad(this.joystick.getAngle()); // 각도를 라디안으로 변환
+        velocityX = Math.cos(angle) * this.speed;
+        velocityY = Math.sin(angle) * this.speed;
+      }
+    }
 
     return { velocityX, velocityY };
   }
@@ -215,31 +210,6 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     } else {
       let { velocityX, velocityY } = this.getVelocity();
 
-      if (this.targetX !== null && this.targetY !== null) {
-        const angle = Phaser.Math.Angle.Between(
-          this.hitBox.x,
-          this.hitBox.y,
-          this.targetX,
-          this.targetY
-        );
-        velocityX = Math.cos(angle) * this.speed;
-        velocityY = Math.sin(angle) * this.speed;
-
-        const distance = Phaser.Math.Distance.Between(
-          this.hitBox.x,
-          this.hitBox.y,
-          this.targetX,
-          this.targetY
-        );
-
-        if (distance < 10) {
-          this.targetX = null;
-          this.targetY = null;
-          velocityX = 0;
-          velocityY = 0;
-        }
-      }
-
       this.hitBox.body.setVelocity(velocityX, velocityY);
 
       if (this.prevX !== this.x || this.prevY !== this.y) {
@@ -254,28 +224,13 @@ class PlayerContainer extends Phaser.GameObjects.Container {
         Phaser.Input.Keyboard.JustDown(this.keys.attack) &&
         !this.isAttacking
       ) {
-        this.isAttacking = true;
-        this.player.anims.play(`attack${this.player.avatar}`, true);
-        this.createClawAttack();
-        this.player.on("animationcomplete", (anim) => {
-          if (anim.key === `attack${this.player.avatar}`) {
-            this.isAttacking = false;
-          }
-        });
+        this.handleAttack();
       }
 
-      this.nickname.updatePosition(); // 닉네임 위치 업데이트
-      if (this.arrow) {
-        this.arrow.updatePosition(); // Arrow 위치 업데이트
-      }
-      if (this.bomb) {
-        this.bomb.updatePosition();
-      }
-
-      // 컨테이너 위치 업데이트
+      // Update container position
       this.setPosition(this.hitBox.x, this.hitBox.y);
 
-      // 플레이어 애니메이션 처리
+      // Handle player animations
       if (velocityX !== 0 || velocityY !== 0) {
         if (!this.isAttacking) {
           this.player.anims.play(
@@ -296,24 +251,8 @@ class PlayerContainer extends Phaser.GameObjects.Container {
   }
 
   createClawAttack() {
-    const offset = -110; // Claw의 오프셋을 조정합니다
-    const clawX = this.hitBox.x + (this.player.flipX ? -offset : offset);
-    const clawY = this.hitBox.y;
-    const isHeadingRight = this.player.flipX;
-    const startingPosition = [clawX, clawY];
-    const damage = 10;
-    const scale = 1.5;
-    new Claw(
-      this.scene,
-      startingPosition,
-      isHeadingRight,
-      damage,
-      scale,
-      this.player.isSelfInitiated
-    );
-    if (this.player.isSelfInitiated) {
-      SocketManager.emitPlayerAttack({ x: clawX, y: clawY });
-    }
+    const claw = new Claw(this.scene, this.hitBox, this.player);
+    this.add(claw);
   }
 
   moveTo(x, y) {
@@ -327,7 +266,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       duration: 100,
       ease: "Linear",
       onUpdate: () => {
-        if (!this.hitBox) return;
+        if (!this.hitBox || !this.player) return;
         this.setPosition(this.hitBox.x, this.hitBox.y);
         if (deltaX !== 0 || deltaY !== 0) {
           if (this.player.isDead) {
@@ -369,6 +308,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       this.player.anims
         .play(`stun${this.player.avatar}`, true)
         .once("animationcomplete", () => {
+          if (!this.player) return;
           this.player.anims.play(`idle${this.player.avatar}`, true);
           this.isStunned = false;
         });
@@ -389,6 +329,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     this.isWinner = false;
     this.isAttacking = false;
     this.player.setReadyStatus();
+    this.nickname.setColor("#ffffff");
     this.hitBox.body.checkCollision.none = false;
   }
 
@@ -399,8 +340,9 @@ class PlayerContainer extends Phaser.GameObjects.Container {
 
   setDead() {
     this.isAttacking = false;
-    this.explodeBomb();
     this.player.setDeadStatus();
+    this.nickname.setColor("#ff0000");
+    this.explodeBomb();
     this.hitBox.body.checkCollision.none = true;
   }
 
@@ -408,10 +350,12 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     if (!this.bomb) {
       this.bomb = new Bomb(this.scene, this.player);
       this.add(this.bomb);
+      this.bringToTop(this.chatBalloon);
     }
   }
 
   receiveBomb() {
+    if (this.player.isPlay && this.player.isDead) return;
     this.isStunned = true;
     this.isAttacking = false;
 
@@ -420,11 +364,14 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     if (!this.bomb) {
       this.bomb = new Bomb(this.scene, this.player);
       this.add(this.bomb);
+      this.bringToTop(this.chatBalloon);
     }
 
+    if (this.player.isPlay && this.player.isDead) return;
     this.player.anims
       .play(`stun${this.player.avatar}`, true)
       .once("animationcomplete", () => {
+        if (!this.player) return;
         this.player.anims.play(`idle${this.player.avatar}`, true);
         this.isStunned = false;
       });
@@ -441,6 +388,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     if (this.bomb) {
       this.bomb.destroy();
       new Explosion(this.scene, this.player, this);
+      new BodyExplosion(this.scene, this.player, this);
       this.bomb = null;
     }
   }
@@ -455,6 +403,8 @@ class PlayerContainer extends Phaser.GameObjects.Container {
   }
 
   choice() {
+    this.nickname.setColor("#FFD700");
+
     if (this.player.isDead) {
       this.player.isDead = false;
       this.player.setTexture(`player${this.player.avatar}`);
@@ -462,35 +412,48 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       this.player.setAlpha(1);
       this.hitBox.body.checkCollision.none = false;
     }
+
     this.scene.tweens.add({
       targets: this.player,
       scale: 3,
       duration: 2000,
       ease: "Power1",
       onUpdate: () => {
-        const { velocityX, velocityY } = this.getVelocity();
-        if (velocityX !== 0 || velocityY !== 0) {
-          this.player.anims.play(`move${this.player.avatar}`, true);
-          this.player.setFlipX(velocityX > 0);
+        if (!this.player) return;
+        if (this.player.isSelfInitiated) {
+          const { velocityX, velocityY } = this.getVelocity();
+          if (velocityX !== 0 || velocityY !== 0) {
+            this.player.anims.play(`move${this.player.avatar}`, true);
+            this.player.setFlipX(velocityX > 0);
+          }
         }
       },
       onComplete: () => {
-        if (!this.scene) return;
+        if (!this.scene || !this.player) return;
         this.scene.tweens.add({
           targets: this.player,
           scale: 1,
           duration: 2000,
           ease: "Power1",
           onUpdate: () => {
-            const { velocityX, velocityY } = this.getVelocity();
-            if (velocityX !== 0 || velocityY !== 0) {
-              this.player.anims.play(`move${this.player.avatar}`, true);
-              this.player.setFlipX(velocityX > 0);
+            if (!this.player) return;
+            if (this.player.isSelfInitiated) {
+              const { velocityX, velocityY } = this.getVelocity();
+              if (velocityX !== 0 || velocityY !== 0) {
+                this.player.anims.play(`move${this.player.avatar}`, true);
+                this.player.setFlipX(velocityX > 0);
+              }
             }
           },
         });
       },
     });
+  }
+
+  addMessage(nickname, message) {
+    if (this.chatDisplay) {
+      this.chatDisplay.addMessage(nickname, message);
+    }
   }
 
   addStatusIcon(item) {
@@ -539,6 +502,10 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     if (this.statusIcon) {
       this.statusIcon.destroy();
       this.statusIcon = null;
+    }
+    if (this.joystick) {
+      this.joystick.destroy();
+      this.joystick = null;
     }
     // Call the parent class's destroy method
     super.destroy();

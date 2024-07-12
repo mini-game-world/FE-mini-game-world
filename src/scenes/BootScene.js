@@ -1,15 +1,17 @@
 import Phaser from "phaser";
 
+import faviconIco from "../assets/favicon.png";
 import backgroundImg from "../assets/background.png";
 import arrowImg from "../assets/arrow.png";
 import crownImg from "../assets/crown.png";
-import punching_bagImg from "../assets/punching_bag.png";
+import boxingImg from "../assets/boxing.png";
 import bomb_masterImg from "../assets/bomb_master.png";
 
 import playerDeadSprite from "../assets/playerDead.png";
 import clawSprite from "../assets/claw_white.png";
 import bombSprite from "../assets/bomb.png";
 import explosionSprite from "../assets/explosion.png";
+import BodyExplosionSprite from "../assets/bodyExplosion.png";
 import starSprite from "../assets/star.png";
 import question from "../assets/question.png";
 
@@ -40,10 +42,10 @@ import timerSound from "../assets/sounds/timer.ogg";
 import explosionSound from "../assets/sounds/explosion.ogg";
 import winnerSound from "../assets/sounds/winner.ogg";
 import buttonClickSound from "../assets/sounds/ButtonClick.ogg";
-import playingBGM1 from "../assets/bgm/playingBGM1.mp3";
-import playingBGM2 from "../assets/bgm/playingBGM2.mp3";
-import waitingBGM1 from "../assets/bgm/waitingBGM1.mp3";
-import waitingBGM2 from "../assets/bgm/waitingBGM2.mp3";
+import playingBGM1 from "../assets/bgm/playingBGM1.ogg";
+import playingBGM2 from "../assets/bgm/playingBGM2.ogg";
+import waitingBGM1 from "../assets/bgm/waitingBGM1.ogg";
+import waitingBGM2 from "../assets/bgm/waitingBGM2.ogg";
 import mainBGM from "../assets/bgm/mainBGM.ogg";
 
 // Import player assets from player0 to player30
@@ -178,10 +180,11 @@ class BootScene extends Phaser.Scene {
   }
 
   preload() {
+    this.load.image("favicon", faviconIco);
     this.load.image("background", backgroundImg);
     this.load.image("arrow", arrowImg);
     this.load.image("crown", crownImg);
-    this.load.image("punching_bag", punching_bagImg);
+    this.load.image("boxing", boxingImg);
     this.load.image("bomb_master", bomb_masterImg);
     this.load.image("item", itemImg);
     this.load.image("speed", speedImg);
@@ -233,6 +236,11 @@ class BootScene extends Phaser.Scene {
     this.load.spritesheet("explosion", explosionSprite, {
       frameWidth: 32,
       frameHeight: 32,
+    });
+
+    this.load.spritesheet("BodyExplosion", BodyExplosionSprite, {
+      frameWidth: 204,
+      frameHeight: 204,
     });
 
     this.load.spritesheet("star", starSprite, {
@@ -400,7 +408,13 @@ class BootScene extends Phaser.Scene {
       frames: this.anims.generateFrameNumbers("claw_white"),
       frameRate: 20,
       repeat: 0,
-      hideOnComplete: true,
+    });
+
+    this.anims.create({
+      key: "bomb",
+      frames: this.anims.generateFrameNumbers("bomb"),
+      frameRate: 5,
+      repeat: -1,
     });
 
     this.scene.start("MainScene");

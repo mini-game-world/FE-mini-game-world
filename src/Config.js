@@ -4,31 +4,36 @@ import MainScene from "./scenes/MainScene";
 import GameScene from "./scenes/GameScene";
 import TutorialScene from "./scenes/TutorialScene";
 
-// 모바일 기기 감지
-const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+const platform = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+  ? "mobile"
+  : "other";
 
 const Config = {
   type: Phaser.AUTO,
   width: 4160,
   height: 3200,
+  audio: {
+    noAudio: platform === "mobile",
+  },
   scene: [BootScene, MainScene, TutorialScene, GameScene],
-  pixelArt: true,
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
-    orientation: Phaser.Scale.LANDSCAPE,
   },
   physics: {
     default: "arcade",
     arcade: {
       debug: false,
+      fps: 60,
     },
   },
-  parent: "game-container",
+  render: {
+    pixelArt: true,
+    roundPixels: true,
+  },
+  input: {
+    activePointers: 3,
+  },
 };
-
-if (isMobile) {
-  Config.scale.orientation = Phaser.Scale.LANDSCAPE;
-}
 
 export default Config;

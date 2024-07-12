@@ -6,7 +6,7 @@ class Punching_bag extends Phaser.GameObjects.Image {
       scene.cameras.main.height / 2 -
         scene.cameras.main.height / 4 / scene.cameras.main.zoom -
         150,
-      "punching_bag"
+      "boxing"
     );
     this.scene = scene;
     this.target = target;

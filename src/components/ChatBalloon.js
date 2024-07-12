@@ -5,6 +5,7 @@ export default class ChatBalloon extends Phaser.GameObjects.Container {
     super(scene, player.x, player.y - 100);
     this.scene = scene;
     this.player = player;
+    this.hideTimer = null;
 
     this.setDepth(31).setVisible(false);
 
@@ -52,7 +53,12 @@ export default class ChatBalloon extends Phaser.GameObjects.Container {
     );
 
     this.setVisible(true);
-    this.scene.time.addEvent({
+
+    if (this.hideTimer) {
+      this.hideTimer.remove(false);
+    }
+
+    this.hideTimer = this.scene.time.addEvent({
       delay: 3000,
       callback: () => {
         this.setVisible(false);
@@ -62,6 +68,9 @@ export default class ChatBalloon extends Phaser.GameObjects.Container {
   }
 
   destroy() {
+    if (this.hideTimer) {
+      this.hideTimer.remove(false);
+    }
     super.destroy();
   }
 }

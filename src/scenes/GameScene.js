@@ -5,14 +5,11 @@ import GameStatusText from "../components/GameStatusText";
 import MapShrinker from "../utils/MapShrinker";
 import BGMManager from "../utils/BGMManager";
 import CameraManager from "../utils/CameraManager";
-import ChatBox from "../components/ChatBox";
 import PlayerContainer from "../components/PlayerContainer";
 import Item from "../components/Item";
-import ChatDisplay from "../components/ChatDisplay";
 import ItemEffect from "../components/ItemEffect";
 import RankText from "../components/RankText";
 import InfoText from "../components/InfoText";
-
 
 class GameScene extends Phaser.Scene {
   constructor() {
@@ -26,35 +23,26 @@ class GameScene extends Phaser.Scene {
     this.gameStatusText = null;
     this.rankText = null;
 
-    this.bgmManager = null;
     this.cameraManager = null;
     this.mapShrinker = null;
-
-    this.chatBox = null;
-    this.chatDisplay = null;
+    this.bgmManager = null;
 
     this.itemsGroup = null;
-    this.isMobile = /Mobi|Android/i.test(navigator.userAgent);
   }
 
   create() {
     SocketManager.connect();
     this.setBackground();
-
     this.cameraManager = new CameraManager(this);
-
-    this.bgmManager = new BGMManager(this);
-    this.bgmManager.startWaitingBGM();
 
     this.resultText = new ResultText(this);
     this.infoText = new InfoText(this);
     this.gameStatusText = new GameStatusText(this);
+    this.bgmManager = new BGMManager(this);
+
     this.rankText = new RankText(this);
 
     this.mapShrinker = new MapShrinker(this);
-    if (!this.isMobile) {
-      this.chatDisplay = new ChatDisplay(this);
-    }
 
     this.itemsGroup = this.physics.add.group();
 
@@ -75,9 +63,6 @@ class GameScene extends Phaser.Scene {
         if (isSelfInitiated) {
           this.player = playerContainer;
           this.cameraManager.smoothFollow(this.player);
-          if (!this.isMobile) {
-            this.chatBox = new ChatBox(this, this.player);
-          }
           this.physics.add.collider(this.player.hitBox, this.backGround);
           this.physics.add.collider(this.player.hitBox, this.fence);
           this.physics.add.collider(this.player.hitBox, this.house);
@@ -108,8 +93,22 @@ class GameScene extends Phaser.Scene {
     SocketManager.onPlayerMoved((player) => {
       const { playerId, x, y } = player;
       if (this.players[playerId]) {
-        const playerContainer = this.players[playerId];
-        playerContainer.moveTo(x, y);
+        const {
+          x: camX,
+          y: camY,
+          width: camWidth,
+          height: camHeight,
+        } = this.cameraManager.getCameraBounds();
+        const isInCameraView =
+          x >= camX &&
+          x <= camX + camWidth &&
+          y >= camY &&
+          y <= camY + camHeight;
+
+        if (isInCameraView) {
+          const playerContainer = this.players[playerId];
+          playerContainer.moveTo(x, y);
+        }
       }
     });
 
@@ -123,7 +122,25 @@ class GameScene extends Phaser.Scene {
 
     SocketManager.onAttackPlayer((id) => {
       if (this.players[id]) {
-        this.players[id].createClawAttack();
+        const playerContainer = this.players[id];
+        const { x, y } = playerContainer;
+
+        const {
+          x: camX,
+          y: camY,
+          width: camWidth,
+          height: camHeight,
+        } = this.cameraManager.getCameraBounds(60);
+
+        const isInCameraView =
+          x >= camX &&
+          x <= camX + camWidth &&
+          y >= camY &&
+          y <= camY + camHeight;
+
+        if (isInCameraView) {
+          this.players[id].createClawAttack();
+        }
       }
     });
 
@@ -137,13 +154,17 @@ class GameScene extends Phaser.Scene {
 
     SocketManager.onPlayingGame((isPlaying) => {
       if (isPlaying === 1) {
-        this.bgmManager.startPlayingBGM();
+        if (this.bgmManager) {
+          this.bgmManager.playPlayingRandomBGM();
+        }
         this.gameStatusText.showStart();
         Object.values(this.players).forEach((player) => {
           player.setPlay();
         });
       } else {
-        this.bgmManager.startWaitingBGM();
+        if (this.bgmManager) {
+          this.bgmManager.playWaitingRandomBGM();
+        }
         this.gameStatusText.showEnd();
         Object.values(this.players).forEach((player) => {
           player.setReady();
@@ -157,7 +178,7 @@ class GameScene extends Phaser.Scene {
     });
 
     SocketManager.onPlayInfo((survivorCount) => {
-      if (this.player.player.isPlay) {
+      if (this.player && this.player.player.isPlay) {
         this.updatePlayInfo(survivorCount);
       }
     });
@@ -193,21 +214,23 @@ class GameScene extends Phaser.Scene {
       this.gameStatusText.showResult();
       this.player.stopMove();
 
-      if (data && data.gameWinner && this.players[data.gameWinner]) {
-        const winPlayer = this.players[data.gameWinner];
-        winPlayer.choice();
-        this.resultText.showWinner(winPlayer.player.nickname);
-        this.cameraManager.smoothFollow(winPlayer);
+      if (data.gameWinner && this.players[data.gameWinner]) {
+        const winner = this.players[data.gameWinner];
+        this.cameraManager.smoothFollow(winner);
+        winner.choice();
+        this.resultText.showWinner(winner.player.nickname);
       }
-      if (data && data.PunchingBag && data.PunchingBag.playerId != "") {
+
+      if (data.PunchingBag && data.PunchingBag.playerId != "") {
         this.time.delayedCall(
           5000,
           () => {
+            this.player.stopMove();
             if (this.players[data.PunchingBag.playerId]) {
-              const bagPlayer = this.players[data.PunchingBag.playerId];
-              bagPlayer.choice();
-              this.resultText.showPunchingBag(bagPlayer.player.nickname);
-              this.cameraManager.smoothFollow(bagPlayer);
+              const punchKing = this.players[data.PunchingBag.playerId];
+              this.cameraManager.smoothFollow(punchKing);
+              punchKing.choice();
+              this.resultText.showPunchKing(punchKing.player.nickname);
             }
           },
           [],
@@ -216,16 +239,17 @@ class GameScene extends Phaser.Scene {
       }
 
       let timer = 5000;
-      if (data.PunchingBag.playerId != "") timer = 10000;
-      if (data && data.BombMaster && data.BombMaster.playerId != "") {
+      if (data.PunchingBag.playerId != "") timer = 11000;
+      if (data.BombMaster && data.BombMaster.playerId != "") {
         this.time.delayedCall(
           timer,
           () => {
+            this.player.stopMove();
             if (this.players[data.BombMaster.playerId]) {
               const bombMasterPlayer = this.players[data.BombMaster.playerId];
+              this.cameraManager.smoothFollow(bombMasterPlayer);
               bombMasterPlayer.choice();
               this.resultText.showBombMaster(bombMasterPlayer.player.nickname);
-              this.cameraManager.smoothFollow(bombMasterPlayer);
             }
           },
           [],
@@ -246,6 +270,9 @@ class GameScene extends Phaser.Scene {
 
     // 게임 접속 시 현재 상태 확인
     SocketManager.onGameStatus((status) => {
+      if (this.bgmManager) {
+        this.bgmManager.playWaitingRandomBGM();
+      }
       if (status === 1) {
         this.gameStatusText.showProceeding();
       } else {
@@ -256,12 +283,7 @@ class GameScene extends Phaser.Scene {
     SocketManager.onChatMessage(({ playerId, message }) => {
       if (this.players[playerId]) {
         this.players[playerId].showChatMessage(message);
-        if (!this.isMobile && this.chatDisplay) {
-          this.chatDisplay.addMessage(
-            this.players[playerId].player.nickname,
-            message
-          );
-        }
+        this.player.addMessage(this.players[playerId].player.nickname, message);
       }
     });
 
@@ -288,16 +310,15 @@ class GameScene extends Phaser.Scene {
     });
 
     SocketManager.onCurrentBombRanker((data) => {
-      const nickname = this.players[data.playerId].player.nickname
+      const nickname = this.players[data.playerId].player.nickname;
       this.rankText.showBombRank(nickname, data.count);
     });
 
     SocketManager.onCurrentHitRanker((data) => {
-      const nickname = this.players[data.playerId].player.nickname
+      const nickname = this.players[data.playerId].player.nickname;
       this.rankText.showHitRank(nickname, data.count);
     });
   }
-
   setBackground() {
     // 타일맵 설정
     const map = this.make.tilemap({ key: "map" });
@@ -364,14 +385,14 @@ class GameScene extends Phaser.Scene {
   }
 
   updatePlayerCountText() {
-    if (!this.player.player.isPlay) {
+    if (this.player && !this.player.player.isPlay) {
       const playerCount = Object.keys(this.players).length;
       this.infoText.update(playerCount);
     }
   }
 
   updatePlayInfo(survivorCount) {
-    if (this.player.player.isPlay) {
+    if (this.player && this.player.player.isPlay) {
       this.infoText.updatePlayInfo(survivorCount);
     }
   }

@@ -1,38 +1,37 @@
 import Phaser from "phaser";
+import SocketManager from "../utils/SocketManager";
 
-export default class Claw extends Phaser.Physics.Arcade.Sprite {
-  constructor(
-    scene,
-    startingPosition,
-    isHeadingRight,
-    damage,
-    scale,
-    isSelfInitiated
-  ) {
-    super(scene, startingPosition[0], startingPosition[1], "claw_white");
+export default class Claw extends Phaser.GameObjects.Sprite {
+  constructor(scene, hitBox, player) {
+    const offsetX = player.flipX ? 150 : -150; // 플레이어 방향에 따른 오프셋 설정
+    const clawX = player.x + offsetX;
+    const clawY = player.y;
+    super(scene, clawX, clawY, "claw_white");
 
-    // 화면 및 물리엔진에 추가합니다.
-    scene.add.existing(this);
-    scene.physics.world.enableBody(this);
-    // 공격 소리를 추가합니다.
-    if (isSelfInitiated) {
+    this.scene = scene;
+    this.player = player;
+    this.isSelfInitiated = this.player.isSelfInitiated;
+
+    this.scene.add.existing(this);
+
+    const realX = hitBox.x + offsetX;
+    const realY = hitBox.y;
+
+    if (this.isSelfInitiated) {
+      SocketManager.emitPlayerAttack({ x: realX, y: realY });
       this.scratch_sound = scene.sound.add("scratch_sound", { volume: 0.5 });
       this.scratch_sound.play();
     }
 
-    // Claw 공격은 앞 1회, 뒤 1회가 한 세트입니다.
     // DURATION은 각 Claw 공격의 지속 시간(ms)입니다.
     this.DURATION = 500;
 
-    // 데미지를 설정합니다.
-    this.m_damage = damage;
-    // 크기, depth를 설정합니다.
     this.scale = 3;
     this.setDepth(30);
-    // 애니메이션을 재생합니다.
     this.anims.play("claw_white", true);
+
     // 플레이어가 왼쪽을 보고 있을 경우 claw 이미지를 좌우 반전시킵니다.
-    if (!isHeadingRight) {
+    if (!player.flipX) {
       this.flipX = true;
     }
 

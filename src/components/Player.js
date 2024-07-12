@@ -1,7 +1,6 @@
 import Phaser from "phaser";
-import CollisionChecker from "../utils/CollisionChecker";
 
-class Player extends Phaser.Physics.Arcade.Sprite {
+class Player extends Phaser.GameObjects.Sprite {
   constructor(scene, x, y, texture, info) {
     super(scene, x, y, texture);
     this.scene = scene;
@@ -10,7 +9,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.nickname = info.nickname;
 
     this.scene.add.existing(this);
-    this.scene.physics.add.existing(this);
 
     this.setScale(1);
     this.setDepth(30);
@@ -29,9 +27,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.setReadyStatus(); // 준비 상태
       }
     }
-
-    this.prevX = x;
-    this.prevY = y;
   }
 
   createAnimations() {
