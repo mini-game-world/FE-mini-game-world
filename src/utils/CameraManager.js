@@ -25,7 +25,7 @@ class CameraManager {
     this.mainCamera.once("camerapancomplete", () => {
       this.mainCamera.startFollow(target);
       this.isPanning = false; // 플래그 해제
-      if (target.player.isSelfInitiated) {
+      if (target && target.player && target.player.isSelfInitiated) {
         target.isWinner = true;
       }
     });
