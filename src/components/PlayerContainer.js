@@ -343,7 +343,6 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     this.player.setDeadStatus();
     this.nickname.setColor("#ff0000");
     this.explodeBomb();
-    this.hitBox.body.checkCollision.none = true;
   }
 
   setBombUser() {
