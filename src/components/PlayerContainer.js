@@ -330,12 +330,10 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     this.isAttacking = false;
     this.player.setReadyStatus();
     this.nickname.setColor("#ffffff");
-    this.hitBox.body.checkCollision.none = false;
   }
 
   setPlay() {
     this.player.setPlayStatus();
-    this.hitBox.body.checkCollision.none = false;
   }
 
   setDead() {
@@ -409,7 +407,6 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       this.player.setTexture(`player${this.player.avatar}`);
       this.player.anims.play(`idle${this.player.avatar}`, true);
       this.player.setAlpha(1);
-      this.hitBox.body.checkCollision.none = false;
     }
 
     this.scene.tweens.add({
