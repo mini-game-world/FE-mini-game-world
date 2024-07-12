@@ -9,8 +9,8 @@ const isMobile = /Mobi|Android/i.test(navigator.userAgent);
 
 const Config = {
   type: Phaser.AUTO,
-  width: 3840,
-  height: 2560,
+  width: 4160,
+  height: 3200,
   scene: [BootScene, MainScene, TutorialScene, GameScene],
   pixelArt: true,
   scale: {

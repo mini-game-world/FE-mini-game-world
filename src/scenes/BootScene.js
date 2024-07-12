@@ -21,7 +21,7 @@ import bigImg from "../assets/big.png";
 
 // Import map
 import first_tileset from "../assets/tiles/first_tileset.png";
-import map from "../assets/maps/village5.tmj";
+import map from "../assets/maps/village.tmj";
 import chest_2 from "../assets/tiles/chest_2.png";
 import house_1 from "../assets/tiles/house_1.png";
 import logs from "../assets/tiles/logs.png";
