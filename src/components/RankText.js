@@ -2,8 +2,8 @@ class RankText extends Phaser.GameObjects.Text {
   constructor(scene) {
     super(
       scene,
-      3100,
-      450,
+      3300,
+      550,
       "",
       {
         fontSize: "40px",
@@ -22,8 +22,8 @@ class RankText extends Phaser.GameObjects.Text {
 
     this.secondLine = new Phaser.GameObjects.Text(
       scene,
-      3100, 
-      500, 
+      3300, 
+      600, 
       "",
       {
         fontSize: "40px",
