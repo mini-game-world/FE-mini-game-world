@@ -8,8 +8,8 @@ export default class MapShrinker {
     delay = 15000,
     minWidth = 1400,
     minHeight = 1400,
-    initialWidth = 3840,
-    initialHeight = 2560,
+    initialWidth = 4160,
+    initialHeight = 3200,
     tileWidth = 32,
     tileHeight = 32
   ) {
