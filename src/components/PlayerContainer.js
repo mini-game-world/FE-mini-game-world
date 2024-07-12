@@ -13,6 +13,7 @@ import CollisionChecker from "../utils/CollisionChecker";
 import StatusIcon from "./StatusIcon";
 import ChatDisplay from "./ChatDisplay";
 import Joystick from "./Joystick"; // Joystick 클래스 추가
+import Bang from "./Bang";
 
 class PlayerContainer extends Phaser.GameObjects.Container {
   constructor(scene, x, y, texture, info) {
@@ -358,7 +359,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     this.isStunned = true;
     this.isAttacking = false;
 
-    new Star(this.scene, this.player, this);
+    new Bang(this.scene, this.player, this);
 
     if (!this.bomb) {
       this.bomb = new Bomb(this.scene, this.player);
