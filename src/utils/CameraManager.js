@@ -1,5 +1,5 @@
 class CameraManager {
-  constructor(scene, bounds = { width: 3840, height: 2560 }, zoom = 1.5) {
+  constructor(scene, bounds = { width: 4160, height: 3200 }, zoom = 1.5) {
     this.scene = scene;
     this.mainCamera = this.scene.cameras.main;
     this.setCameraBounds(bounds.width, bounds.height);

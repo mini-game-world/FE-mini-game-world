@@ -55,13 +55,13 @@ export default class MainScene extends Phaser.Scene {
     });
 
     this.player1 = this.physics.add
-      .sprite(2090, 1936, "player_move1")
+      .sprite(2090, 2456, "player_move1")
       .setScale(2);
     this.player1.setCollideWorldBounds(false);
     this.player1.play("move1");
 
     this.player2 = this.physics.add
-      .sprite(1290, 1936, "player_move2")
+      .sprite(1290, 2456, "player_move2")
       .setScale(2);
     this.player2.setCollideWorldBounds(false);
     this.player2.play("move2");
@@ -73,7 +73,7 @@ export default class MainScene extends Phaser.Scene {
 
     this.createButton(
       this.scale.width / 2,
-      this.scale.height - 1450,
+      this.scale.height - 1750,
       "시작하기",
       () => {
         this.sound.play("click_sound");
@@ -83,7 +83,7 @@ export default class MainScene extends Phaser.Scene {
 
     this.createButton(
       this.scale.width / 2,
-      this.scale.height - 1150,
+      this.scale.height - 1450,
       "튜토리얼",
       () => {
         this.sound.play("click_sound");

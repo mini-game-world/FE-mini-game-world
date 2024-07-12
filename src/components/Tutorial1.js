@@ -64,8 +64,8 @@ export default class Tutorial1 {
     if (this.player1) {
       this.scene.tweens.add({
         targets: this.player1,
-        x: 1000,
-        y: 1936,
+        x: 1200,
+        y: 2456,
         duration: 2000,
         ease: "Linear",
         onComplete: () => {
