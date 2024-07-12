@@ -168,16 +168,6 @@ class TutorialScene extends Phaser.Scene {
     this.star.anims.play("star1", true);
 
     // 튜토리얼 3
-    this.anims.create({
-      key: "move1",
-      frames: this.anims.generateFrameNumbers("player_move1", {
-        start: 0,
-        end: 3,
-      }),
-      frameRate: 5,
-      repeat: -1,
-    });
-
     this.item = this.add.image(2800, 2050, "item").setScale(2).setScale(0.3);
     this.player5 = this.physics.add
       .sprite(3600, 1936, "player_move1")
@@ -190,78 +180,25 @@ class TutorialScene extends Phaser.Scene {
     const buttonWidth = 400;
     const buttonHeight = 150;
 
-    const button = this.add.graphics();
-    button.fillStyle(0xadd8e6, 1);
-    button.fillRoundedRect(
-      -buttonWidth / 2,
-      -buttonHeight / 2,
-      buttonWidth,
-      buttonHeight,
-      40
-    );
-    button.lineStyle(8, 0xffffff, 1);
-    button.strokeRoundedRect(
-      -buttonWidth / 2,
-      -buttonHeight / 2,
-      buttonWidth,
-      buttonHeight,
-      40
-    );
+    const button = this.add
+      .rectangle(x, y, buttonWidth, buttonHeight, 0xadd8e6, 1)
+      .setStrokeStyle(8, 0xffffff, 1)
+      .setInteractive({ useHandCursor: true })
+      .on("pointerdown", callback)
+      .on("pointerover", () => this.updateButtonColor(button, 0xffb6c1))
+      .on("pointerout", () => this.updateButtonColor(button, 0xadd8e6));
 
     const buttonText = this.add
-      .text(0, 0, text, {
+      .text(x, y, text, {
         fontFamily: "BMJUA",
         fontSize: "64px",
         fill: "#000000",
       })
       .setOrigin(0.5);
+  }
 
-    const container = this.add.container(x, y, [button, buttonText]);
-
-    container.setSize(buttonWidth, buttonHeight);
-    container
-      .setInteractive({ useHandCursor: true })
-      .on("pointerdown", callback);
-
-    container.on("pointerover", () => {
-      button.clear();
-      button.fillStyle(0xffb6c1, 1);
-      button.fillRoundedRect(
-        -buttonWidth / 2,
-        -buttonHeight / 2,
-        buttonWidth,
-        buttonHeight,
-        40
-      );
-      button.lineStyle(8, 0xffffff, 1);
-      button.strokeRoundedRect(
-        -buttonWidth / 2,
-        -buttonHeight / 2,
-        buttonWidth,
-        buttonHeight,
-        40
-      );
-    });
-
-    container.on("pointerout", () => {
-      button.clear();
-      button.fillStyle(0xadd8e6, 1);
-      button.fillRoundedRect(
-        -buttonWidth / 2,
-        -buttonHeight / 2,
-        buttonWidth,
-        buttonHeight,
-        40
-      );
-      button.lineStyle(8, 0xffffff, 1);
-      button.strokeRoundedRect(
-        -buttonWidth / 2,
-        -buttonHeight / 2,
-        buttonWidth,
-        buttonHeight,
-        40
-      );
-    });
+  updateButtonColor(button, color) {
+    button.setFillStyle(color, 1);
   }
 }
 

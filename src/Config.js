@@ -16,7 +16,6 @@ const Config = {
     noAudio: platform === "mobile",
   },
   scene: [BootScene, MainScene, TutorialScene, GameScene],
-  pixelArt: true,
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
@@ -25,7 +24,12 @@ const Config = {
     default: "arcade",
     arcade: {
       debug: false,
+      fps: 60,
     },
+  },
+  render: {
+    pixelArt: true,
+    roundPixels: true,
   },
   input: {
     activePointers: 3,

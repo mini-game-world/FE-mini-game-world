@@ -11,7 +11,6 @@ import Explosion from "./Explosion";
 import BodyExplosion from "./BodyExplosion";
 import CollisionChecker from "../utils/CollisionChecker";
 import StatusIcon from "./StatusIcon";
-import ChatBox from "./ChatBox";
 import ChatDisplay from "./ChatDisplay";
 import Joystick from "./Joystick"; // Joystick 클래스 추가
 
@@ -60,7 +59,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     this.isWinner = false;
 
     this.bomb = null;
-    this.speed = 700; // 기본 속도 추가
+    this.speed = 600; // 기본 속도 추가
 
     this.statusIcon = null;
 
@@ -81,7 +80,6 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       }
     } else {
       if (this.player.isSelfInitiated) {
-        this.chatBox = new ChatBox(this.scene);
         this.chatDisplay = new ChatDisplay(this.scene);
       }
     }
@@ -149,11 +147,11 @@ class PlayerContainer extends Phaser.GameObjects.Container {
   }
 
   getVelocity() {
-    if (this.speed < 900) {
+    if (this.speed < 800) {
       if (this.bomb) {
-        this.speed = 800;
-      } else {
         this.speed = 700;
+      } else {
+        this.speed = 600;
       }
     }
 
@@ -352,6 +350,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     if (!this.bomb) {
       this.bomb = new Bomb(this.scene, this.player);
       this.add(this.bomb);
+      this.bringToTop(this.chatBalloon);
     }
   }
 
@@ -365,6 +364,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     if (!this.bomb) {
       this.bomb = new Bomb(this.scene, this.player);
       this.add(this.bomb);
+      this.bringToTop(this.chatBalloon);
     }
 
     if (this.player.isPlay && this.player.isDead) return;

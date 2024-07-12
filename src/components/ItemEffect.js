@@ -24,7 +24,7 @@ class ItemEffect {
 
   increaseSpeed() {
     if (this.player.player.isSelfInitiated) {
-      this.player.speed = 900;
+      this.player.speed = 800;
       this.gameScene.time.delayedCall(5000, () => {
         this.player.speed = 600; // 5초 후 원래 속도로 복구
       });
