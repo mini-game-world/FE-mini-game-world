@@ -147,6 +147,7 @@ class GameScene extends Phaser.Scene {
         const randomX = Phaser.Math.Between(1280 , 2080);
         const randomY = Phaser.Math.Between(960, 1280);
         this.player.hitBox.setPosition(randomX, randomY);
+        SocketManager.emitPlayerMovement({ x: randomX, y: randomY });
         this.cameraManager.smoothFollow(this.player);
         this.mapShrinker.reset();
         this.rankText.clearText();
@@ -177,6 +178,7 @@ class GameScene extends Phaser.Scene {
             const randomX = Phaser.Math.Between(0, 320);
             const randomY = Phaser.Math.Between(0, 320);
             this.player.hitBox.setPosition(randomX, randomY);
+            SocketManager.emitPlayerMovement({ x: randomX, y: randomY });
           }
         }
       });
