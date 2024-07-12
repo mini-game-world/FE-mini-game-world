@@ -153,7 +153,7 @@ class GameScene extends Phaser.Scene {
     });
 
     SocketManager.onPlayInfo((survivorCount) => {
-      if (this.player && this.player.player.isPlay) {
+      if (this.player && this.player.player && this.player.player.isPlay) {
         this.updatePlayInfo(survivorCount);
       }
     });
@@ -360,14 +360,14 @@ class GameScene extends Phaser.Scene {
   }
 
   updatePlayerCountText() {
-    if (this.player && !this.player.player.isPlay) {
+    if (this.player && this.player.player && !this.player.player.isPlay) {
       const playerCount = Object.keys(this.players).length;
       this.infoText.update(playerCount);
     }
   }
 
   updatePlayInfo(survivorCount) {
-    if (this.player && this.player.player.isPlay) {
+    if (this.player && this.player.player && this.player.player.isPlay) {
       this.infoText.updatePlayInfo(survivorCount);
     }
   }
