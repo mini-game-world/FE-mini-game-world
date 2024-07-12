@@ -93,22 +93,7 @@ class GameScene extends Phaser.Scene {
     SocketManager.onPlayerMoved((player) => {
       const { playerId, x, y } = player;
       if (this.players[playerId]) {
-        const {
-          x: camX,
-          y: camY,
-          width: camWidth,
-          height: camHeight,
-        } = this.cameraManager.getCameraBounds();
-        const isInCameraView =
-          x >= camX &&
-          x <= camX + camWidth &&
-          y >= camY &&
-          y <= camY + camHeight;
-
-        if (isInCameraView) {
-          const playerContainer = this.players[playerId];
-          playerContainer.moveTo(x, y);
-        }
+        this.players[playerId].moveTo(x, y);
       }
     });
 
@@ -122,25 +107,7 @@ class GameScene extends Phaser.Scene {
 
     SocketManager.onAttackPlayer((id) => {
       if (this.players[id]) {
-        const playerContainer = this.players[id];
-        const { x, y } = playerContainer;
-
-        const {
-          x: camX,
-          y: camY,
-          width: camWidth,
-          height: camHeight,
-        } = this.cameraManager.getCameraBounds(60);
-
-        const isInCameraView =
-          x >= camX &&
-          x <= camX + camWidth &&
-          y >= camY &&
-          y <= camY + camHeight;
-
-        if (isInCameraView) {
-          this.players[id].createClawAttack();
-        }
+        this.players[id].createClawAttack();
       }
     });
 
