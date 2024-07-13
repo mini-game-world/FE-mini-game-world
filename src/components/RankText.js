@@ -23,7 +23,7 @@ class RankText extends Phaser.GameObjects.Text {
     this.secondLine = new Phaser.GameObjects.Text(
       scene,
       scene.cameras.main.width - 693.3333333333333,
-      573.3333333333333,
+      583.3333333333333,
       "",
       {
         fontSize: "40px",
