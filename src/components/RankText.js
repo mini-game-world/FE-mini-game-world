@@ -2,8 +2,8 @@ class RankText extends Phaser.GameObjects.Text {
   constructor(scene) {
     super(
       scene,
-      3100,
-      450,
+      scene.cameras.main.width - 693.3333333333333,
+      533.3333333333333,
       "",
       {
         fontSize: "40px",
@@ -22,8 +22,8 @@ class RankText extends Phaser.GameObjects.Text {
 
     this.secondLine = new Phaser.GameObjects.Text(
       scene,
-      3100, 
-      500, 
+      scene.cameras.main.width - 693.3333333333333,
+      573.3333333333333,
       "",
       {
         fontSize: "40px",
@@ -47,7 +47,7 @@ class RankText extends Phaser.GameObjects.Text {
 
   showHitRank(nickname, count) {
     this.secondLine.setAlpha(1);
-    this.secondLine.setText(`스트라이커 ${nickname} ${count}회`);
+    this.secondLine.setText(`동네 깡패 ${nickname} ${count}회`);
   }
 
   clearText() {
