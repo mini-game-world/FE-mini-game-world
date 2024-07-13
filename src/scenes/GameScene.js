@@ -199,6 +199,10 @@ class GameScene extends Phaser.Scene {
       this.gameStatusText.showResult();
       this.player.stopMove();
 
+      this.players[data.gameWinner].setWinner();
+      this.players[data.PunchingBag].setWinner();
+      this.players[data.BombMaster].setWinner();
+
       let position = null;
 
       // Check if this player is the game winner (highest priority)

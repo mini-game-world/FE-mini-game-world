@@ -392,29 +392,25 @@ class PlayerContainer extends Phaser.GameObjects.Container {
   }
 
   stopMove() {
-    if (!this.player.isDead) {
-      this.player.anims.play(`idle${this.player.avatar}`, true);
-    } else {
-      this.player.anims.play(`dead`, true);
-    }
     this.isWinner = false;
+  }
+
+  setWinner() {
+    this.player.isDead = false;
+    this.player.setAlpha(1);
+    this.nickname.setColor("#ffffff");
+    this.player.setTexture(`player${this.player.avatar}`);
+    this.player.anims.play(`idle${this.player.avatar}`, true);
   }
 
   choice() {
     return new Promise((resolve) => {
       this.nickname.setColor("#FFD700");
 
-      // if (this.player.isDead) {
-      //   this.player.isDead = false;
-      //   this.player.setTexture(`player${this.player.avatar}`);
-      //   this.player.anims.play(`idle${this.player.avatar}`, true);
-      //   this.player.setAlpha(1);
-      // }
-
       this.scene.tweens.add({
         targets: this,
         scale: 3,
-        duration: 2000,
+        duration: 1500,
         ease: "Power1",
         onComplete: () => {
           if (!this.scene || !this) return;
@@ -424,6 +420,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
             duration: 1000,
             ease: "Power1",
             onComplete: () => {
+              this.nickname.setColor("#ffffff");
               resolve();
             },
           });
