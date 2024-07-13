@@ -3,8 +3,8 @@ export default class Tutorial3 {
     this.scene = scene;
     this.player5 = player5;
 
-    this.originalX = 3600;
-    this.originalY = 1936;
+    this.originalX = 3880;
+    this.originalY = 2456;
 
     this.tutorial3();
   }
@@ -27,8 +27,8 @@ export default class Tutorial3 {
       this.player5.setFlipX(false);
       this.scene.tweens.add({
         targets: this.player5,
-        x: 2800,
-        y: 1936,
+        x: 3080,
+        y: 2456,
         duration: 2000,
         ease: "Linear",
         onComplete: () => {

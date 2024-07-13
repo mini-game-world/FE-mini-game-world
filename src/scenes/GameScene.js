@@ -64,6 +64,7 @@ class GameScene extends Phaser.Scene {
           this.player = playerContainer;
           this.cameraManager.smoothFollow(this.player);
           this.physics.add.collider(this.player.hitBox, this.backGround);
+          this.physics.add.collider(this.player.hitBox, this.fence);
           this.physics.add.collider(this.player.hitBox, this.house);
           this.physics.add.collider(this.player.hitBox, this.object);
 
@@ -329,6 +330,8 @@ class GameScene extends Phaser.Scene {
     const tree_2 = map.addTilesetImage("tree_2", "tree_2");
     const stone_1 = map.addTilesetImage("stone_1", "stone_1");
     const stone_3 = map.addTilesetImage("stone_3", "stone_3");
+    const fence_1 = map.addTilesetImage("fence_1", "fence_1");
+    const fence_3 = map.addTilesetImage("fence_3", "fence_3");
 
     // 레이어 생성 (Tiled에서 설정한 레이어 이름 사용)
     // map.createLayer("Tile Layer 1", tileset, 0, 0);
@@ -336,6 +339,8 @@ class GameScene extends Phaser.Scene {
     // this.blocklayer.setCollisionByProperty({ collides: true });
     this.backGround = map.createLayer("BackGround", Tileset_1, 0, 0);
     this.backGround.setCollisionByProperty({ collides: true });
+    this.fence = map.createLayer("Fence", [fence_1, fence_3], 0, 0);
+    this.fence.setCollisionByProperty({ collides: true });
     this.house = map.createLayer("House", house_1, 0, 0);
     this.house.setCollisionByProperty({ collides: true });
     this.object = map.createLayer(

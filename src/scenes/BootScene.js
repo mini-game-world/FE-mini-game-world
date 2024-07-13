@@ -23,7 +23,7 @@ import bigImg from "../assets/big.png";
 
 // Import map
 import first_tileset from "../assets/tiles/first_tileset.png";
-import map from "../assets/maps/village3.tmj";
+import map from "../assets/maps/village5.tmj";
 import chest_2 from "../assets/tiles/chest_2.png";
 import house_1 from "../assets/tiles/house_1.png";
 import logs from "../assets/tiles/logs.png";
@@ -33,6 +33,8 @@ import tree_1 from "../assets/tiles/tree_1.png";
 import tree_2 from "../assets/tiles/tree_2.png";
 import stone_1 from "../assets/tiles/stone_1.png";
 import stone_3 from "../assets/tiles/stone_3.png";
+import fence_1 from "../assets/tiles/fence_1.png";
+import fence_3 from "../assets/tiles/fence_3.png";
 
 // Import Sound
 import scratchSound from "../assets/sounds/scratch.ogg";
@@ -201,6 +203,8 @@ class BootScene extends Phaser.Scene {
     this.load.image("tree_2", tree_2);
     this.load.image("stone_3", stone_3);
     this.load.image("stone_1", stone_1);
+    this.load.image("fence_1", fence_1);
+    this.load.image("fence_3", fence_3);
 
     //audio
     this.load.audio("scratch_sound", scratchSound);
