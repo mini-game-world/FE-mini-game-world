@@ -142,7 +142,9 @@ class GameScene extends Phaser.Scene {
             this.player.isAttacking = false;
             this.player.isStunned = false;
           }
-          player.setPlay();
+          if (player) {
+            player.setPlay();
+          }
         });
       } else {
         if (this.bgmManager) {
@@ -166,7 +168,9 @@ class GameScene extends Phaser.Scene {
 
             this.cameraManager.smoothFollow(this.player);
           }
-          player.setReady();
+          if (player) {
+            player.setReady();
+          }
         });
 
         this.rankText.clearText();
@@ -199,7 +203,9 @@ class GameScene extends Phaser.Scene {
           this.player.hitBox.setPosition(randomX, randomY);
           SocketManager.emitPlayerMovement({ x: randomX, y: randomY });
         }
-        this.players[id].setDead();
+        if (this.players[id]) {
+          this.players[id].setDead();
+        }
       });
     });
 
