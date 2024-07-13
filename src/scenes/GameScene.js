@@ -199,21 +199,31 @@ class GameScene extends Phaser.Scene {
       this.gameStatusText.showResult();
       this.player.stopMove();
 
+      let position = null;
+
+      // Check if this player is the game winner (highest priority)
       if (this.player === this.players[data.gameWinner]) {
-        this.player.setPosition(1680, 1752);
-        SocketManager.emitPlayerMovement({ x: 1680, y: 1752 });
+        position = { x: 1680, y: 1752 };
       }
 
-      // 내 캐릭터가 PunchingBag인 경우
+      // Check if this player is PunchingBag (second priority)
       if (this.player === this.players[data.PunchingBag]) {
-        this.player.setPosition(1280, 1752);
-        SocketManager.emitPlayerMovement({ x: 1280, y: 1752 });
+        if (!position) {
+          position = { x: 1280, y: 1752 };
+        }
       }
 
-      // 내 캐릭터가 BombMaster인 경우
+      // Check if this player is BombMaster (third priority)
       if (this.player === this.players[data.BombMaster]) {
-        this.player.setPosition(1920, 1752);
-        SocketManager.emitPlayerMovement({ x: 1920, y: 1752 });
+        if (!position) {
+          position = { x: 1920, y: 1752 };
+        }
+      }
+
+      // Set position if it's determined
+      if (position) {
+        this.player.setPosition(position.x, position.y);
+        SocketManager.emitPlayerMovement({ x: position.x, y: position.y });
       }
     });
 
