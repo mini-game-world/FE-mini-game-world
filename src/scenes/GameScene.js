@@ -144,7 +144,7 @@ class GameScene extends Phaser.Scene {
         Object.values(this.players).forEach((player) => {
           player.setReady();
         });
-        const randomX = Phaser.Math.Between(1280 , 2080);
+        const randomX = Phaser.Math.Between(1280, 2080);
         const randomY = Phaser.Math.Between(960, 1280);
         this.player.hitBox.setPosition(randomX, randomY);
         SocketManager.emitPlayerMovement({ x: randomX, y: randomY });
@@ -174,7 +174,7 @@ class GameScene extends Phaser.Scene {
       players.forEach((id) => {
         if (this.players[id]) {
           this.players[id].setDead();
-          if(id === SocketManager.channel.id){
+          if (id === SocketManager.channel.id) {
             const randomX = Phaser.Math.Between(0, 320);
             const randomY = Phaser.Math.Between(0, 320);
             this.player.hitBox.setPosition(randomX, randomY);
@@ -199,47 +199,21 @@ class GameScene extends Phaser.Scene {
       this.gameStatusText.showResult();
       this.player.stopMove();
 
-      if (data.gameWinner && this.players[data.gameWinner]) {
-        const winner = this.players[data.gameWinner];
-        this.cameraManager.smoothFollow(winner);
-        winner.choice();
-        this.resultText.showWinner(winner.player.nickname);
+      if (this.player === this.players[data.gameWinner]) {
+        this.player.setPosition(1680, 1752);
+        SocketManager.emitPlayerMovement({ x: 1680, y: 1752 });
       }
 
-      if (data.PunchingBag && data.PunchingBag.playerId != "") {
-        this.time.delayedCall(
-          5000,
-          () => {
-            this.player.stopMove();
-            if (this.players[data.PunchingBag.playerId]) {
-              const punchKing = this.players[data.PunchingBag.playerId];
-              this.cameraManager.smoothFollow(punchKing);
-              punchKing.choice();
-              this.resultText.showPunchKing(punchKing.player.nickname);
-            }
-          },
-          [],
-          this
-        );
+      // 내 캐릭터가 PunchingBag인 경우
+      if (this.player === this.players[data.PunchingBag]) {
+        this.player.setPosition(1280, 1752);
+        SocketManager.emitPlayerMovement({ x: 1280, y: 1752 });
       }
 
-      let timer = 5000;
-      if (data.PunchingBag.playerId != "") timer = 11000;
-      if (data.BombMaster && data.BombMaster.playerId != "") {
-        this.time.delayedCall(
-          timer,
-          () => {
-            this.player.stopMove();
-            if (this.players[data.BombMaster.playerId]) {
-              const bombMasterPlayer = this.players[data.BombMaster.playerId];
-              this.cameraManager.smoothFollow(bombMasterPlayer);
-              bombMasterPlayer.choice();
-              this.resultText.showBombMaster(bombMasterPlayer.player.nickname);
-            }
-          },
-          [],
-          this
-        );
+      // 내 캐릭터가 BombMaster인 경우
+      if (this.player === this.players[data.BombMaster]) {
+        this.player.setPosition(1920, 1752);
+        SocketManager.emitPlayerMovement({ x: 1920, y: 1752 });
       }
     });
 
