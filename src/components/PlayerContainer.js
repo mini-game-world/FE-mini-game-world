@@ -63,7 +63,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     this.bomb = null;
     this.speed = 600; // 기본 속도 추가
 
-    this.statusIcon = null;
+    this.statusIcons = [];
 
     this.collisionChecker = new CollisionChecker();
 
@@ -464,21 +464,21 @@ class PlayerContainer extends Phaser.GameObjects.Container {
   }
 
   addStatusIcon(item) {
-    if (this.statusIcon) {
-      this.statusIcon.destroy();
-    }
     const iconX = this.player.x + this.player.width / 2 + 20; // 플레이어 오른쪽에 아이콘 위치
     const iconY = this.player.y;
-    this.statusIcon = new StatusIcon(this.scene, iconX, iconY, item);
-    this.add(this.statusIcon);
+    const statusIcon = new StatusIcon(this.scene, iconX, iconY, item);
+    this.add(statusIcon);
+    this.statusIcons.push(statusIcon);
 
     this.scene.time.delayedCall(5000, () => {
-      if (this.statusIcon) {
-        this.statusIcon.destroy();
-        this.statusIcon = null;
+      const index = this.statusIcons.indexOf(statusIcon);
+      if (index !== -1) {
+        statusIcon.destroy();
+        this.statusIcons.splice(index, 1);
       }
     });
   }
+
 
   destroy() {
     // Custom cleanup for PlayerContainer
