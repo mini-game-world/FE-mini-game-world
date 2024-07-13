@@ -326,11 +326,12 @@ class PlayerContainer extends Phaser.GameObjects.Container {
   }
 
   setReady() {
-    this.bomb = null;
-    this.isWinner = false;
-    this.isAttacking = false;
-    this.player.setReadyStatus();
+    if (this.bomb) {
+      this.bomb.destroy();
+      this.bomb = null;
+    }
     this.nickname.setColor("#ffffff");
+    this.player.setReadyStatus();
   }
 
   setPlay() {

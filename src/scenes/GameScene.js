@@ -136,6 +136,7 @@ class GameScene extends Phaser.Scene {
           this.bgmManager.playPlayingRandomBGM();
         }
         this.gameStatusText.showStart();
+
         Object.values(this.players).forEach((player) => {
           player.setPlay();
         });
@@ -144,14 +145,23 @@ class GameScene extends Phaser.Scene {
           this.bgmManager.playWaitingRandomBGM();
         }
         this.gameStatusText.showEnd();
+
         Object.values(this.players).forEach((player) => {
+          if (this.player === player) {
+            this.player.isWinner = false;
+            this.player.isAttacking = false;
+            this.player.isStunned = false;
+
+            const randomX = Phaser.Math.Between(1280, 2080);
+            const randomY = Phaser.Math.Between(960, 1280);
+            this.player.hitBox.setPosition(randomX, randomY);
+            SocketManager.emitPlayerMovement({ x: randomX, y: randomY });
+
+            this.cameraManager.smoothFollow(this.player);
+          }
           player.setReady();
         });
-        const randomX = Phaser.Math.Between(1280, 2080);
-        const randomY = Phaser.Math.Between(960, 1280);
-        this.player.hitBox.setPosition(randomX, randomY);
-        SocketManager.emitPlayerMovement({ x: randomX, y: randomY });
-        this.cameraManager.smoothFollow(this.player);
+
         this.mapShrinker.reset();
         this.rankText.clearText();
         this.itemsGroup.clear(true, true);
