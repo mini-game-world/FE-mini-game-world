@@ -51,7 +51,7 @@ class BackgroundManager {
   }
 
   setWorldBounds() {
-    this.scene.physics.world.setBounds(0, 0, 4160, 3200);
+    this.scene.physics.world.setBounds(0, 0, 3840, 3200);
   }
 
   addDebugging() {
