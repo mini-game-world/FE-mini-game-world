@@ -149,6 +149,9 @@ class GameScene extends Phaser.Scene {
           this.bgmManager.playWaitingRandomBGM();
         }
         this.gameStatusText.showEnd();
+        if (this.resultText) {
+          this.resultText.del();
+        }
 
         Object.values(this.players).forEach((player) => {
           if (this.player === player) {
@@ -259,6 +262,8 @@ class GameScene extends Phaser.Scene {
           await this.cameraManager.smoothFollowWinner(
             this.players[data.gameWinner]
           );
+        }
+        if (data.gameWinner && this.players[data.gameWinner]) {
           await this.players[data.gameWinner].choice(
             this.resultText.showWinner
           );
@@ -268,15 +273,18 @@ class GameScene extends Phaser.Scene {
           await this.cameraManager.smoothFollowWinner(
             this.players[data.PunchingBag]
           );
+        }
+        if (data.PunchingBag && this.players[data.PunchingBag]) {
           await this.players[data.PunchingBag].choice(
             this.resultText.showPunchKing
           );
         }
-
         if (data.BombMaster && this.players[data.BombMaster]) {
           await this.cameraManager.smoothFollowWinner(
             this.players[data.BombMaster]
           );
+        }
+        if (data.BombMaster && this.players[data.BombMaster]) {
           await this.players[data.BombMaster].choice(
             this.resultText.showBombMaster
           );
