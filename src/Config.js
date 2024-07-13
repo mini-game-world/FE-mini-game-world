@@ -10,12 +10,13 @@ const platform = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
 
 const Config = {
   type: Phaser.AUTO,
-  width: 3840,
-  height: 2560,
+  width: 4160,
+  height: 3200,
   audio: {
     noAudio: platform === "mobile",
   },
   scene: [BootScene, MainScene, TutorialScene, GameScene],
+  pixelArt: true,
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
@@ -24,12 +25,7 @@ const Config = {
     default: "arcade",
     arcade: {
       debug: false,
-      fps: 60,
     },
-  },
-  render: {
-    pixelArt: true,
-    roundPixels: true,
   },
   input: {
     activePointers: 3,
