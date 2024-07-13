@@ -149,6 +149,9 @@ class GameScene extends Phaser.Scene {
           this.bgmManager.playWaitingRandomBGM();
         }
         this.gameStatusText.showEnd();
+        if (this.resultText) {
+          this.resultText.del();
+        }
 
         Object.values(this.players).forEach((player) => {
           if (this.player === player) {
