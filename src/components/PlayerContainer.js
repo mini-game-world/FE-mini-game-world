@@ -58,6 +58,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     this.isAttacking = false; // 공격 상태 추가
     this.isStunned = false;
     this.isWinner = false;
+    this.isReversed = false;
 
     this.bomb = null;
     this.speed = 600; // 기본 속도 추가
@@ -159,17 +160,33 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     let velocityX = 0;
     let velocityY = 0;
 
-    if (this.keys.up.isDown) velocityY = -this.speed;
-    if (this.keys.down.isDown) velocityY = this.speed;
-    if (this.keys.left.isDown) velocityX = -this.speed;
-    if (this.keys.right.isDown) velocityX = this.speed;
+    if(!this.isReversed) {
+      if (this.keys.up.isDown) velocityY = -this.speed;
+      if (this.keys.down.isDown) velocityY = this.speed;
+      if (this.keys.left.isDown) velocityX = -this.speed;
+      if (this.keys.right.isDown) velocityX = this.speed;
+    } else {
+      if (this.keys.up.isDown) velocityY = this.speed;
+      if (this.keys.down.isDown) velocityY = -this.speed;
+      if (this.keys.left.isDown) velocityX = this.speed;
+      if (this.keys.right.isDown) velocityX = -this.speed;
+    }
+    
 
     if (this.joystick) {
       const force = this.joystick.getForce();
       if (force > 0) {
         const angle = Phaser.Math.DegToRad(this.joystick.getAngle()); // 각도를 라디안으로 변환
-        velocityX = Math.cos(angle) * this.speed;
-        velocityY = Math.sin(angle) * this.speed;
+        let joystickX = Math.cos(angle) * this.speed;
+        let joystickY = Math.sin(angle) * this.speed;
+
+        if (this.isReversed) {
+          joystickX = -joystickX; // 조이스틱의 X값 반전
+          joystickY = -joystickY; // 조이스틱의 Y값 반전
+        }
+  
+        velocityX = joystickX;
+        velocityY = joystickY;
       }
     }
 

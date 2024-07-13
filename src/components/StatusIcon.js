@@ -11,6 +11,9 @@ class StatusIcon extends Phaser.GameObjects.Image {
       case 2:
         texture = "big";
         break;
+      case 3:
+        texture = "reverse";
+        break;
       default:
         break;
     }

@@ -21,6 +21,7 @@ import itemImg from "../assets/item.png";
 import speedImg from "../assets/speed.png";
 import stealthImg from "../assets/stealth.png";
 import bigImg from "../assets/big.png";
+import reverseImg from "../assets/reverse.png";
 
 // Import map
 import first_tileset from "../assets/tiles/first_tileset.png";
@@ -193,6 +194,7 @@ class BootScene extends Phaser.Scene {
       speed: speedImg,
       stealth: stealthImg,
       big: bigImg,
+      reverse: reverseImg, 
       question: question,
       bang: bang,
       first_tileset: first_tileset,
