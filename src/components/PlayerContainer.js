@@ -403,9 +403,11 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     this.player.anims.play(`idle${this.player.avatar}`, true);
   }
 
-  choice() {
+  choice(showFunction) {
     return new Promise((resolve) => {
       this.nickname.setColor("#FFD700");
+
+      showFunction.call(this.scene.resultText, this.player.nickname);
 
       this.scene.tweens.add({
         targets: this,
@@ -420,7 +422,15 @@ class PlayerContainer extends Phaser.GameObjects.Container {
             duration: 1000,
             ease: "Power1",
             onComplete: () => {
-              this.nickname.setColor("#ffffff");
+              if (!this.scene || !this) return;
+              if (this.nickname) {
+                this.nickname.setColor("#ffffff");
+              }
+
+              if (this.scene.resultText) {
+                this.scene.resultText.del();
+              }
+
               resolve();
             },
           });
