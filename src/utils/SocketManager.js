@@ -6,37 +6,41 @@ class SocketManager {
   }
 
   connect() {
-    this.channel = geckos({
-      url: "https://www.jungleptest.xyz",
-      port: 443,
-    });
+    return new Promise((resolve, reject) => {
+      this.channel = geckos({
+        url: "https://www.jungleptest.xyz",
+        port: 443,
+      });
 
-    this.channel.onConnect((error) => {
-      if (error) {
-        console.error("Connection error:", error.message);
-        return;
-      }
-      console.log("Connected to server");
-    });
+      this.channel.onConnect((error) => {
+        if (error) {
+          console.error("Connection error:", error.message);
+          reject(error);
+        } else {
+          console.log("Connected to server");
+          resolve();
+        }
+      });
 
-    this.channel.onDisconnect(() => {
-      console.log("Disconnected from server");
-    });
+      this.channel.onDisconnect(() => {
+        console.log("Disconnected from server");
+      });
 
-    this.channel.on("error", (error) => {
-      console.error("Channel error:", error);
-    });
+      this.channel.on("error", (error) => {
+        console.error("Channel error:", error);
+      });
 
-    this.channel.on("iceConnectionStateChange", (state) => {
-      console.log("ICE Connection State Change:", state);
-    });
+      this.channel.on("iceConnectionStateChange", (state) => {
+        console.log("ICE Connection State Change:", state);
+      });
 
-    this.channel.on("connectionStateChange", (state) => {
-      console.log("Connection State Change:", state);
-    });
+      this.channel.on("connectionStateChange", (state) => {
+        console.log("Connection State Change:", state);
+      });
 
-    this.channel.on("ping", () => {
-      this.channel.emit("pong");
+      this.channel.on("ping", () => {
+        this.channel.emit("pong");
+      });
     });
   }
 

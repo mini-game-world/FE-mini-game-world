@@ -16,7 +16,7 @@ class CameraManager {
   }
 
   smoothFollow(target, duration = 2000, easing = "Sine.easeInOut") {
-    if (this.isPanning) return; // 이미 pan 작업 중이면 리턴
+    if (!target || this.isPanning) return; // 이미 pan 작업 중이면 리턴
 
     this.isPanning = true; // 플래그 설정
     this.mainCamera.stopFollow();
