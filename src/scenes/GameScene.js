@@ -138,6 +138,10 @@ class GameScene extends Phaser.Scene {
         this.gameStatusText.showStart();
 
         Object.values(this.players).forEach((player) => {
+          if (this.player === player) {
+            this.player.isAttacking = false;
+            this.player.isStunned = false;
+          }
           player.setPlay();
         });
       } else {
