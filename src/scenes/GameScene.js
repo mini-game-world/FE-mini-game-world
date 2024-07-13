@@ -175,15 +175,15 @@ class GameScene extends Phaser.Scene {
 
     SocketManager.onDeadUsers((players) => {
       players.forEach((id) => {
-        if (this.players[id]) {
-          this.players[id].setDead();
-          if (id === SocketManager.channel.id) {
-            const randomX = Phaser.Math.Between(0, 320);
-            const randomY = Phaser.Math.Between(0, 320);
-            this.player.hitBox.setPosition(randomX, randomY);
-            SocketManager.emitPlayerMovement({ x: randomX, y: randomY });
-          }
+        if (this.players[id] === this.player) {
+          this.player.isAttacking = false;
+          this.isStunned = false;
+          const randomX = Phaser.Math.Between(0, 320);
+          const randomY = Phaser.Math.Between(0, 320);
+          this.player.hitBox.setPosition(randomX, randomY);
+          SocketManager.emitPlayerMovement({ x: randomX, y: randomY });
         }
+        this.players[id].setDead();
       });
     });
 

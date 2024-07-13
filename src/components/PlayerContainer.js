@@ -338,10 +338,9 @@ class PlayerContainer extends Phaser.GameObjects.Container {
   }
 
   setDead() {
-    this.isAttacking = false;
+    this.explodeBomb();
     this.player.setDeadStatus();
     this.nickname.setColor("#ff0000");
-    this.explodeBomb();
   }
 
   setBombUser() {
@@ -370,6 +369,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       .play(`stun${this.player.avatar}`, true)
       .once("animationcomplete", () => {
         if (!this.player) return;
+        if (this.player.isPlay && this.player.isDead) return;
         this.player.anims.play(`idle${this.player.avatar}`, true);
         this.isStunned = false;
       });
