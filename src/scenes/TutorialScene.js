@@ -43,7 +43,7 @@ class TutorialScene extends Phaser.Scene {
     const text1 = this.add
       .text(
         this.scale.width * 0.2,
-        this.scale.height * 0.4,
+        this.scale.height * 0.3,
         "1\n\n폭탄이 터지기 전에\n방향키로 움직이며\n다른 플레이어에게 넘겨요!",
         textStyle
       )
@@ -52,7 +52,7 @@ class TutorialScene extends Phaser.Scene {
     const text2 = this.add
       .text(
         this.scale.width * 0.5,
-        this.scale.height * 0.4,
+        this.scale.height * 0.3,
         "2\n\nZ키를 누르면 공격을\n할 수 있어요.",
         textStyle
       )
@@ -61,7 +61,7 @@ class TutorialScene extends Phaser.Scene {
     const text3 = this.add
       .text(
         this.scale.width * 0.8,
-        this.scale.height * 0.4,
+        this.scale.height * 0.3,
         "3\n\n아이템을 획득해보세요!",
         textStyle
       )
@@ -89,13 +89,13 @@ class TutorialScene extends Phaser.Scene {
     });
 
     this.player1 = this.physics.add
-      .sprite(1200, 2456, "player_move1")
+      .sprite(1200, 1936, "player_move1")
       .setScale(2);
     this.player1.setCollideWorldBounds(false);
     this.player1.play("move1");
 
     this.player2 = this.physics.add
-      .sprite(450, 2456, "player_move2")
+      .sprite(450, 1936, "player_move2")
       .setScale(2);
     this.player2.setCollideWorldBounds(false);
     this.player2.play("move2");
@@ -142,16 +142,16 @@ class TutorialScene extends Phaser.Scene {
     });
 
     this.player3 = this.physics.add
-      .sprite(2300, 2456, "player_attack1")
+      .sprite(2100, 1936, "player_attack1")
       .setScale(2);
     this.player3.play("attack1");
 
     this.player4 = this.physics.add
-      .sprite(1900, 2456, "player_stun2")
+      .sprite(1700, 1936, "player_stun2")
       .setScale(2);
     this.player4.play("stun2");
 
-    this.claw = this.physics.add.sprite(2100, 2456, "claw_white3").setScale(8);
+    this.claw = this.physics.add.sprite(1900, 1936, "claw_white3").setScale(8);
     this.claw.setDepth(200);
     this.claw.flipX = true;
     this.claw.anims.play("claw_white3", true);
@@ -165,9 +165,9 @@ class TutorialScene extends Phaser.Scene {
     this.star.anims.play("star1", true);
 
     // 튜토리얼 3
-    this.item = this.add.image(3080, 2570, "item").setScale(2).setScale(0.3);
+    this.item = this.add.image(2800, 2050, "item").setScale(2).setScale(0.3);
     this.player5 = this.physics.add
-      .sprite(3880, 2456, "player_move1")
+      .sprite(3600, 1936, "player_move1")
       .setScale(2);
     this.player5.play("move1");
     this.tutorial3 = new Tutorial3(this, this.player5);
