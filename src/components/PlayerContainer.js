@@ -58,6 +58,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     this.isAttacking = false; // 공격 상태 추가
     this.isStunned = false;
     this.isWinner = false;
+    this.isReversed = false;
 
     this.bomb = null;
     this.speed = 600; // 기본 속도 추가
@@ -159,10 +160,18 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     let velocityX = 0;
     let velocityY = 0;
 
-    if (this.keys.up.isDown) velocityY = -this.speed;
-    if (this.keys.down.isDown) velocityY = this.speed;
-    if (this.keys.left.isDown) velocityX = -this.speed;
-    if (this.keys.right.isDown) velocityX = this.speed;
+    if(!this.isReversed) {
+      if (this.keys.up.isDown) velocityY = -this.speed;
+      if (this.keys.down.isDown) velocityY = this.speed;
+      if (this.keys.left.isDown) velocityX = -this.speed;
+      if (this.keys.right.isDown) velocityX = this.speed;
+    } else {
+      if (this.keys.up.isDown) velocityY = this.speed;
+      if (this.keys.down.isDown) velocityY = -this.speed;
+      if (this.keys.left.isDown) velocityX = this.speed;
+      if (this.keys.right.isDown) velocityX = -this.speed;
+    }
+    
 
     if (this.joystick) {
       const force = this.joystick.getForce();

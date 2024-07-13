@@ -16,6 +16,9 @@ class ItemEffect {
       case 2:
         this.increaseScale();
         break;
+      case 3:
+        this.reverseDirection();
+        break;
       default:
         break;
     }
@@ -49,6 +52,13 @@ class ItemEffect {
     this.player.setScale(2);
     this.gameScene.time.delayedCall(5000, () => {
       this.player.setScale(1); // 5초 후 원래 크기로 복구
+    });
+  }
+
+  reverseDirection() {
+    this.player.isReversed = true;
+    this.gameScene.time.delayedCall(5000, () => {
+      this.player.isReversed = false; // 5초 후 원래 상태로 복구
     });
   }
 }
