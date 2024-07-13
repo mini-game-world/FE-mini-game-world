@@ -313,13 +313,21 @@ class GameScene extends Phaser.Scene {
     });
 
     SocketManager.onCurrentBombRanker((data) => {
-      const nickname = this.players[data.playerId].player.nickname;
-      this.rankText.showBombRank(nickname, data.count);
+      if (this.players[data.playerId] && this.players[data.playerId].player) {
+        this.rankText.showBombRank(
+          this.players[data.playerId].player.nickname,
+          data.count
+        );
+      }
     });
 
     SocketManager.onCurrentHitRanker((data) => {
-      const nickname = this.players[data.playerId].player.nickname;
-      this.rankText.showHitRank(nickname, data.count);
+      if (this.players[data.playerId] && this.players[data.playerId].player) {
+        this.rankText.showHitRank(
+          this.players[data.playerId].player.nickname,
+          data.count
+        );
+      }
     });
   }
   setBackground() {
