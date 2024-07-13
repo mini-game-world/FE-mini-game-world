@@ -169,7 +169,6 @@ class GameScene extends Phaser.Scene {
           player.setReady();
         });
 
-        this.mapShrinker.reset();
         this.rankText.clearText();
         this.itemsGroup.clear(true, true);
       }
@@ -217,6 +216,7 @@ class GameScene extends Phaser.Scene {
 
     SocketManager.onWinnerPlayer(async (data) => {
       this.gameStatusText.showResult();
+      this.mapShrinker.reset();
       this.player.stopMove();
 
       if (this.players[data.gameWinner]) {
