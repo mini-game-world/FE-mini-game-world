@@ -33,341 +33,345 @@ class GameScene extends Phaser.Scene {
     this.itemsGroup = null;
   }
 
-  create() {
-    SocketManager.connect();
-    this.backgroundManager = new BackgroundManager(this);
-    this.cameraManager = new CameraManager(this);
+  async create() {
+    try {
+      await SocketManager.connect();
 
-    this.resultText = new ResultText(this);
-    this.infoText = new InfoText(this);
-    this.gameStatusText = new GameStatusText(this);
-    this.bgmManager = new BGMManager(this);
+      this.backgroundManager = new BackgroundManager(this);
+      this.cameraManager = new CameraManager(this);
+      this.resultText = new ResultText(this);
+      this.infoText = new InfoText(this);
+      this.gameStatusText = new GameStatusText(this);
+      this.bgmManager = new BGMManager(this);
+      this.rankText = new RankText(this);
+      this.mapShrinker = new MapShrinker(this);
+      this.itemsGroup = this.physics.add.group();
 
-    this.rankText = new RankText(this);
+      SocketManager.onCurrentPlayers((players) => {
+        Object.keys(players).forEach((id) => {
+          const { x, y, avatar, isPlay, isDead, nickname } = players[id];
+          const isSelfInitiated = id === SocketManager.channel.id;
+          const info = { avatar, isPlay, isDead, nickname, isSelfInitiated };
 
-    this.mapShrinker = new MapShrinker(this);
+          // 이미 플레이어 객체가 존재하면 무시
+          if (!this.players[id]) {
+            const playerContainer = new PlayerContainer(
+              this,
+              x,
+              y,
+              `player${avatar}`,
+              info
+            );
+            this.players[id] = playerContainer;
 
-    this.itemsGroup = this.physics.add.group();
+            if (!this.player && isSelfInitiated) {
+              this.player = playerContainer;
+              this.cameraManager.smoothFollow(this.player);
+              this.physics.add.collider(this.player.hitBox, this.backGround);
+              this.physics.add.collider(this.player.hitBox, this.fence);
+              this.physics.add.collider(this.player.hitBox, this.house);
+              this.physics.add.collider(this.player.hitBox, this.object);
 
-    SocketManager.onCurrentPlayers((players) => {
-      Object.keys(players).forEach((id) => {
-        const { x, y, avatar, isPlay, isDead, nickname } = players[id];
-        const isSelfInitiated = id === SocketManager.channel.id;
-        const info = { avatar, isPlay, isDead, nickname, isSelfInitiated };
+              this.mapShrinker.applyPreviousShrinks();
+            }
+          }
+        });
+        this.updatePlayerCountText();
+      });
+
+      SocketManager.onNewPlayer((player) => {
+        const { playerId, x, y, avatar, nickname } = player;
+        const isSelfInitiated = false;
+        const info = { avatar, nickname, isSelfInitiated };
 
         // 이미 플레이어 객체가 존재하면 무시
-        if (!this.players[id]) {
-          const playerContainer = new PlayerContainer(
+        if (!this.players[playerId]) {
+          const newPlayer = new PlayerContainer(
             this,
             x,
             y,
             `player${avatar}`,
             info
           );
-          this.players[id] = playerContainer;
+          this.players[playerId] = newPlayer;
 
-          if (!this.player && isSelfInitiated) {
-            this.player = playerContainer;
-            this.cameraManager.smoothFollow(this.player);
-            this.physics.add.collider(this.player.hitBox, this.backGround);
-            this.physics.add.collider(this.player.hitBox, this.fence);
-            this.physics.add.collider(this.player.hitBox, this.house);
-            this.physics.add.collider(this.player.hitBox, this.object);
-
-            this.mapShrinker.applyPreviousShrinks();
-          }
+          this.updatePlayerCountText();
         }
       });
-      this.updatePlayerCountText();
-    });
 
-    SocketManager.onNewPlayer((player) => {
-      const { playerId, x, y, avatar, nickname } = player;
-      const isSelfInitiated = false;
-      const info = { avatar, nickname, isSelfInitiated };
-
-      // 이미 플레이어 객체가 존재하면 무시
-      if (!this.players[playerId]) {
-        const newPlayer = new PlayerContainer(
-          this,
-          x,
-          y,
-          `player${avatar}`,
-          info
-        );
-        this.players[playerId] = newPlayer;
-
-        this.updatePlayerCountText();
-      }
-    });
-
-    SocketManager.onPlayerMoved((player) => {
-      const { playerId, x, y } = player;
-      if (this.players[playerId]) {
-        this.players[playerId].moveTo(x, y);
-      }
-    });
-
-    SocketManager.onPlayerAttacked((ids) => {
-      ids.forEach((id) => {
-        if (this.players[id]) {
-          this.players[id].stunPlayer();
+      SocketManager.onPlayerMoved((player) => {
+        const { playerId, x, y } = player;
+        if (this.players[playerId]) {
+          this.players[playerId].moveTo(x, y);
         }
       });
-    });
 
-    SocketManager.onAttackPlayer((id) => {
-      if (this.players[id]) {
-        this.players[id].createClawAttack();
-      }
-    });
-
-    SocketManager.onPlayerDisconnected((id) => {
-      if (this.players[id]) {
-        this.players[id].destroy();
-        delete this.players[id];
-      }
-      this.updatePlayerCountText();
-    });
-
-    SocketManager.onPlayingGame((isPlaying) => {
-      if (isPlaying === 1) {
-        if (this.bgmManager) {
-          this.bgmManager.playPlayingRandomBGM();
-        }
-        this.gameStatusText.showStart();
-
-        Object.values(this.players).forEach((player) => {
-          if (this.player === player) {
-            this.player.isAttacking = false;
-            this.player.isStunned = false;
-          }
-          if (player) {
-            player.setPlay();
+      SocketManager.onPlayerAttacked((ids) => {
+        ids.forEach((id) => {
+          if (this.players[id]) {
+            this.players[id].stunPlayer();
           }
         });
-      } else {
+      });
+
+      SocketManager.onAttackPlayer((id) => {
+        if (this.players[id]) {
+          this.players[id].createClawAttack();
+        }
+      });
+
+      SocketManager.onPlayerDisconnected((id) => {
+        if (this.players[id]) {
+          this.players[id].destroy();
+          delete this.players[id];
+        }
+        this.updatePlayerCountText();
+      });
+
+      SocketManager.onPlayingGame((isPlaying) => {
+        if (isPlaying === 1) {
+          if (this.bgmManager) {
+            this.bgmManager.playPlayingRandomBGM();
+          }
+          this.gameStatusText.showStart();
+
+          Object.values(this.players).forEach((player) => {
+            if (this.player === player) {
+              this.player.isAttacking = false;
+              this.player.isStunned = false;
+            }
+            if (player) {
+              player.setPlay();
+            }
+          });
+        } else {
+          if (this.bgmManager) {
+            this.bgmManager.playWaitingRandomBGM();
+          }
+          this.gameStatusText.showEnd();
+          if (this.resultText) {
+            this.resultText.del();
+          }
+
+          Object.values(this.players).forEach((player) => {
+            if (this.player === player) {
+              this.player.isWinner = false;
+              this.player.isAttacking = false;
+              this.player.isStunned = false;
+
+              const randomX = Phaser.Math.Between(1280, 2080);
+              const randomY = Phaser.Math.Between(960, 1280);
+              this.player.hitBox.setPosition(randomX, randomY);
+              SocketManager.emitPlayerMovement({ x: randomX, y: randomY });
+
+              this.cameraManager.smoothFollow(this.player);
+            }
+            if (player) {
+              player.setReady();
+            }
+          });
+
+          this.rankText.clearText();
+          this.itemsGroup.clear(true, true);
+        }
+        this.updatePlayerCountText();
+      });
+
+      SocketManager.onPlayInfo((survivorCount) => {
+        if (this.player && this.player.player && this.player.player.isPlay) {
+          this.updatePlayInfo(survivorCount);
+        }
+      });
+
+      SocketManager.onBombUsers((players) => {
+        players.forEach((id) => {
+          if (this.players[id]) {
+            this.players[id].setBombUser();
+          }
+        });
+      });
+
+      SocketManager.onDeadUsers((players) => {
+        players.forEach((id) => {
+          if (this.players[id] === this.player) {
+            this.player.isAttacking = false;
+            this.isStunned = false;
+            const randomX = Phaser.Math.Between(0, 320);
+            const randomY = Phaser.Math.Between(0, 320);
+            this.player.hitBox.setPosition(randomX, randomY);
+            SocketManager.emitPlayerMovement({ x: randomX, y: randomY });
+          }
+          if (this.players[id]) {
+            this.players[id].setDead();
+          }
+        });
+      });
+
+      SocketManager.onChangeBombUser((players) => {
+        const current = players[0];
+        const previous = players[1];
+        if (this.players[current]) {
+          this.players[current].receiveBomb();
+        }
+        if (this.players[previous]) {
+          this.players[previous].removeBomb();
+        }
+      });
+
+      SocketManager.onWinnerPlayer(async (data) => {
+        this.gameStatusText.showResult();
+        this.mapShrinker.reset();
+        this.player.stopMove();
+
+        if (this.players[data.gameWinner]) {
+          this.players[data.gameWinner].setWinner();
+        }
+        if (this.players[data.PunchingBag]) {
+          this.players[data.PunchingBag].setWinner();
+        }
+        if (this.players[data.BombMaster]) {
+          this.players[data.BombMaster].setWinner();
+        }
+
+        let position = null;
+
+        // Check if this player is the game winner (highest priority)
+        if (this.player === this.players[data.gameWinner]) {
+          position = { x: 1680, y: 1752 };
+        }
+
+        // Check if this player is PunchingBag (second priority)
+        if (this.player === this.players[data.PunchingBag]) {
+          if (!position) {
+            position = { x: 1280, y: 1752 };
+          }
+        }
+
+        // Check if this player is BombMaster (third priority)
+        if (this.player === this.players[data.BombMaster]) {
+          if (!position) {
+            position = { x: 2080, y: 1752 };
+          }
+        }
+
+        // Set position if it's determined
+        if (position) {
+          this.player.setPosition(position.x, position.y);
+          SocketManager.emitPlayerMovement({ x: position.x, y: position.y });
+        }
+
+        try {
+          // Sequentially follow each player role if they exist
+          if (data.gameWinner && this.players[data.gameWinner]) {
+            await this.cameraManager.smoothFollowWinner(
+              this.players[data.gameWinner]
+            );
+          }
+          if (data.gameWinner && this.players[data.gameWinner]) {
+            await this.players[data.gameWinner].choice(
+              this.resultText.showWinner
+            );
+          }
+
+          if (data.PunchingBag && this.players[data.PunchingBag]) {
+            await this.cameraManager.smoothFollowWinner(
+              this.players[data.PunchingBag]
+            );
+          }
+          if (data.PunchingBag && this.players[data.PunchingBag]) {
+            await this.players[data.PunchingBag].choice(
+              this.resultText.showPunchKing
+            );
+          }
+          if (data.BombMaster && this.players[data.BombMaster]) {
+            await this.cameraManager.smoothFollowWinner(
+              this.players[data.BombMaster]
+            );
+          }
+          if (data.BombMaster && this.players[data.BombMaster]) {
+            await this.players[data.BombMaster].choice(
+              this.resultText.showBombMaster
+            );
+          }
+        } catch (error) {
+          console.error("Error during smooth follow sequence:", error);
+        }
+      });
+
+      SocketManager.onBombGameReady((count) => {
+        if (this.gameStatusText) {
+          if (count === -1) {
+            this.gameStatusText.showWait();
+          } else {
+            this.gameStatusText.showReadyCount(count);
+          }
+        }
+      });
+
+      // 게임 접속 시 현재 상태 확인
+      SocketManager.onGameStatus((status) => {
         if (this.bgmManager) {
           this.bgmManager.playWaitingRandomBGM();
         }
-        this.gameStatusText.showEnd();
-        if (this.resultText) {
-          this.resultText.del();
+        if (status === 1) {
+          this.gameStatusText.showProceeding();
+        } else {
+          this.gameStatusText.showWait();
         }
+      });
 
-        Object.values(this.players).forEach((player) => {
-          if (this.player === player) {
-            this.player.isWinner = false;
-            this.player.isAttacking = false;
-            this.player.isStunned = false;
+      SocketManager.onChatMessage(({ playerId, message }) => {
+        if (this.players[playerId]) {
+          this.players[playerId].showChatMessage(message);
+          this.player.addMessage(
+            this.players[playerId].player.nickname,
+            message
+          );
+        }
+      });
 
-            const randomX = Phaser.Math.Between(1280, 2080);
-            const randomY = Phaser.Math.Between(960, 1280);
-            this.player.hitBox.setPosition(randomX, randomY);
-            SocketManager.emitPlayerMovement({ x: randomX, y: randomY });
+      SocketManager.onNewItems((items) => {
+        items.forEach(({ x, y }) => {
+          const newItem = Item.createItem(this, x, y, "item");
+          this.itemsGroup.add(newItem); // Add new item to the group
+        });
+      });
 
-            this.cameraManager.smoothFollow(this.player);
-          }
-          if (player) {
-            player.setReady();
+      SocketManager.onItemPickedUp((data) => {
+        const { playerId, item, x, y } = data;
+        this.itemsGroup.getChildren().forEach((existingItem) => {
+          if (existingItem.x === x && existingItem.y === y) {
+            existingItem.destroy();
+            this.itemsGroup.remove(existingItem, true, true);
           }
         });
 
-        this.rankText.clearText();
-        this.itemsGroup.clear(true, true);
-      }
-      this.updatePlayerCountText();
-    });
-
-    SocketManager.onPlayInfo((survivorCount) => {
-      if (this.player && this.player.player && this.player.player.isPlay) {
-        this.updatePlayInfo(survivorCount);
-      }
-    });
-
-    SocketManager.onBombUsers((players) => {
-      players.forEach((id) => {
-        if (this.players[id]) {
-          this.players[id].setBombUser();
-        }
-      });
-    });
-
-    SocketManager.onDeadUsers((players) => {
-      players.forEach((id) => {
-        if (this.players[id] === this.player) {
-          this.player.isAttacking = false;
-          this.isStunned = false;
-          const randomX = Phaser.Math.Between(0, 320);
-          const randomY = Phaser.Math.Between(0, 320);
-          this.player.hitBox.setPosition(randomX, randomY);
-          SocketManager.emitPlayerMovement({ x: randomX, y: randomY });
-        }
-        if (this.players[id]) {
-          this.players[id].setDead();
-        }
-      });
-    });
-
-    SocketManager.onChangeBombUser((players) => {
-      const current = players[0];
-      const previous = players[1];
-      if (this.players[current]) {
-        this.players[current].receiveBomb();
-      }
-      if (this.players[previous]) {
-        this.players[previous].removeBomb();
-      }
-    });
-
-    SocketManager.onWinnerPlayer(async (data) => {
-      this.gameStatusText.showResult();
-      this.mapShrinker.reset();
-      this.player.stopMove();
-
-      if (this.players[data.gameWinner]) {
-        this.players[data.gameWinner].setWinner();
-      }
-      if (this.players[data.PunchingBag]) {
-        this.players[data.PunchingBag].setWinner();
-      }
-      if (this.players[data.BombMaster]) {
-        this.players[data.BombMaster].setWinner();
-      }
-
-      let position = null;
-
-      // Check if this player is the game winner (highest priority)
-      if (this.player === this.players[data.gameWinner]) {
-        position = { x: 1680, y: 1752 };
-      }
-
-      // Check if this player is PunchingBag (second priority)
-      if (this.player === this.players[data.PunchingBag]) {
-        if (!position) {
-          position = { x: 1280, y: 1752 };
-        }
-      }
-
-      // Check if this player is BombMaster (third priority)
-      if (this.player === this.players[data.BombMaster]) {
-        if (!position) {
-          position = { x: 2080, y: 1752 };
-        }
-      }
-
-      // Set position if it's determined
-      if (position) {
-        this.player.setPosition(position.x, position.y);
-        SocketManager.emitPlayerMovement({ x: position.x, y: position.y });
-      }
-
-      try {
-        // Sequentially follow each player role if they exist
-        if (data.gameWinner && this.players[data.gameWinner]) {
-          await this.cameraManager.smoothFollowWinner(
-            this.players[data.gameWinner]
-          );
-        }
-        if (data.gameWinner && this.players[data.gameWinner]) {
-          await this.players[data.gameWinner].choice(
-            this.resultText.showWinner
-          );
-        }
-
-        if (data.PunchingBag && this.players[data.PunchingBag]) {
-          await this.cameraManager.smoothFollowWinner(
-            this.players[data.PunchingBag]
-          );
-        }
-        if (data.PunchingBag && this.players[data.PunchingBag]) {
-          await this.players[data.PunchingBag].choice(
-            this.resultText.showPunchKing
-          );
-        }
-        if (data.BombMaster && this.players[data.BombMaster]) {
-          await this.cameraManager.smoothFollowWinner(
-            this.players[data.BombMaster]
-          );
-        }
-        if (data.BombMaster && this.players[data.BombMaster]) {
-          await this.players[data.BombMaster].choice(
-            this.resultText.showBombMaster
-          );
-        }
-      } catch (error) {
-        console.error("Error during smooth follow sequence:", error);
-      }
-    });
-
-    SocketManager.onBombGameReady((count) => {
-      if (this.gameStatusText) {
-        if (count === -1) {
-          this.gameStatusText.showWait();
-        } else {
-          this.gameStatusText.showReadyCount(count);
-        }
-      }
-    });
-
-    // 게임 접속 시 현재 상태 확인
-    SocketManager.onGameStatus((status) => {
-      if (this.bgmManager) {
-        this.bgmManager.playWaitingRandomBGM();
-      }
-      if (status === 1) {
-        this.gameStatusText.showProceeding();
-      } else {
-        this.gameStatusText.showWait();
-      }
-    });
-
-    SocketManager.onChatMessage(({ playerId, message }) => {
-      if (this.players[playerId]) {
-        this.players[playerId].showChatMessage(message);
-        this.player.addMessage(this.players[playerId].player.nickname, message);
-      }
-    });
-
-    SocketManager.onNewItems((items) => {
-      items.forEach(({ x, y }) => {
-        const newItem = Item.createItem(this, x, y, "item");
-        this.itemsGroup.add(newItem); // Add new item to the group
-      });
-    });
-
-    SocketManager.onItemPickedUp((data) => {
-      const { playerId, item, x, y } = data;
-      this.itemsGroup.getChildren().forEach((existingItem) => {
-        if (existingItem.x === x && existingItem.y === y) {
-          existingItem.destroy();
-          this.itemsGroup.remove(existingItem, true, true);
+        if (this.players[playerId]) {
+          const itemEffect = new ItemEffect(this, this.players[playerId], item);
+          itemEffect.applyEffect();
         }
       });
 
-      if (this.players[playerId]) {
-        const itemEffect = new ItemEffect(this, this.players[playerId], item);
-        itemEffect.applyEffect();
-      }
-    });
+      SocketManager.onCurrentBombRanker((data) => {
+        if (this.players[data.playerId] && this.players[data.playerId].player) {
+          this.rankText.showBombRank(
+            this.players[data.playerId].player.nickname,
+            data.count
+          );
+        }
+      });
 
-    SocketManager.onCurrentBombRanker((data) => {
-      if (this.players[data.playerId] && this.players[data.playerId].player) {
-        this.rankText.showBombRank(
-          this.players[data.playerId].player.nickname,
-          data.count
-        );
-      }
-    });
-
-    SocketManager.onCurrentHitRanker((data) => {
-      if (this.players[data.playerId] && this.players[data.playerId].player) {
-        this.rankText.showHitRank(
-          this.players[data.playerId].player.nickname,
-          data.count
-        );
-      }
-    });
+      SocketManager.onCurrentHitRanker((data) => {
+        if (this.players[data.playerId] && this.players[data.playerId].player) {
+          this.rankText.showHitRank(
+            this.players[data.playerId].player.nickname,
+            data.count
+          );
+        }
+      });
+    } catch (error) {
+      console.error("Error during socket connection:", error);
+    }
   }
 
   updatePlayerCountText() {
