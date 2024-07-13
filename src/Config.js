@@ -10,7 +10,7 @@ const platform = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
 
 const Config = {
   type: Phaser.AUTO,
-  width: 3840,
+  width: 3999,
   height: 3200,
   audio: {
     noAudio: platform === "mobile",
