@@ -10,6 +10,7 @@ import Item from "../components/Item";
 import ItemEffect from "../components/ItemEffect";
 import RankText from "../components/RankText";
 import InfoText from "../components/InfoText";
+import "regenerator-runtime/runtime";
 
 class GameScene extends Phaser.Scene {
   constructor() {
@@ -195,13 +196,19 @@ class GameScene extends Phaser.Scene {
       }
     });
 
-    SocketManager.onWinnerPlayer((data) => {
+    SocketManager.onWinnerPlayer(async (data) => {
       this.gameStatusText.showResult();
       this.player.stopMove();
 
-      this.players[data.gameWinner].setWinner();
-      this.players[data.PunchingBag].setWinner();
-      this.players[data.BombMaster].setWinner();
+      if (this.players[data.gameWinner]) {
+        this.players[data.gameWinner].setWinner();
+      }
+      if (this.players[data.PunchingBag]) {
+        this.players[data.PunchingBag].setWinner();
+      }
+      if (this.players[data.BombMaster]) {
+        this.players[data.BombMaster].setWinner();
+      }
 
       let position = null;
 
@@ -230,23 +237,28 @@ class GameScene extends Phaser.Scene {
         SocketManager.emitPlayerMovement({ x: position.x, y: position.y });
       }
 
-      ////
+      try {
+        // Sequentially follow each player role if they exist
+        if (data.gameWinner && this.players[data.gameWinner]) {
+          await this.cameraManager.smoothFollowWinner(
+            this.players[data.gameWinner]
+          );
+        }
 
-      this.cameraManager
-        .smoothFollowWinner(this.players[data.gameWinner])
-        .then(() => {
-          if (data.PunchingBag && this.players[data.PunchingBag]) {
-            this.cameraManager
-              .smoothFollowWinner(this.players[data.PunchingBag])
-              .then(() => {
-                if (data.BombMaster && this.players[data.BombMaster]) {
-                  this.cameraManager.smoothFollowWinner(
-                    this.players[data.BombMaster]
-                  );
-                }
-              });
-          }
-        });
+        if (data.PunchingBag && this.players[data.PunchingBag]) {
+          await this.cameraManager.smoothFollowWinner(
+            this.players[data.PunchingBag]
+          );
+        }
+
+        if (data.BombMaster && this.players[data.BombMaster]) {
+          await this.cameraManager.smoothFollowWinner(
+            this.players[data.BombMaster]
+          );
+        }
+      } catch (error) {
+        console.error("Error during smooth follow sequence:", error);
+      }
     });
 
     SocketManager.onBombGameReady((count) => {
