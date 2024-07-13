@@ -66,22 +66,6 @@ class ResultText extends Phaser.GameObjects.Text {
 
     this.winnerText = `최종 우승자!! ${name}`;
     this.setText(this.winnerText);
-    this.setAlpha(1);
-    this.scene.time.delayedCall(
-      5000,
-      () => {
-        this.setAlpha(0);
-        if (this.crownImage) {
-          this.crownImage.destroy();
-          this.crownImage = null;
-        }
-        if (this.winnerText) {
-          this.winnerText = null;
-        }
-      },
-      [],
-      this.scene
-    );
   }
 
   showPunchKing(name) {
@@ -92,22 +76,6 @@ class ResultText extends Phaser.GameObjects.Text {
 
     this.punchKingText = `동 네 깡 패 !! ${name}`;
     this.setText(this.punchKingText);
-    this.setAlpha(1);
-    this.scene.time.delayedCall(
-      5000,
-      () => {
-        this.setAlpha(0);
-        if (this.punchKingImage) {
-          this.punchKingImage.destroy();
-          this.punchKingImage = null;
-        }
-        if (this.punchKingText) {
-          this.punchKingText = null;
-        }
-      },
-      [],
-      this.scene
-    );
   }
 
   showBombMaster(name) {
@@ -118,26 +86,11 @@ class ResultText extends Phaser.GameObjects.Text {
 
     this.bombMasterText = `폭탄돌리기왕 ${name}`;
     this.setText(this.bombMasterText);
-    this.setAlpha(1);
-
-    this.scene.time.delayedCall(
-      5000,
-      () => {
-        this.setAlpha(0);
-        if (this.bomb_masterImage) {
-          this.bomb_masterImage.destroy();
-          this.bomb_masterImage = null;
-        }
-        if (this.bombMasterText) {
-          this.bombMasterText = null;
-        }
-      },
-      [],
-      this.scene
-    );
   }
 
-  destroy() {
+  del() {
+    this.setText("");
+
     if (this.crownImage) {
       this.crownImage.destroy();
       this.crownImage = null;
@@ -150,6 +103,10 @@ class ResultText extends Phaser.GameObjects.Text {
       this.bomb_masterImage.destroy();
       this.bomb_masterImage = null;
     }
+  }
+
+  destroy() {
+    this.del();
     super.destroy();
   }
 }

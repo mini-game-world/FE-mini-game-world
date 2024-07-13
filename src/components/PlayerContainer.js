@@ -343,11 +343,12 @@ class PlayerContainer extends Phaser.GameObjects.Container {
   }
 
   setReady() {
-    this.bomb = null;
-    this.isWinner = false;
-    this.isAttacking = false;
-    this.player.setReadyStatus();
+    if (this.bomb) {
+      this.bomb.destroy();
+      this.bomb = null;
+    }
     this.nickname.setColor("#ffffff");
+    this.player.setReadyStatus();
   }
 
   setPlay() {
@@ -355,10 +356,9 @@ class PlayerContainer extends Phaser.GameObjects.Container {
   }
 
   setDead() {
-    this.isAttacking = false;
+    this.explodeBomb();
     this.player.setDeadStatus();
     this.nickname.setColor("#ff0000");
-    this.explodeBomb();
   }
 
   setBombUser() {
@@ -387,6 +387,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       .play(`stun${this.player.avatar}`, true)
       .once("animationcomplete", () => {
         if (!this.player) return;
+        if (this.player.isPlay && this.player.isDead) return;
         this.player.anims.play(`idle${this.player.avatar}`, true);
         this.isStunned = false;
       });
@@ -409,58 +410,50 @@ class PlayerContainer extends Phaser.GameObjects.Container {
   }
 
   stopMove() {
-    if (!this.player.isDead) {
-      this.player.anims.play(`idle${this.player.avatar}`, true);
-    } else {
-      this.player.anims.play(`dead`, true);
-    }
     this.isWinner = false;
   }
 
-  choice() {
-    this.nickname.setColor("#FFD700");
+  setWinner() {
+    this.player.isDead = false;
+    this.player.setAlpha(1);
+    this.nickname.setColor("#ffffff");
+    this.player.setTexture(`player${this.player.avatar}`);
+    this.player.anims.play(`idle${this.player.avatar}`, true);
+  }
 
-    if (this.player.isDead) {
-      this.player.isDead = false;
-      this.player.setTexture(`player${this.player.avatar}`);
-      this.player.anims.play(`idle${this.player.avatar}`, true);
-      this.player.setAlpha(1);
-    }
+  choice(showFunction) {
+    return new Promise((resolve) => {
+      this.nickname.setColor("#FFD700");
 
-    this.scene.tweens.add({
-      targets: this.player,
-      scale: 3,
-      duration: 2000,
-      ease: "Power1",
-      onUpdate: () => {
-        if (!this.player) return;
-        if (this.player.isSelfInitiated) {
-          const { velocityX, velocityY } = this.getVelocity();
-          if (velocityX !== 0 || velocityY !== 0) {
-            this.player.anims.play(`move${this.player.avatar}`, true);
-            this.player.setFlipX(velocityX > 0);
-          }
-        }
-      },
-      onComplete: () => {
-        if (!this.scene || !this.player) return;
-        this.scene.tweens.add({
-          targets: this.player,
-          scale: 1,
-          duration: 2000,
-          ease: "Power1",
-          onUpdate: () => {
-            if (!this.player) return;
-            if (this.player.isSelfInitiated) {
-              const { velocityX, velocityY } = this.getVelocity();
-              if (velocityX !== 0 || velocityY !== 0) {
-                this.player.anims.play(`move${this.player.avatar}`, true);
-                this.player.setFlipX(velocityX > 0);
+      showFunction.call(this.scene.resultText, this.player.nickname);
+
+      this.scene.tweens.add({
+        targets: this,
+        scale: 3,
+        duration: 1500,
+        ease: "Power1",
+        onComplete: () => {
+          if (!this.scene || !this) return;
+          this.scene.tweens.add({
+            targets: this,
+            scale: 1,
+            duration: 1000,
+            ease: "Power1",
+            onComplete: () => {
+              if (!this.scene || !this) return;
+              if (this.nickname) {
+                this.nickname.setColor("#ffffff");
               }
-            }
-          },
-        });
-      },
+
+              if (this.scene.resultText) {
+                this.scene.resultText.del();
+              }
+
+              resolve();
+            },
+          });
+        },
+      });
     });
   }
 

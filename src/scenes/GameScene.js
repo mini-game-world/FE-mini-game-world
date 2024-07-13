@@ -10,6 +10,8 @@ import Item from "../components/Item";
 import ItemEffect from "../components/ItemEffect";
 import RankText from "../components/RankText";
 import InfoText from "../components/InfoText";
+import BackgroundManager from "../utils/BackgroundManager";
+import "regenerator-runtime/runtime";
 
 class GameScene extends Phaser.Scene {
   constructor() {
@@ -26,13 +28,14 @@ class GameScene extends Phaser.Scene {
     this.cameraManager = null;
     this.mapShrinker = null;
     this.bgmManager = null;
+    this.backgroundManager = null;
 
     this.itemsGroup = null;
   }
 
   create() {
     SocketManager.connect();
-    this.setBackground();
+    this.backgroundManager = new BackgroundManager(this);
     this.cameraManager = new CameraManager(this);
 
     this.resultText = new ResultText(this);
@@ -133,7 +136,12 @@ class GameScene extends Phaser.Scene {
           this.bgmManager.playPlayingRandomBGM();
         }
         this.gameStatusText.showStart();
+
         Object.values(this.players).forEach((player) => {
+          if (this.player === player) {
+            this.player.isAttacking = false;
+            this.player.isStunned = false;
+          }
           player.setPlay();
         });
       } else {
@@ -141,14 +149,23 @@ class GameScene extends Phaser.Scene {
           this.bgmManager.playWaitingRandomBGM();
         }
         this.gameStatusText.showEnd();
+
         Object.values(this.players).forEach((player) => {
+          if (this.player === player) {
+            this.player.isWinner = false;
+            this.player.isAttacking = false;
+            this.player.isStunned = false;
+
+            const randomX = Phaser.Math.Between(1280, 2080);
+            const randomY = Phaser.Math.Between(960, 1280);
+            this.player.hitBox.setPosition(randomX, randomY);
+            SocketManager.emitPlayerMovement({ x: randomX, y: randomY });
+
+            this.cameraManager.smoothFollow(this.player);
+          }
           player.setReady();
         });
-        const randomX = Phaser.Math.Between(1280 , 2080);
-        const randomY = Phaser.Math.Between(960, 1280);
-        this.player.hitBox.setPosition(randomX, randomY);
-        SocketManager.emitPlayerMovement({ x: randomX, y: randomY });
-        this.cameraManager.smoothFollow(this.player);
+
         this.mapShrinker.reset();
         this.rankText.clearText();
         this.itemsGroup.clear(true, true);
@@ -172,15 +189,15 @@ class GameScene extends Phaser.Scene {
 
     SocketManager.onDeadUsers((players) => {
       players.forEach((id) => {
-        if (this.players[id]) {
-          this.players[id].setDead();
-          if(id === SocketManager.channel.id){
-            const randomX = Phaser.Math.Between(0, 320);
-            const randomY = Phaser.Math.Between(0, 320);
-            this.player.hitBox.setPosition(randomX, randomY);
-            SocketManager.emitPlayerMovement({ x: randomX, y: randomY });
-          }
+        if (this.players[id] === this.player) {
+          this.player.isAttacking = false;
+          this.isStunned = false;
+          const randomX = Phaser.Math.Between(0, 320);
+          const randomY = Phaser.Math.Between(0, 320);
+          this.player.hitBox.setPosition(randomX, randomY);
+          SocketManager.emitPlayerMovement({ x: randomX, y: randomY });
         }
+        this.players[id].setDead();
       });
     });
 
@@ -195,51 +212,77 @@ class GameScene extends Phaser.Scene {
       }
     });
 
-    SocketManager.onWinnerPlayer((data) => {
+    SocketManager.onWinnerPlayer(async (data) => {
       this.gameStatusText.showResult();
       this.player.stopMove();
 
-      if (data.gameWinner && this.players[data.gameWinner]) {
-        const winner = this.players[data.gameWinner];
-        this.cameraManager.smoothFollow(winner);
-        winner.choice();
-        this.resultText.showWinner(winner.player.nickname);
+      if (this.players[data.gameWinner]) {
+        this.players[data.gameWinner].setWinner();
+      }
+      if (this.players[data.PunchingBag]) {
+        this.players[data.PunchingBag].setWinner();
+      }
+      if (this.players[data.BombMaster]) {
+        this.players[data.BombMaster].setWinner();
       }
 
-      if (data.PunchingBag && data.PunchingBag.playerId != "") {
-        this.time.delayedCall(
-          5000,
-          () => {
-            this.player.stopMove();
-            if (this.players[data.PunchingBag.playerId]) {
-              const punchKing = this.players[data.PunchingBag.playerId];
-              this.cameraManager.smoothFollow(punchKing);
-              punchKing.choice();
-              this.resultText.showPunchKing(punchKing.player.nickname);
-            }
-          },
-          [],
-          this
-        );
+      let position = null;
+
+      // Check if this player is the game winner (highest priority)
+      if (this.player === this.players[data.gameWinner]) {
+        position = { x: 1680, y: 1752 };
       }
 
-      let timer = 5000;
-      if (data.PunchingBag.playerId != "") timer = 11000;
-      if (data.BombMaster && data.BombMaster.playerId != "") {
-        this.time.delayedCall(
-          timer,
-          () => {
-            this.player.stopMove();
-            if (this.players[data.BombMaster.playerId]) {
-              const bombMasterPlayer = this.players[data.BombMaster.playerId];
-              this.cameraManager.smoothFollow(bombMasterPlayer);
-              bombMasterPlayer.choice();
-              this.resultText.showBombMaster(bombMasterPlayer.player.nickname);
-            }
-          },
-          [],
-          this
-        );
+      // Check if this player is PunchingBag (second priority)
+      if (this.player === this.players[data.PunchingBag]) {
+        if (!position) {
+          position = { x: 1280, y: 1752 };
+        }
+      }
+
+      // Check if this player is BombMaster (third priority)
+      if (this.player === this.players[data.BombMaster]) {
+        if (!position) {
+          position = { x: 2080, y: 1752 };
+        }
+      }
+
+      // Set position if it's determined
+      if (position) {
+        this.player.setPosition(position.x, position.y);
+        SocketManager.emitPlayerMovement({ x: position.x, y: position.y });
+      }
+
+      try {
+        // Sequentially follow each player role if they exist
+        if (data.gameWinner && this.players[data.gameWinner]) {
+          await this.cameraManager.smoothFollowWinner(
+            this.players[data.gameWinner]
+          );
+          await this.players[data.gameWinner].choice(
+            this.resultText.showWinner
+          );
+        }
+
+        if (data.PunchingBag && this.players[data.PunchingBag]) {
+          await this.cameraManager.smoothFollowWinner(
+            this.players[data.PunchingBag]
+          );
+          await this.players[data.PunchingBag].choice(
+            this.resultText.showPunchKing
+          );
+        }
+
+        if (data.BombMaster && this.players[data.BombMaster]) {
+          await this.cameraManager.smoothFollowWinner(
+            this.players[data.BombMaster]
+          );
+          await this.players[data.BombMaster].choice(
+            this.resultText.showBombMaster
+          );
+        }
+      } catch (error) {
+        console.error("Error during smooth follow sequence:", error);
       }
     });
 
@@ -295,78 +338,22 @@ class GameScene extends Phaser.Scene {
     });
 
     SocketManager.onCurrentBombRanker((data) => {
-      const nickname = this.players[data.playerId].player.nickname;
-      this.rankText.showBombRank(nickname, data.count);
+      if (this.players[data.playerId] && this.players[data.playerId].player) {
+        this.rankText.showBombRank(
+          this.players[data.playerId].player.nickname,
+          data.count
+        );
+      }
     });
 
     SocketManager.onCurrentHitRanker((data) => {
-      const nickname = this.players[data.playerId].player.nickname;
-      this.rankText.showHitRank(nickname, data.count);
+      if (this.players[data.playerId] && this.players[data.playerId].player) {
+        this.rankText.showHitRank(
+          this.players[data.playerId].player.nickname,
+          data.count
+        );
+      }
     });
-  }
-  setBackground() {
-    // 타일맵 설정
-    const map = this.make.tilemap({ key: "map" });
-    const house_1 = map.addTilesetImage("house_1", "house_1");
-    const logs = map.addTilesetImage("logs", "logs");
-    const stump_2 = map.addTilesetImage("stump_2", "stump_2");
-    const Tileset_1 = map.addTilesetImage("Tileset_1", "Tileset_1");
-    const tree_1 = map.addTilesetImage("tree_1", "tree_1");
-    const tree_2 = map.addTilesetImage("tree_2", "tree_2");
-    const stone_1 = map.addTilesetImage("stone_1", "stone_1");
-    const stone_3 = map.addTilesetImage("stone_3", "stone_3");
-    const fence_1 = map.addTilesetImage("fence_1", "fence_1");
-    const fence_3 = map.addTilesetImage("fence_3", "fence_3");
-
-    // 레이어 생성 (Tiled에서 설정한 레이어 이름 사용)
-
-    this.backGround = map.createLayer("BackGround", Tileset_1, 0, 0);
-    this.backGround.setCollisionByProperty({ collides: true });
-    this.fence = map.createLayer("Fence", [fence_1, fence_3], 0, 0);
-    this.fence.setCollisionByProperty({ collides: true });
-    this.house = map.createLayer("House", house_1, 0, 0);
-    this.house.setCollisionByProperty({ collides: true });
-    this.object = map.createLayer(
-      "Object",
-      [Tileset_1, logs, stump_2, tree_1, tree_2, stone_1, stone_3],
-      0,
-      0
-    );
-    this.object.setCollisionByProperty({ collides: true });
-
-    this.mapShrink = map.createLayer("MapShrink", Tileset_1, 0, 0);
-    this.mapShrink.setCollisionByProperty({ collides: true });
-
-    // 충돌 디버그 그래픽 추가
-    // this.debugGraphics = this.add.graphics();
-    // this.backGround.renderDebug(this.debugGraphics, {
-    //   tileColor: null, // 충돌하지 않는 타일은 표시하지 않음
-    //   collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
-    //   faceColor: new Phaser.Display.Color(0, 255, 0, 128), // 충돌하는 면은 반투명 녹색으로 표시
-    // });
-    // this.house.renderDebug(this.debugGraphics, {
-    //   tileColor: null, // 충돌하지 않는 타일은 표시하지 않음
-    //   collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
-    //   faceColor: new Phaser.Display.Color(0, 255, 0, 128), // 충돌하는 면은 반투명 녹색으로 표시
-    // });
-    // this.object.renderDebug(this.debugGraphics, {
-    //   tileColor: null, // 충돌하지 않는 타일은 표시하지 않음
-    //   collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
-    //   faceColor: new Phaser.Display.Color(0, 255, 0, 128), // 충돌하는 면은 반투명 녹색으로 표시
-    // });
-    // this.fence.renderDebug(this.debugGraphics, {
-    //   tileColor: null, // 충돌하지 않는 타일은 표시하지 않음
-    //   collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
-    //   faceColor: new Phaser.Display.Color(0, 255, 0, 128), // 충돌하는 면은 반투명 녹색으로 표시
-    // });
-    // this.mapShrink.renderDebug(this.debugGraphics, {
-    //   tileColor: null, // 충돌하지 않는 타일은 표시하지 않음
-    //   collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
-    //   faceColor: new Phaser.Display.Color(0, 255, 0, 128), // 충돌하는 면은 반투명 녹색으로 표시
-    // });
-
-    // Set world bounds
-    this.physics.world.setBounds(0, 0, 4160, 3200);
   }
 
   updatePlayerCountText() {
