@@ -177,6 +177,9 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       const force = this.joystick.getForce();
       if (force > 0) {
         const angle = Phaser.Math.DegToRad(this.joystick.getAngle()); // 각도를 라디안으로 변환
+        if (this.isReversed) {
+          angle += Phaser.Math.DegToRad(180); // 각도 반전
+        }
         velocityX = Math.cos(angle) * this.speed;
         velocityY = Math.sin(angle) * this.speed;
       }
