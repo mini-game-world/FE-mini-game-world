@@ -401,49 +401,34 @@ class PlayerContainer extends Phaser.GameObjects.Container {
   }
 
   choice() {
-    this.nickname.setColor("#FFD700");
+    return new Promise((resolve) => {
+      this.nickname.setColor("#FFD700");
 
-    if (this.player.isDead) {
-      this.player.isDead = false;
-      this.player.setTexture(`player${this.player.avatar}`);
-      this.player.anims.play(`idle${this.player.avatar}`, true);
-      this.player.setAlpha(1);
-    }
+      // if (this.player.isDead) {
+      //   this.player.isDead = false;
+      //   this.player.setTexture(`player${this.player.avatar}`);
+      //   this.player.anims.play(`idle${this.player.avatar}`, true);
+      //   this.player.setAlpha(1);
+      // }
 
-    this.scene.tweens.add({
-      targets: this.player,
-      scale: 3,
-      duration: 2000,
-      ease: "Power1",
-      onUpdate: () => {
-        if (!this.player) return;
-        if (this.player.isSelfInitiated) {
-          const { velocityX, velocityY } = this.getVelocity();
-          if (velocityX !== 0 || velocityY !== 0) {
-            this.player.anims.play(`move${this.player.avatar}`, true);
-            this.player.setFlipX(velocityX > 0);
-          }
-        }
-      },
-      onComplete: () => {
-        if (!this.scene || !this.player) return;
-        this.scene.tweens.add({
-          targets: this.player,
-          scale: 1,
-          duration: 2000,
-          ease: "Power1",
-          onUpdate: () => {
-            if (!this.player) return;
-            if (this.player.isSelfInitiated) {
-              const { velocityX, velocityY } = this.getVelocity();
-              if (velocityX !== 0 || velocityY !== 0) {
-                this.player.anims.play(`move${this.player.avatar}`, true);
-                this.player.setFlipX(velocityX > 0);
-              }
-            }
-          },
-        });
-      },
+      this.scene.tweens.add({
+        targets: this,
+        scale: 3,
+        duration: 2000,
+        ease: "Power1",
+        onComplete: () => {
+          if (!this.scene || !this) return;
+          this.scene.tweens.add({
+            targets: this,
+            scale: 1,
+            duration: 1000,
+            ease: "Power1",
+            onComplete: () => {
+              resolve();
+            },
+          });
+        },
+      });
     });
   }
 

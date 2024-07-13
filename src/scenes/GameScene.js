@@ -216,7 +216,7 @@ class GameScene extends Phaser.Scene {
       // Check if this player is BombMaster (third priority)
       if (this.player === this.players[data.BombMaster]) {
         if (!position) {
-          position = { x: 1920, y: 1752 };
+          position = { x: 2080, y: 1752 };
         }
       }
 
@@ -225,6 +225,24 @@ class GameScene extends Phaser.Scene {
         this.player.setPosition(position.x, position.y);
         SocketManager.emitPlayerMovement({ x: position.x, y: position.y });
       }
+
+      ////
+
+      this.cameraManager
+        .smoothFollowWinner(this.players[data.gameWinner])
+        .then(() => {
+          if (data.PunchingBag && this.players[data.PunchingBag]) {
+            this.cameraManager
+              .smoothFollowWinner(this.players[data.PunchingBag])
+              .then(() => {
+                if (data.BombMaster && this.players[data.BombMaster]) {
+                  this.cameraManager.smoothFollowWinner(
+                    this.players[data.BombMaster]
+                  );
+                }
+              });
+          }
+        });
     });
 
     SocketManager.onBombGameReady((count) => {

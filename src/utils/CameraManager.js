@@ -31,6 +31,24 @@ class CameraManager {
     });
   }
 
+  smoothFollowWinner(target, duration = 2000, easing = "Sine.easeInOut") {
+    return new Promise((resolve) => {
+      if (this.isPanning) return; // 이미 pan 작업 중이면 리턴
+
+      this.isPanning = true; // 플래그 설정
+      this.mainCamera.stopFollow();
+      this.mainCamera.pan(target.x, target.y, duration, easing);
+
+      this.mainCamera.once("camerapancomplete", () => {
+        this.mainCamera.startFollow(target);
+        this.isPanning = false; // 플래그 해제
+        target.choice().then(() => {
+          resolve();
+        });
+      });
+    });
+  }
+
   getCurrentCameraPosition() {
     return { x: this.mainCamera.scrollX, y: this.mainCamera.scrollY };
   }
