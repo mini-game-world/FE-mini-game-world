@@ -173,7 +173,11 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       if (this.bomb) {
         this.speed = 700;
       } else {
-        this.speed = 600;
+        if (this.speed < 500) {
+          this.speed = 400;
+        } else {
+          this.speed = 600;
+        }
       }
     }
 

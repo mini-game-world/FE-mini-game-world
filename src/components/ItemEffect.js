@@ -1,74 +1,124 @@
 class ItemEffect {
-  constructor(gameScene, player, item) {
-    this.gameScene = gameScene;
+  constructor(scene, player) {
+    this.scene = scene;
     this.player = player;
-    this.item = item;
-    this.isSelfInitiated = this.player.player.isSelfInitiated;
+  }
 
-    if (this.isSelfInitiated) {
-      this.acquireSound = this.gameScene.sound.add("acquire_sound", {
+  applyEffect(acquire_player, itemNumber) {
+    if (this.player === acquire_player) {
+      this.acquireSound = this.scene.sound.add("acquire_sound", {
         volume: 0.2,
       });
       this.acquireSound.play();
     }
-  }
-
-  applyEffect() {
-    switch (this.item) {
+    switch (itemNumber) {
       case 0:
-        this.increaseSpeed();
+        this.increaseMySpeedUPAndScaleDown(acquire_player);
         break;
       case 1:
-        this.hidePlayer();
+        this.hidePlayer(acquire_player);
         break;
       case 2:
-        this.increaseScale();
+        this.increaseMySpeedDownAndScaleUp(acquire_player);
         break;
       case 3:
-        this.reverseDirection();
+        this.reverseDirection(acquire_player);
         break;
       default:
         break;
     }
-    this.player.addStatusIcon(this.item); // 아이콘 추가
+    acquire_player.addStatusIcon(itemNumber); // 아이콘 추가
   }
 
-  increaseSpeed() {
-    if (this.player.player.isSelfInitiated) {
+  increaseMySpeedUPAndScaleDown(acquire_player) {
+    if (this.player === acquire_player) {
       this.player.speed = 800;
-      this.gameScene.time.delayedCall(5000, () => {
-        this.player.speed = 600; // 5초 후 원래 속도로 복구
+      this.player.setScale(0.5);
+      this.scene.time.delayedCall(5000, () => {
+        this.player.setScale(1);
+        this.player.speed = 600;
+      });
+    } else {
+      acquire_player.setScale(0.5);
+      this.scene.time.delayedCall(5000, () => {
+        acquire_player.setScale(1);
       });
     }
   }
 
-  hidePlayer() {
-    if (this.player.player.isSelfInitiated) {
+  hidePlayer(acquire_player) {
+    if (this.player === acquire_player) {
       this.player.setAlpha(0.7);
-      this.gameScene.time.delayedCall(5000, () => {
+      this.scene.time.delayedCall(5000, () => {
         this.player.setAlpha(1);
       });
     } else {
-      this.player.setAlpha(0);
-      this.gameScene.time.delayedCall(5000, () => {
-        this.player.setAlpha(1);
+      acquire_player.setAlpha(0);
+      this.scene.time.delayedCall(5000, () => {
+        acquire_player.setAlpha(1);
       });
     }
   }
 
-  increaseScale() {
-    this.player.setScale(2);
-    this.gameScene.time.delayedCall(5000, () => {
-      this.player.setScale(1); // 5초 후 원래 크기로 복구
-    });
+  increaseMySpeedDownAndScaleUp(acquire_player) {
+    if (acquire_player.player.isSelfInitiated) {
+      this.player.speed = 400;
+      this.player.setScale(2);
+      this.scene.time.delayedCall(5000, () => {
+        this.player.setScale(1);
+        this.player.speed = 600;
+      });
+    } else {
+      acquire_player.setScale(2);
+      this.scene.time.delayedCall(5000, () => {
+        acquire_player.setScale(1);
+      });
+    }
   }
 
-  reverseDirection() {
-    this.player.isReversed = true;
-    this.gameScene.time.delayedCall(5000, () => {
-      this.player.isReversed = false; // 5초 후 원래 상태로 복구
-    });
+  reverseDirection(acquire_player) {
+    if (this.player === acquire_player) {
+      this.player.isReversed = true;
+      this.scene.time.delayedCall(5000, () => {
+        this.player.isReversed = false; // 5초 후 원래 상태로 복구
+      });
+    }
   }
+
+  // increaseOthersSpeedUPAndScaleDown(acquire_player, players) {
+  //   Object.keys(players).forEach((id) => {
+  //     if (players[id] !== acquire_player) {
+  //       players[id].setScale(0.5);
+  //       this.scene.time.delayedCall(5000, () => {
+  //         players[id].setScale(1);
+  //       });
+  //     }
+  //   });
+
+  //   if (this.player !== acquire_player) {
+  //     this.player.speed = 800;
+  //     this.scene.time.delayedCall(5000, () => {
+  //       this.player.speed = 600;
+  //     });
+  //   }
+  // }
+  // increaseOthersSpeedDownAndScaleUp(acquire_player, players) {
+  //   Object.keys(players).forEach((id) => {
+  //     if (players[id] !== acquire_player) {
+  //       players[id].setScale(2);
+  //       this.scene.time.delayedCall(5000, () => {
+  //         players[id].setScale(1);
+  //       });
+  //     }
+  //   });
+
+  //   if (this.player !== acquire_player) {
+  //     this.player.speed = 400;
+  //     this.scene.time.delayedCall(5000, () => {
+  //       this.player.speed = 600;
+  //     });
+  //   }
+  // }
 }
 
 export default ItemEffect;

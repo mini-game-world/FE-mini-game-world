@@ -32,6 +32,7 @@ class GameScene extends Phaser.Scene {
     this.backgroundManager = null;
 
     this.itemsGroup = null;
+    this.itemEffect = null;
   }
 
   async create() {
@@ -74,6 +75,8 @@ class GameScene extends Phaser.Scene {
               this.physics.add.collider(this.player.hitBox, this.object);
 
               this.mapShrinker.applyPreviousShrinks();
+
+              this.itemEffect = new ItemEffect(this, this.player);
             }
           }
         });
@@ -349,8 +352,7 @@ class GameScene extends Phaser.Scene {
         });
 
         if (this.players[playerId]) {
-          const itemEffect = new ItemEffect(this, this.players[playerId], item);
-          itemEffect.applyEffect();
+          this.itemEffect.applyEffect(this.players[playerId], item);
         }
       });
 
