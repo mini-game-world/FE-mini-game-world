@@ -381,6 +381,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
   }
 
   setReady() {
+    this.isAttacking = false;
     if (this.bomb) {
       this.bomb.destroy();
       this.bomb = null;
