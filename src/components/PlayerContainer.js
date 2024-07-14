@@ -146,6 +146,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
       attack: Phaser.Input.Keyboard.KeyCodes.Z, // 공격 키 추가
       switch: Phaser.Input.Keyboard.KeyCodes.Q, // Q 키 추가
+      focus: Phaser.Input.Keyboard.KeyCodes.SPACE,
     });
   }
 
@@ -269,6 +270,9 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     if (this.player.isDead && this.player.isPlay) {
       if (Phaser.Input.Keyboard.JustDown(this.keys.switch)) {
         this.scene.switchTarget();
+      }
+      if (Phaser.Input.Keyboard.JustDown(this.keys.focus)) {
+        this.scene.switchToPlayer();
       }
     }
   }

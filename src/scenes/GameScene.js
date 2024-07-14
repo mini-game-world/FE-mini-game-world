@@ -401,7 +401,16 @@ class GameScene extends Phaser.Scene {
 
     const newTarget = alivePlayers[this.currentTargetIndex];
 
-    this.cameraManager.switchTarget(newTarget);
+    if (newTarget) {
+      this.cameraManager.switchTarget(newTarget);
+    }
+  }
+
+  switchToPlayer() {
+    if (this.player) {
+      this.cameraManager.switchTarget(this.player);
+      this.currentTargetIndex = -1;
+    }
   }
 
   update() {
