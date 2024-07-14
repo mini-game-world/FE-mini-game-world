@@ -45,13 +45,13 @@ class ItemEffect {
   hidePlayer() {
     if (this.player.player.isSelfInitiated) {
       this.player.setAlpha(0.7);
-      this.gameScene.time.delayedCall(5000, () => {
-        this.player.setAlpha(1);
+      this.gameScene.time.delayedCall(3000, () => {
+        this.player.setAlpha(1); // 3초 후 원래 상태로 복구
       });
     } else {
       this.player.setAlpha(0);
-      this.gameScene.time.delayedCall(5000, () => {
-        this.player.setAlpha(1);
+      this.gameScene.time.delayedCall(3000, () => {
+        this.player.setAlpha(1); // 3초 후 원래 상태로 복구
       });
     }
   }
@@ -65,8 +65,8 @@ class ItemEffect {
 
   reverseDirection() {
     this.player.isReversed = true;
-    this.gameScene.time.delayedCall(5000, () => {
-      this.player.isReversed = false; // 5초 후 원래 상태로 복구
+    this.gameScene.time.delayedCall(3000, () => {
+      this.player.isReversed = false; // 3초 후 원래 상태로 복구
     });
   }
 }
