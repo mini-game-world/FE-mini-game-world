@@ -159,8 +159,8 @@ class GameScene extends Phaser.Scene {
               this.player.isAttacking = false;
               this.player.isStunned = false;
 
-              const randomX = Phaser.Math.Between(960, 2080);
-              const randomY = Phaser.Math.Between(640, 1280);
+              const randomX = Phaser.Math.Between(960, 1600);
+              const randomY = Phaser.Math.Between(960, 1280);
               this.player.hitBox.setPosition(randomX, randomY);
               SocketManager.emitPlayerMovement({ x: randomX, y: randomY });
 
