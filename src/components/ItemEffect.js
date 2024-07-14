@@ -14,20 +14,23 @@ class ItemEffect {
     switch (itemNumber) {
       case 0:
         this.increaseMySpeedUPAndScaleDown(acquire_player);
+        acquire_player.addStatusIcon(itemNumber, 5000);
         break;
       case 1:
         this.hidePlayer(acquire_player);
+        acquire_player.addStatusIcon(itemNumber, 3000);
         break;
       case 2:
         this.increaseMySpeedDownAndScaleUp(acquire_player);
+        acquire_player.addStatusIcon(itemNumber, 5000);
         break;
       case 3:
         this.reverseDirection(acquire_player);
+        acquire_player.addStatusIcon(itemNumber, 3000);
         break;
       default:
         break;
     }
-    acquire_player.addStatusIcon(itemNumber); // 아이콘 추가
   }
 
   increaseMySpeedUPAndScaleDown(acquire_player) {
@@ -49,12 +52,12 @@ class ItemEffect {
   hidePlayer(acquire_player) {
     if (this.player === acquire_player) {
       this.player.setAlpha(0.7);
-      this.scene.time.delayedCall(5000, () => {
+      this.scene.time.delayedCall(3000, () => {
         this.player.setAlpha(1);
       });
     } else {
       acquire_player.setAlpha(0);
-      this.scene.time.delayedCall(5000, () => {
+      this.scene.time.delayedCall(3000, () => {
         acquire_player.setAlpha(1);
       });
     }
@@ -79,7 +82,7 @@ class ItemEffect {
   reverseDirection(acquire_player) {
     if (this.player === acquire_player) {
       this.player.isReversed = true;
-      this.scene.time.delayedCall(5000, () => {
+      this.scene.time.delayedCall(3000, () => {
         this.player.isReversed = false; // 5초 후 원래 상태로 복구
       });
     }
