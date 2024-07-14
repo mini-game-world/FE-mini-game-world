@@ -152,6 +152,22 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     });
   }
 
+  handleRemoteAttack() {
+    if (this.isAttacking) return; // Prevent multiple attacks at the same time
+
+    this.isAttacking = true;
+    this.player.anims.play(`attack${this.player.avatar}`, true);
+    this.createClawAttack();
+    this.player.once("animationcomplete", (anim) => {
+      if (anim.key === `attack${this.player.avatar}`) {
+        this.isAttacking = false;
+        if (!this.player.isDead) {
+          this.player.anims.play(`idle${this.player.avatar}`, true);
+        }
+      }
+    });
+  }
+
   getVelocity() {
     if (this.speed < 800) {
       if (this.bomb) {
@@ -301,14 +317,14 @@ class PlayerContainer extends Phaser.GameObjects.Container {
           if (this.player.isDead) {
             this.player.anims.play(`dead`, true);
             this.player.setFlipX(deltaX > 0);
-          } else {
+          } else if (!this.isAttacking) {
             this.player.anims.play(`move${this.player.avatar}`, true);
             this.player.setFlipX(deltaX > 0);
           }
         } else {
           if (this.player.isDead) {
             this.player.anims.play(`dead`, true);
-          } else {
+          } else if (!this.isAttacking) {
             this.player.anims.play(`idle${this.player.avatar}`, true);
           }
         }
@@ -320,7 +336,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
           if (!this.player) return;
           if (this.player.isDead) {
             this.player.anims.play(`dead`, true);
-          } else {
+          } else if (!this.isAttacking) {
             this.player.anims.play(`idle${this.player.avatar}`, true);
           }
         }, 100);
@@ -383,6 +399,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       await this.pendingPromise;
     }
 
+    this.isAttacking = false;
     this.explodeBomb();
     this.player.setDeadStatus();
     this.nickname.setColor("#ff0000");

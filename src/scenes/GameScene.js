@@ -117,7 +117,7 @@ class GameScene extends Phaser.Scene {
 
       SocketManager.onAttackPlayer((id) => {
         if (this.players[id]) {
-          this.players[id].createClawAttack();
+          this.players[id].handleRemoteAttack();
         }
       });
 
