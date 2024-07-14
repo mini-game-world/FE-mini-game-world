@@ -173,7 +173,11 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       if (this.bomb) {
         this.speed = 700;
       } else {
-        this.speed = 600;
+        if (this.speed < 500) {
+          this.speed = 400;
+        } else {
+          this.speed = 600;
+        }
       }
     }
 
@@ -516,14 +520,14 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     }
   }
 
-  addStatusIcon(item) {
+  addStatusIcon(item, time) {
     const iconX = this.player.x + this.player.width / 2 + 20; // 플레이어 오른쪽에 아이콘 위치
     const iconY = this.player.y;
     const statusIcon = new StatusIcon(this.scene, iconX, iconY, item);
     this.add(statusIcon);
     this.statusIcons.push(statusIcon);
 
-    this.scene.time.delayedCall(5000, () => {
+    this.scene.time.delayedCall(time, () => {
       const index = this.statusIcons.indexOf(statusIcon);
       if (index !== -1) {
         statusIcon.destroy();
