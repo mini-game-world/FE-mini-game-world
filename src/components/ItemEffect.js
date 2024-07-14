@@ -3,6 +3,14 @@ class ItemEffect {
     this.gameScene = gameScene;
     this.player = player;
     this.item = item;
+    this.isSelfInitiated = this.player.player.isSelfInitiated;
+
+    if (this.isSelfInitiated) {
+      this.acquireSound = this.gameScene.sound.add("acquire_sound", {
+        volume: 0.2,
+      });
+      this.acquireSound.play();
+    }
   }
 
   applyEffect() {

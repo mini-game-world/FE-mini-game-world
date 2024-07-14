@@ -44,6 +44,7 @@ import timerSound from "../assets/sounds/timer.ogg";
 import explosionSound from "../assets/sounds/explosion.ogg";
 import winnerSound from "../assets/sounds/winner.ogg";
 import buttonClickSound from "../assets/sounds/ButtonClick.ogg";
+import acquireSound from "../assets/sounds/acquire.ogg";
 import playingBGM1 from "../assets/bgm/playingBGM1.ogg";
 import playingBGM2 from "../assets/bgm/playingBGM2.ogg";
 import waitingBGM1 from "../assets/bgm/waitingBGM1.ogg";
@@ -194,7 +195,7 @@ class BootScene extends Phaser.Scene {
       speed: speedImg,
       stealth: stealthImg,
       big: bigImg,
-      reverse: reverseImg, 
+      reverse: reverseImg,
       question: question,
       bang: bang,
       first_tileset: first_tileset,
@@ -225,6 +226,7 @@ class BootScene extends Phaser.Scene {
       explosion_sound: explosionSound,
       winner_sound: winnerSound,
       click_sound: buttonClickSound,
+      acquire_sound: acquireSound,
       playingBGM1: playingBGM1,
       playingBGM2: playingBGM2,
       waitingBGM1: waitingBGM1,
