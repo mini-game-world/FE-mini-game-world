@@ -92,6 +92,16 @@ class GameStatusText extends Phaser.GameObjects.Text {
     );
   }
 
+  showSurvivor() {
+    this.showText(
+      "Q 버튼을 눌러 다른 플레이어의 플레이를 관전하세요! \n Space 버튼을 통해 본인의 화면으로 돌아올 수 있습니다",
+      "56px",
+      0,
+      1,
+      1
+    );
+  }
+
   showResult() {
     this.showText("게임 결과 발표중 입니다.", "56px", 0, 1, 1);
   }
@@ -103,5 +113,6 @@ class GameStatusText extends Phaser.GameObjects.Text {
     this.setAlpha(0);
   }
 }
+
 
 export default GameStatusText;
