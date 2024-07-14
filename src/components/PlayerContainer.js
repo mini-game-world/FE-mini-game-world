@@ -69,6 +69,8 @@ class PlayerContainer extends Phaser.GameObjects.Container {
 
     this.chatDisplay = null;
 
+    this.pendingPromise = null;
+
     if (
       this.scene.sys.game.device.os.android ||
       this.scene.sys.game.device.os.iPhone ||
@@ -147,6 +149,22 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       attack: Phaser.Input.Keyboard.KeyCodes.Z, // 공격 키 추가
       switch: Phaser.Input.Keyboard.KeyCodes.Q, // Q 키 추가
       focus: Phaser.Input.Keyboard.KeyCodes.SPACE,
+    });
+  }
+
+  handleRemoteAttack() {
+    if (this.isAttacking) return; // Prevent multiple attacks at the same time
+
+    this.isAttacking = true;
+    this.player.anims.play(`attack${this.player.avatar}`, true);
+    this.createClawAttack();
+    this.player.once("animationcomplete", (anim) => {
+      if (anim.key === `attack${this.player.avatar}`) {
+        this.isAttacking = false;
+        if (!this.player.isDead) {
+          this.player.anims.play(`idle${this.player.avatar}`, true);
+        }
+      }
     });
   }
 
@@ -299,14 +317,14 @@ class PlayerContainer extends Phaser.GameObjects.Container {
           if (this.player.isDead) {
             this.player.anims.play(`dead`, true);
             this.player.setFlipX(deltaX > 0);
-          } else {
+          } else if (!this.isAttacking) {
             this.player.anims.play(`move${this.player.avatar}`, true);
             this.player.setFlipX(deltaX > 0);
           }
         } else {
           if (this.player.isDead) {
             this.player.anims.play(`dead`, true);
-          } else {
+          } else if (!this.isAttacking) {
             this.player.anims.play(`idle${this.player.avatar}`, true);
           }
         }
@@ -318,7 +336,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
           if (!this.player) return;
           if (this.player.isDead) {
             this.player.anims.play(`dead`, true);
-          } else {
+          } else if (!this.isAttacking) {
             this.player.anims.play(`idle${this.player.avatar}`, true);
           }
         }, 100);
@@ -326,23 +344,34 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     });
   }
 
-  stunPlayer() {
+  async stunPlayer() {
     if (this.bomb) return;
     this.isAttacking = false;
     this.isStunned = true;
     new Star(this.scene, this.player, this);
-    if (!this.player.isDead) {
-      this.player.anims
-        .play(`stun${this.player.avatar}`, true)
-        .once("animationcomplete", () => {
-          if (!this.player) return;
-          this.player.anims.play(`idle${this.player.avatar}`, true);
+
+    return new Promise((resolve) => {
+      this.pendingPromise = new Promise((resolveInner) => {
+        if (!this.player.isDead) {
+          this.player.anims
+            .play(`stun${this.player.avatar}`, true)
+            .once("animationcomplete", () => {
+              if (!this.player) return;
+              this.player.anims.play(`idle${this.player.avatar}`, true);
+              this.isStunned = false;
+              resolveInner();
+              resolve();
+            });
+        } else {
+          this.player.anims.play(`dead`, true);
           this.isStunned = false;
-        });
-    } else {
-      this.player.anims.play(`dead`, true);
-      this.isStunned = false;
-    }
+          resolveInner();
+          resolve();
+        }
+      }).finally(() => {
+        this.pendingPromise = null;
+      });
+    });
   }
 
   showChatMessage(message) {
@@ -364,7 +393,13 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     this.player.setPlayStatus();
   }
 
-  setDead() {
+  async setDead() {
+    // stunPlayer나 receiveBomb이 실행중이면 끝날 때까지 기다림
+    if (this.pendingPromise && this.player.isSelfInitiated) {
+      await this.pendingPromise;
+    }
+
+    this.isAttacking = false;
     this.explodeBomb();
     this.player.setDeadStatus();
     this.nickname.setColor("#ff0000");
@@ -378,7 +413,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     }
   }
 
-  receiveBomb() {
+  async receiveBomb() {
     if (this.player.isPlay && this.player.isDead) return;
     this.isStunned = true;
     this.isAttacking = false;
@@ -391,15 +426,23 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       this.bringToTop(this.chatBalloon);
     }
 
-    if (this.player.isPlay && this.player.isDead) return;
-    this.player.anims
-      .play(`stun${this.player.avatar}`, true)
-      .once("animationcomplete", () => {
-        if (!this.player) return;
+    return new Promise((resolve) => {
+      this.pendingPromise = new Promise((resolveInner) => {
         if (this.player.isPlay && this.player.isDead) return;
-        this.player.anims.play(`idle${this.player.avatar}`, true);
-        this.isStunned = false;
+        this.player.anims
+          .play(`stun${this.player.avatar}`, true)
+          .once("animationcomplete", () => {
+            if (!this.player) return;
+            if (this.player.isPlay && this.player.isDead) return;
+            this.player.anims.play(`idle${this.player.avatar}`, true);
+            this.isStunned = false;
+            resolveInner();
+            resolve();
+          });
+      }).finally(() => {
+        this.pendingPromise = null;
       });
+    });
   }
 
   removeBomb() {

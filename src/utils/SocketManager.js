@@ -7,6 +7,12 @@ class SocketManager {
 
   connect() {
     return new Promise((resolve, reject) => {
+      // 기존 채널이 존재하는 경우 재연결을 방지
+      if (this.channel && this.channel.id) {
+        console.log("Already connected");
+        return resolve();
+      }
+
       this.channel = geckos({
         url: "https://www.jungleptest.xyz",
         port: 443,
@@ -24,6 +30,7 @@ class SocketManager {
 
       this.channel.onDisconnect(() => {
         console.log("Disconnected from server");
+        this.channel = null; // 채널 초기화
       });
 
       this.channel.on("error", (error) => {
