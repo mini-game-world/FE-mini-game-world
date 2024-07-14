@@ -493,6 +493,8 @@ class BootScene extends Phaser.Scene {
       repeat: -1,
     });
 
+    this.textures.removeKey('unusedImage');
+
     this.scene.start("MainScene");
   }
 }

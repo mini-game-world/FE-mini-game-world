@@ -35,7 +35,7 @@ class BackgroundManager {
     this.scene.house = map.createLayer("House", house_1, 0, 0);
     this.scene.object = map.createLayer(
       "Object",
-      [Tileset_1, logs, stump_2, tree_1, tree_2, stone_1, stone_3],
+      [Tileset_1, logs, stump_2, tree_1, tree_2, stone_1, stone_3, fence_1],
       0,
       0
     );
@@ -51,7 +51,7 @@ class BackgroundManager {
   }
 
   setWorldBounds() {
-    this.scene.physics.world.setBounds(0, 0, 4160, 3200);
+    this.scene.physics.world.setBounds(0, 0, 3840, 3200);
   }
 
   addDebugging() {
