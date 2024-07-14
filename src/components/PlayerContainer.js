@@ -69,6 +69,8 @@ class PlayerContainer extends Phaser.GameObjects.Container {
 
     this.chatDisplay = null;
 
+    this.pendingPromise = null;
+
     if (
       this.scene.sys.game.device.os.android ||
       this.scene.sys.game.device.os.iPhone ||
@@ -326,23 +328,34 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     });
   }
 
-  stunPlayer() {
+  async stunPlayer() {
     if (this.bomb) return;
     this.isAttacking = false;
     this.isStunned = true;
     new Star(this.scene, this.player, this);
-    if (!this.player.isDead) {
-      this.player.anims
-        .play(`stun${this.player.avatar}`, true)
-        .once("animationcomplete", () => {
-          if (!this.player) return;
-          this.player.anims.play(`idle${this.player.avatar}`, true);
+
+    return new Promise((resolve) => {
+      this.pendingPromise = new Promise((resolveInner) => {
+        if (!this.player.isDead) {
+          this.player.anims
+            .play(`stun${this.player.avatar}`, true)
+            .once("animationcomplete", () => {
+              if (!this.player) return;
+              this.player.anims.play(`idle${this.player.avatar}`, true);
+              this.isStunned = false;
+              resolveInner();
+              resolve();
+            });
+        } else {
+          this.player.anims.play(`dead`, true);
           this.isStunned = false;
-        });
-    } else {
-      this.player.anims.play(`dead`, true);
-      this.isStunned = false;
-    }
+          resolveInner();
+          resolve();
+        }
+      }).finally(() => {
+        this.pendingPromise = null;
+      });
+    });
   }
 
   showChatMessage(message) {
@@ -364,7 +377,12 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     this.player.setPlayStatus();
   }
 
-  setDead() {
+  async setDead() {
+    // stunPlayer나 receiveBomb이 실행중이면 끝날 때까지 기다림
+    if (this.pendingPromise && this.player.isSelfInitiated) {
+      await this.pendingPromise;
+    }
+
     this.explodeBomb();
     this.player.setDeadStatus();
     this.nickname.setColor("#ff0000");
@@ -378,7 +396,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     }
   }
 
-  receiveBomb() {
+  async receiveBomb() {
     if (this.player.isPlay && this.player.isDead) return;
     this.isStunned = true;
     this.isAttacking = false;
@@ -391,15 +409,23 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       this.bringToTop(this.chatBalloon);
     }
 
-    if (this.player.isPlay && this.player.isDead) return;
-    this.player.anims
-      .play(`stun${this.player.avatar}`, true)
-      .once("animationcomplete", () => {
-        if (!this.player) return;
+    return new Promise((resolve) => {
+      this.pendingPromise = new Promise((resolveInner) => {
         if (this.player.isPlay && this.player.isDead) return;
-        this.player.anims.play(`idle${this.player.avatar}`, true);
-        this.isStunned = false;
+        this.player.anims
+          .play(`stun${this.player.avatar}`, true)
+          .once("animationcomplete", () => {
+            if (!this.player) return;
+            if (this.player.isPlay && this.player.isDead) return;
+            this.player.anims.play(`idle${this.player.avatar}`, true);
+            this.isStunned = false;
+            resolveInner();
+            resolve();
+          });
+      }).finally(() => {
+        this.pendingPromise = null;
       });
+    });
   }
 
   removeBomb() {
