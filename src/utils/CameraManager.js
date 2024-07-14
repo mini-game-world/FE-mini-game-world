@@ -47,6 +47,11 @@ class CameraManager {
     });
   }
 
+  switchTarget(target) {
+    this.mainCamera.stopFollow();
+    this.mainCamera.startFollow(target);
+  }
+
   getCurrentCameraPosition() {
     return { x: this.mainCamera.scrollX, y: this.mainCamera.scrollY };
   }

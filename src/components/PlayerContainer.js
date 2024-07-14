@@ -145,6 +145,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       left: Phaser.Input.Keyboard.KeyCodes.LEFT,
       right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
       attack: Phaser.Input.Keyboard.KeyCodes.Z, // 공격 키 추가
+      switch: Phaser.Input.Keyboard.KeyCodes.Q, // Q 키 추가
     });
   }
 
@@ -160,7 +161,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
     let velocityX = 0;
     let velocityY = 0;
 
-    if(!this.isReversed) {
+    if (!this.isReversed) {
       if (this.keys.up.isDown) velocityY = -this.speed;
       if (this.keys.down.isDown) velocityY = this.speed;
       if (this.keys.left.isDown) velocityX = -this.speed;
@@ -171,7 +172,6 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       if (this.keys.left.isDown) velocityX = this.speed;
       if (this.keys.right.isDown) velocityX = -this.speed;
     }
-    
 
     if (this.joystick) {
       const force = this.joystick.getForce();
@@ -184,7 +184,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
           joystickX = -joystickX; // 조이스틱의 X값 반전
           joystickY = -joystickY; // 조이스틱의 Y값 반전
         }
-  
+
         velocityX = joystickX;
         velocityY = joystickY;
       }
@@ -264,6 +264,11 @@ class PlayerContainer extends Phaser.GameObjects.Container {
             true
           );
         }
+      }
+    }
+    if (this.player.isDead && this.player.isPlay) {
+      if (Phaser.Input.Keyboard.JustDown(this.keys.switch)) {
+        this.scene.switchTarget();
       }
     }
   }
@@ -478,7 +483,6 @@ class PlayerContainer extends Phaser.GameObjects.Container {
       }
     });
   }
-
 
   destroy() {
     // Custom cleanup for PlayerContainer

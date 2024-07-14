@@ -19,6 +19,7 @@ class GameScene extends Phaser.Scene {
 
     this.player = null; // 내 캐릭터
     this.players = {}; // 모든 접속자(플레이어)
+    this.currentTargetIndex = -1; // 현재 타겟 인덱스 초기화
 
     this.resultText = null;
     this.playerCountText = null;
@@ -385,6 +386,22 @@ class GameScene extends Phaser.Scene {
     if (this.player && this.player.player && this.player.player.isPlay) {
       this.infoText.updatePlayInfo(survivorCount);
     }
+  }
+
+  switchTarget() {
+    const alivePlayers = Object.values(this.players).filter(
+      (player) =>
+        !player.player.isDead && player.player.isPlay && player !== this.player
+    );
+
+    if (alivePlayers.length === 0) return;
+
+    this.currentTargetIndex =
+      (this.currentTargetIndex + 1) % alivePlayers.length;
+
+    const newTarget = alivePlayers[this.currentTargetIndex];
+
+    this.cameraManager.switchTarget(newTarget);
   }
 
   update() {
