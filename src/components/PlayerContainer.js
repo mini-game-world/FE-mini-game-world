@@ -9,7 +9,7 @@ import ChatBalloon from "./ChatBalloon";
 import Bomb from "./Bomb";
 import Explosion from "./Explosion";
 import BodyExplosion from "./BodyExplosion";
-import CollisionChecker from "../utils/CollisionChecker";
+import CollisionCheckerManager from "../utils/CollisionCheckerManager";
 import StatusIcon from "./StatusIcon";
 import ChatDisplay from "./ChatDisplay";
 import Joystick from "./Joystick"; // Joystick 클래스 추가
@@ -65,7 +65,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
 
     this.statusIcons = [];
 
-    this.collisionChecker = new CollisionChecker();
+    this.collisionCheckerManager = new CollisionCheckerManager();
 
     this.chatDisplay = null;
 
@@ -218,7 +218,7 @@ class PlayerContainer extends Phaser.GameObjects.Container {
 
   update() {
     if (!this.player.isDead) {
-      this.collisionChecker.checkCollisionAndMove(this);
+      this.collisionCheckerManager.checkCollisionAndMove(this);
     }
 
     if (!this.isWinner) {
