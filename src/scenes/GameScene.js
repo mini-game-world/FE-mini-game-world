@@ -2,7 +2,7 @@ import Phaser from "phaser";
 import SocketManager from "../utils/SocketManager";
 import ResultText from "../components/ResultText";
 import GameStatusText from "../components/GameStatusText";
-import MapShrinker from "../utils/MapShrinker";
+import MapShrinkerManager from "../utils/MapShrinkerManager";
 import BGMManager from "../utils/BGMManager";
 import CameraManager from "../utils/CameraManager";
 import PlayerContainer from "../components/PlayerContainer";
@@ -27,7 +27,7 @@ class GameScene extends Phaser.Scene {
     this.rankText = null;
 
     this.cameraManager = null;
-    this.mapShrinker = null;
+    this.mapShrinkerManager = null;
     this.bgmManager = null;
     this.backgroundManager = null;
 
@@ -46,7 +46,7 @@ class GameScene extends Phaser.Scene {
       this.gameStatusText = new GameStatusText(this);
       this.bgmManager = new BGMManager(this);
       this.rankText = new RankText(this);
-      this.mapShrinker = new MapShrinker(this);
+      this.mapShrinkerManager = new MapShrinkerManager(this);
       this.itemsGroup = this.physics.add.group();
 
       SocketManager.onCurrentPlayers((players) => {
@@ -73,8 +73,6 @@ class GameScene extends Phaser.Scene {
               this.physics.add.collider(this.player.hitBox, this.fence);
               this.physics.add.collider(this.player.hitBox, this.house);
               this.physics.add.collider(this.player.hitBox, this.object);
-
-              this.mapShrinker.applyPreviousShrinks();
 
               this.itemEffect = new ItemEffect(this, this.player);
             }
@@ -225,7 +223,7 @@ class GameScene extends Phaser.Scene {
 
       SocketManager.onWinnerPlayer(async (data) => {
         this.gameStatusText.showResult();
-        this.mapShrinker.reset();
+        this.mapShrinkerManager.reset();
         this.player.stopMove();
 
         if (this.players[data.gameWinner]) {
