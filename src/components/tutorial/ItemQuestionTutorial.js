@@ -1,4 +1,4 @@
-export default class Tutorial3 {
+export default class ItemQuestionTutorial {
   constructor(scene, player5) {
     this.scene = scene;
     this.player5 = player5;
