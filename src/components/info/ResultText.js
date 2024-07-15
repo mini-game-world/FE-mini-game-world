@@ -1,6 +1,8 @@
-import Bomb_master from "./Bomb_master";
-import Crown from "./Crown";
+import Phaser from "phaser";
+
+import BombKing from "./BombKing";
 import Boxing from "./Boxing";
+import Crown from "./Crown";
 
 class ResultText extends Phaser.GameObjects.Text {
   constructor(scene) {
@@ -31,7 +33,7 @@ class ResultText extends Phaser.GameObjects.Text {
     this.bombmasterText = null;
     this.crownImage = null;
     this.punchKingImage = null;
-    this.bomb_masterImage = null;
+    this.bombKingImage = null;
   }
 
   createCrownImage() {
@@ -50,12 +52,12 @@ class ResultText extends Phaser.GameObjects.Text {
     this.punchKingImage = new Boxing(this.scene, this);
   }
 
-  createBomb_masterImage() {
-    if (this.bomb_masterImage) {
-      this.bomb_masterImage.destroy();
-      this.bomb_masterImage = null;
+  createBombKingImage() {
+    if (this.bombKingImage) {
+      this.bombKingImage.destroy();
+      this.bombKingImage = null;
     }
-    this.bomb_masterImage = new Bomb_master(this.scene, this);
+    this.bombKingImage = new BombKing(this.scene, this);
   }
 
   showWinner(name) {
@@ -79,7 +81,7 @@ class ResultText extends Phaser.GameObjects.Text {
   }
 
   showBombMaster(name) {
-    this.createBomb_masterImage();
+    this.createBombKingImage();
 
     this.winnerSound = this.scene.sound.add("winner_sound", { volume: 0.2 });
     this.winnerSound.play();
@@ -99,9 +101,9 @@ class ResultText extends Phaser.GameObjects.Text {
       this.punchKingImage.destroy();
       this.punchKingImage = null;
     }
-    if (this.bomb_masterImage) {
-      this.bomb_masterImage.destroy();
-      this.bomb_masterImage = null;
+    if (this.bombKingImage) {
+      this.bombKingImage.destroy();
+      this.bombKingImage = null;
     }
   }
 

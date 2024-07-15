@@ -1,4 +1,6 @@
-class Bomb_master extends Phaser.GameObjects.Image {
+import Phaser from "phaser";
+
+class BombKing extends Phaser.GameObjects.Image {
   constructor(scene, target) {
     super(
       scene,
@@ -24,4 +26,4 @@ class Bomb_master extends Phaser.GameObjects.Image {
   }
 }
 
-export default Bomb_master;
+export default BombKing;

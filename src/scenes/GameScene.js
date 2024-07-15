@@ -1,16 +1,16 @@
 import Phaser from "phaser";
 import SocketManager from "../utils/SocketManager";
-import ResultText from "../components/ResultText";
-import GameStatusText from "../components/GameStatusText";
-import MapShrinkerManager from "../utils/MapShrinkerManager";
-import BGMManager from "../utils/BGMManager";
-import CameraManager from "../utils/CameraManager";
-import PlayerContainer from "../components/PlayerContainer";
-import Item from "../components/Item";
-import ItemEffect from "../components/ItemEffect";
-import RankText from "../components/RankText";
-import InfoText from "../components/InfoText";
 import BackgroundManager from "../utils/BackgroundManager";
+import CameraManager from "../utils/CameraManager";
+import ResultText from "../components/info/ResultText";
+import InfoText from "../components/info/InfoText";
+import GameStatusText from "../components/info/GameStatusText";
+import BGMManager from "../utils/BGMManager";
+import RankText from "../components/info/RankText";
+import MapShrinkerManager from "../utils/MapShrinkerManager";
+import PlayerContainer from "../components/player/PlayerContainer";
+import Item from "../components/item/Item";
+import ItemEffect from "../components/item/ItemEffect";
 import "regenerator-runtime/runtime";
 
 class GameScene extends Phaser.Scene {

@@ -1,4 +1,4 @@
-import GameStatusText from "../components/GameStatusText";
+import GameStatusText from "../components/info/GameStatusText";
 import SocketManager from "./SocketManager";
 
 export default class MapShrinkerManager {

@@ -1,20 +1,20 @@
 import Phaser from "phaser";
+
+import SocketManager from "../../utils/SocketManager";
 import Player from "./Player";
 import Nickname from "./Nickname";
-import SocketManager from "../utils/SocketManager";
+import ChatBalloon from "../chat/ChatBalloon";
+import Arrow from "./Arrow";
+import CollisionCheckerManager from "../../utils/CollisionCheckerManager";
+import Joystick from "./Joystick";
+import ChatDisplay from "../chat/ChatDisplay";
 import Claw from "./Claw";
 import Star from "./Star";
-import Arrow from "./Arrow";
-import ChatBalloon from "./ChatBalloon";
-import Bomb from "./Bomb";
-import Explosion from "./Explosion";
-import BodyExplosion from "./BodyExplosion";
-import CollisionCheckerManager from "../utils/CollisionCheckerManager";
-import StatusIcon from "./StatusIcon";
-import ChatDisplay from "./ChatDisplay";
-import Joystick from "./Joystick"; // Joystick 클래스 추가
+import Bomb from "../bomb/Bomb";
 import Bang from "./Bang";
-
+import Explosion from "../bomb/Explosion";
+import BodyExplosion from "./BodyExplosion";
+import StatusIcon from "../item/StatusIcon";
 class PlayerContainer extends Phaser.GameObjects.Container {
   constructor(scene, x, y, texture, info) {
     super(scene, x, y);

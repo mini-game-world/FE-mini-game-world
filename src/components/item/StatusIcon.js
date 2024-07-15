@@ -1,3 +1,4 @@
+import Phaser from "phaser";
 class StatusIcon extends Phaser.GameObjects.Image {
   constructor(scene, x, y, item) {
     let texture;
