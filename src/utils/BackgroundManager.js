@@ -1,5 +1,3 @@
-// BackgroundManager.js
-
 class BackgroundManager {
   constructor(scene) {
     this.scene = scene;

@@ -1,15 +1,16 @@
+import Phaser from "phaser";
 class StatusIcon extends Phaser.GameObjects.Image {
   constructor(scene, x, y, item) {
     let texture;
     switch (item) {
       case 0:
-        texture = "speed";
+        texture = "speedUp";
         break;
       case 1:
-        texture = "stealth";
+        texture = "badSight";
         break;
       case 2:
-        texture = "big";
+        texture = "speedDown";
         break;
       case 3:
         texture = "reverse";

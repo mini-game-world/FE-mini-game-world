@@ -1,4 +1,6 @@
-class Bomb_master extends Phaser.GameObjects.Image {
+import Phaser from "phaser";
+
+class BombKing extends Phaser.GameObjects.Image {
   constructor(scene, target) {
     super(
       scene,
@@ -6,7 +8,7 @@ class Bomb_master extends Phaser.GameObjects.Image {
       scene.cameras.main.height / 2 -
         scene.cameras.main.height / 4 / scene.cameras.main.zoom -
         150,
-      "bomb_master"
+      "bombKing"
     );
     this.scene = scene;
     this.target = target;
@@ -24,4 +26,4 @@ class Bomb_master extends Phaser.GameObjects.Image {
   }
 }
 
-export default Bomb_master;
+export default BombKing;

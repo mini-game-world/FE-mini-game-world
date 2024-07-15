@@ -1,3 +1,5 @@
+import Phaser from "phaser";
+
 class InfoText extends Phaser.GameObjects.Text {
   constructor(scene) {
     super(

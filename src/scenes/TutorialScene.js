@@ -1,6 +1,6 @@
 import Phaser from "phaser";
-import Tutorial1 from "../components/Tutorial1";
-import Tutorial3 from "../components/Tutorial3";
+import PlayerBombTutorial from "../components/tutorial/PlayerBombTutorial";
+import ItemQuestionTutorial from "../components/tutorial/ItemQuestionTutorial";
 import BGMManager from "../utils/BGMManager";
 
 class TutorialScene extends Phaser.Scene {
@@ -100,7 +100,12 @@ class TutorialScene extends Phaser.Scene {
     this.player2.setCollideWorldBounds(false);
     this.player2.play("move2");
 
-    this.Tutorial1 = new Tutorial1(this, this.player1, this.player2, "bomb");
+    this.playerBombTutorial = new PlayerBombTutorial(
+      this,
+      this.player1,
+      this.player2,
+      "bomb"
+    );
 
     // 튜토리얼 2
     this.anims.create({
@@ -170,7 +175,7 @@ class TutorialScene extends Phaser.Scene {
       .sprite(3600, 1936, "player_move1")
       .setScale(2);
     this.player5.play("move1");
-    this.tutorial3 = new Tutorial3(this, this.player5);
+    this.itemQuestionTutorial = new ItemQuestionTutorial(this, this.player5);
 
     // Listen for the shutdown event
     this.events.on("shutdown", this.shutdown, this);

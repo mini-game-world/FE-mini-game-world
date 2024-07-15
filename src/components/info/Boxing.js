@@ -1,4 +1,6 @@
-class Crown extends Phaser.GameObjects.Image {
+import Phaser from "phaser";
+
+class Boxing extends Phaser.GameObjects.Image {
   constructor(scene, target) {
     super(
       scene,
@@ -6,7 +8,7 @@ class Crown extends Phaser.GameObjects.Image {
       scene.cameras.main.height / 2 -
         scene.cameras.main.height / 4 / scene.cameras.main.zoom -
         150,
-      "crown"
+      "boxing"
     );
     this.scene = scene;
     this.target = target;
@@ -24,4 +26,4 @@ class Crown extends Phaser.GameObjects.Image {
   }
 }
 
-export default Crown;
+export default Boxing;

@@ -1,4 +1,5 @@
-import SocketManager from "../utils/SocketManager";
+import Phaser from "phaser";
+import SocketManager from "../../utils/SocketManager";
 
 export default class ChatDisplay {
   constructor(scene) {

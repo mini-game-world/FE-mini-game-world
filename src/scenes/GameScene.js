@@ -1,16 +1,16 @@
 import Phaser from "phaser";
 import SocketManager from "../utils/SocketManager";
-import ResultText from "../components/ResultText";
-import GameStatusText from "../components/GameStatusText";
-import MapShrinker from "../utils/MapShrinker";
-import BGMManager from "../utils/BGMManager";
-import CameraManager from "../utils/CameraManager";
-import PlayerContainer from "../components/PlayerContainer";
-import Item from "../components/Item";
-import ItemEffect from "../components/ItemEffect";
-import RankText from "../components/RankText";
-import InfoText from "../components/InfoText";
 import BackgroundManager from "../utils/BackgroundManager";
+import CameraManager from "../utils/CameraManager";
+import ResultText from "../components/info/ResultText";
+import InfoText from "../components/info/InfoText";
+import GameStatusText from "../components/info/GameStatusText";
+import BGMManager from "../utils/BGMManager";
+import RankText from "../components/info/RankText";
+import MapShrinkerManager from "../utils/MapShrinkerManager";
+import PlayerContainer from "../components/player/PlayerContainer";
+import Item from "../components/item/Item";
+import ItemEffect from "../components/item/ItemEffect";
 import "regenerator-runtime/runtime";
 
 class GameScene extends Phaser.Scene {
@@ -27,7 +27,7 @@ class GameScene extends Phaser.Scene {
     this.rankText = null;
 
     this.cameraManager = null;
-    this.mapShrinker = null;
+    this.mapShrinkerManager = null;
     this.bgmManager = null;
     this.backgroundManager = null;
 
@@ -46,7 +46,7 @@ class GameScene extends Phaser.Scene {
       this.gameStatusText = new GameStatusText(this);
       this.bgmManager = new BGMManager(this);
       this.rankText = new RankText(this);
-      this.mapShrinker = new MapShrinker(this);
+      this.mapShrinkerManager = new MapShrinkerManager(this);
       this.itemsGroup = this.physics.add.group();
 
       SocketManager.onCurrentPlayers((players) => {
@@ -73,8 +73,6 @@ class GameScene extends Phaser.Scene {
               this.physics.add.collider(this.player.hitBox, this.fence);
               this.physics.add.collider(this.player.hitBox, this.house);
               this.physics.add.collider(this.player.hitBox, this.object);
-
-              this.mapShrinker.applyPreviousShrinks();
 
               this.itemEffect = new ItemEffect(this, this.player);
             }
@@ -225,7 +223,7 @@ class GameScene extends Phaser.Scene {
 
       SocketManager.onWinnerPlayer(async (data) => {
         this.gameStatusText.showResult();
-        this.mapShrinker.reset();
+        this.mapShrinkerManager.reset();
         this.player.stopMove();
 
         if (this.players[data.gameWinner]) {

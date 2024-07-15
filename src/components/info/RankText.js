@@ -1,3 +1,5 @@
+import Phaser from "phaser";
+
 class RankText extends Phaser.GameObjects.Text {
   constructor(scene) {
     super(

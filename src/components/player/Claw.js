@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import SocketManager from "../utils/SocketManager";
+import SocketManager from "../../utils/SocketManager";
 
 export default class Claw extends Phaser.GameObjects.Sprite {
   constructor(scene, hitBox, player) {
