@@ -44,16 +44,12 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-      - name: Delete existing files from S3
-        run: aws s3 rm s3://mini-game-world-web --recursive --include "*"
-
-      - name: Upload all files to S3 except WebP
+      - name: Upload all files to S3
+        run: aws s3 sync ./dist s3://mini-game-world-web/ --delete
+  
+      - name: Correct MIME type for WebP files
         run: |
-          find ./dist -type f ! -name '*.webp' -exec aws s3 cp {} s3://mini-game-world-web/{} \;
-
-      - name: Upload WebP files with correct MIME type
-        run: |
-          find ./dist -name '*.webp' -exec bash -c 'aws s3 cp "$1" s3://mini-game-world-web/"${1#./dist/}" --content-type image/webp' _ {} \;
+          find ./dist -name '*.webp' -exec bash -c 'aws s3 cp "s3://mini-game-world-web/${1#./dist/}" "s3://mini-game-world-web/${1#./dist/}" --metadata-directive REPLACE --content-type image/webp' _ {} \;
 
       - name: Cloudfront 캐시 무효화
         run: aws cloudfront create-invalidation --distribution-id E1WQE1CPEFVIRJ --paths "/*"
