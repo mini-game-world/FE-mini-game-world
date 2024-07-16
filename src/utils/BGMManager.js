@@ -1,49 +1,52 @@
 class BGMManager {
   constructor(scene) {
     this.scene = scene;
-    this.playingBGMs = [];
-    this.waitingBGMs = [];
-    this.currentPlayingBGM = null;
-    this.currentWaitingBGM = null;
-
-    this.initBGMs();
+    this.waitingBgmList = ["waitingBGM1", "waitingBGM2"];
+    this.playingBGMList = ["playingBGM1", "playingBGM2"];
+    this.mainBGMList = ["mainBGM"];
+    this.currentBGM = null;
   }
 
-  initBGMs() {
-    this.playingBGMs = [
-      this.scene.sound.add("playingBGM1", { loop: true, volume: 0.2 }),
-      this.scene.sound.add("playingBGM2", { loop: true, volume: 0.2 }),
-    ];
-    this.waitingBGMs = [
-      this.scene.sound.add("waitingBGM1", { loop: true, volume: 0.2 }),
-      this.scene.sound.add("waitingBGM2", { loop: true, volume: 0.2 }),
-    ];
+  playWaitingRandomBGM() {
+    const randomIndex = Math.floor(Math.random() * this.waitingBgmList.length);
+    const randomBGM = this.waitingBgmList[randomIndex];
+
+    if (this.currentBGM) {
+      this.currentBGM.stop();
+    }
+
+    this.currentBGM = this.scene.sound.add(randomBGM);
+    this.currentBGM.play({ loop: true, volume: 0.2 });
   }
 
-  startPlayingBGM() {
-    if (this.currentWaitingBGM && this.currentWaitingBGM.isPlaying) {
-      this.currentWaitingBGM.stop();
-    }
-    if (this.currentPlayingBGM && this.currentPlayingBGM.isPlaying) {
-      this.currentPlayingBGM.stop();
+  playPlayingRandomBGM() {
+    const randomIndex = Math.floor(Math.random() * this.playingBGMList.length);
+    const randomBGM = this.playingBGMList[randomIndex];
+
+    if (this.currentBGM) {
+      this.currentBGM.stop();
     }
 
-    const randomIndex = Phaser.Math.Between(0, this.playingBGMs.length - 1);
-    this.currentPlayingBGM = this.playingBGMs[randomIndex];
-    this.currentPlayingBGM.play();
+    this.currentBGM = this.scene.sound.add(randomBGM);
+    this.currentBGM.play({ loop: true, volume: 0.2 });
   }
 
-  startWaitingBGM() {
-    if (this.currentPlayingBGM && this.currentPlayingBGM.isPlaying) {
-      this.currentPlayingBGM.stop();
-    }
-    if (this.currentWaitingBGM && this.currentWaitingBGM.isPlaying) {
-      this.currentWaitingBGM.stop();
+  playMainBGM() {
+    const mainBGM = this.mainBGMList[0];
+
+    if (this.currentBGM) {
+      this.currentBGM.stop();
     }
 
-    const randomIndex = Phaser.Math.Between(0, this.waitingBGMs.length - 1);
-    this.currentWaitingBGM = this.waitingBGMs[randomIndex];
-    this.currentWaitingBGM.play();
+    this.currentBGM = this.scene.sound.add(mainBGM);
+    this.currentBGM.play({ loop: true, volume: 0.2 });
+  }
+
+  stop() {
+    if (this.currentBGM) {
+      this.currentBGM.stop();
+      this.currentBGM = null;
+    }
   }
 }
 

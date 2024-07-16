@@ -1,359 +1,417 @@
 import Phaser from "phaser";
-import Player from "../components/Player";
 import SocketManager from "../utils/SocketManager";
-import PlayerCountText from "../components/PlayerCountText";
-import ResultText from "../components/ResultText";
-import GameStatusText from "../components/GameStatusText";
-import MapShrinker from "../utils/MapShrinker";
-import BGMManager from "../utils/BGMManager";
+import BackgroundManager from "../utils/BackgroundManager";
 import CameraManager from "../utils/CameraManager";
-import ChatBox from "../components/ChatBox";
+import ResultText from "../components/info/ResultText";
+import InfoText from "../components/info/InfoText";
+import GameStatusText from "../components/info/GameStatusText";
+import BGMManager from "../utils/BGMManager";
+import RankText from "../components/info/RankText";
+import MapShrinkerManager from "../utils/MapShrinkerManager";
+import PlayerContainer from "../components/player/PlayerContainer";
+import Item from "../components/item/Item";
+import ItemEffect from "../components/item/ItemEffect";
+import "regenerator-runtime/runtime";
 
 class GameScene extends Phaser.Scene {
   constructor() {
     super("GameScene");
 
-    this.player = null;
-
-    this.players = {};
-    this.activePlayers = {};
-    this.deadPlayers = {};
-    this.waitingPlayers = {};
+    this.player = null; // 내 캐릭터
+    this.players = {}; // 모든 접속자(플레이어)
+    this.currentTargetIndex = -1; // 현재 타겟 인덱스 초기화
 
     this.resultText = null;
     this.playerCountText = null;
     this.gameStatusText = null;
+    this.rankText = null;
 
-    this.bgmManager = null;
     this.cameraManager = null;
-    this.mapShrinker = null;
+    this.mapShrinkerManager = null;
+    this.bgmManager = null;
+    this.backgroundManager = null;
 
-    this.ChatBox = null;
+    this.itemsGroup = null;
+    this.itemEffect = null;
   }
 
-  create() {
-    SocketManager.connect();
-    this.setBackground();
+  async create() {
+    try {
+      await SocketManager.connect();
 
-    this.bgmManager = new BGMManager(this);
-    this.cameraManager = new CameraManager(this);
+      this.backgroundManager = new BackgroundManager(this);
+      this.cameraManager = new CameraManager(this);
+      this.resultText = new ResultText(this);
+      this.infoText = new InfoText(this);
+      this.gameStatusText = new GameStatusText(this);
+      this.bgmManager = new BGMManager(this);
+      this.rankText = new RankText(this);
+      this.mapShrinkerManager = new MapShrinkerManager(this);
+      this.itemsGroup = this.physics.add.group();
 
-    this.resultText = new ResultText(this);
+      SocketManager.onCurrentPlayers((players) => {
+        Object.keys(players).forEach((id) => {
+          const { x, y, avatar, isPlay, isDead, nickname } = players[id];
+          const isSelfInitiated = id === SocketManager.channel.id;
+          const info = { avatar, isPlay, isDead, nickname, isSelfInitiated };
 
-    this.playerCountText = new PlayerCountText(this);
-    this.gameStatusText = new GameStatusText(this);
+          // 이미 플레이어 객체가 존재하면 무시
+          if (!this.players[id]) {
+            const playerContainer = new PlayerContainer(
+              this,
+              x,
+              y,
+              `player${avatar}`,
+              info
+            );
+            this.players[id] = playerContainer;
 
-    // MapShrinker 인스턴스 생성 및 시작
-    console.log("Creating MapShrinker instance");
-    this.mapShrinker = new MapShrinker(
-      this,
-      15000, //delay
-      3000, //interval
-      1300, //min Width
-      1300, //min Height
-      3840, //initial Width
-      2560, //initial Height
-      32, //tile Width
-      24 //tile Height
-    );
-    // this.mapShrinker.start();
+            if (!this.player && isSelfInitiated) {
+              this.player = playerContainer;
+              this.cameraManager.smoothFollow(this.player);
+              this.physics.add.collider(this.player.hitBox, this.backGround);
+              this.physics.add.collider(this.player.hitBox, this.fence);
+              this.physics.add.collider(this.player.hitBox, this.house);
+              this.physics.add.collider(this.player.hitBox, this.object);
 
-    SocketManager.onCurrentPlayers((players) => {
-      Object.keys(players).forEach((id) => {
-        const { x, y, avatar, isPlay, isDead, nickname } = players[id];
-        const isSelfInitiated = id === SocketManager.socket.id;
-        const info = { avatar, isPlay, isDead, nickname, isSelfInitiated };
-        const player = new Player(this, x, y, `player${avatar}`, info);
-        this.players[id] = player;
+              this.itemEffect = new ItemEffect(this, this.player);
+            }
+          }
+        });
+        this.updatePlayerCountText();
+      });
 
-        if (isSelfInitiated) {
-          this.player = player;
-          this.cameraManager.smoothFollow(this.player);
-          this.ChatBox = new ChatBox(this, this.player);
-          // 충돌 설정
-          // this.physics.add.collider(this.player, this.blocklayer);
-          this.physics.add.collider(this.player, this.backGround);
-          this.physics.add.collider(this.player, this.house);
-          this.physics.add.collider(this.player, this.object);
+      SocketManager.onNewPlayer((player) => {
+        const { playerId, x, y, avatar, nickname } = player;
+        const isSelfInitiated = false;
+        const info = { avatar, nickname, isSelfInitiated };
+
+        // 이미 플레이어 객체가 존재하면 무시
+        if (!this.players[playerId]) {
+          const newPlayer = new PlayerContainer(
+            this,
+            x,
+            y,
+            `player${avatar}`,
+            info
+          );
+          this.players[playerId] = newPlayer;
+
+          this.updatePlayerCountText();
         }
+      });
 
-        if (isPlay) {
-          this.activePlayers[id] = player;
-        } else if (isDead) {
-          this.deadPlayers[id] = player;
+      SocketManager.onPlayerMoved((player) => {
+        const { playerId, x, y } = player;
+        if (this.players[playerId]) {
+          this.players[playerId].moveTo(x, y);
+        }
+      });
+
+      SocketManager.onPlayerAttacked((ids) => {
+        ids.forEach((id) => {
+          if (this.players[id]) {
+            this.players[id].stunPlayer();
+          }
+        });
+      });
+
+      SocketManager.onAttackPlayer((id) => {
+        if (this.players[id]) {
+          this.players[id].handleRemoteAttack();
+        }
+      });
+
+      SocketManager.onPlayerDisconnected((id) => {
+        if (this.players[id]) {
+          this.players[id].destroy();
+          delete this.players[id];
+        }
+        this.updatePlayerCountText();
+      });
+
+      SocketManager.onPlayingGame((isPlaying) => {
+        if (isPlaying === 1) {
+          if (this.bgmManager) {
+            this.bgmManager.playPlayingRandomBGM();
+          }
+          this.gameStatusText.showStart();
+
+          Object.values(this.players).forEach((player) => {
+            if (this.player === player) {
+              this.player.isAttacking = false;
+              this.player.isStunned = false;
+            }
+            if (player) {
+              player.setPlay();
+            }
+          });
         } else {
-          this.waitingPlayers[id] = player;
-        }
-      });
-      this.updatePlayerCountText();
-    });
-
-    SocketManager.onNewPlayer((player) => {
-      const { playerId, x, y, avatar, nickname } = player;
-      const isSelfInitiated = false;
-      const info = { avatar, nickname, isSelfInitiated };
-      const newPlayer = new Player(this, x, y, `player${avatar}`, info);
-      this.players[playerId] = newPlayer;
-      this.waitingPlayers[playerId] = newPlayer;
-
-      this.updatePlayerCountText();
-    });
-
-    SocketManager.onPlayerMoved((player) => {
-      const { playerId, x, y } = player;
-      if (this.players[playerId]) {
-        const playerSprite = this.players[playerId];
-        const prevX = playerSprite.x;
-
-        // Apply tween for smooth movement
-        this.tweens.add({
-          targets: playerSprite,
-          x: x,
-          y: y,
-          duration: 100, // Duration of the tween
-          ease: "Linear", // Easing function
-          onUpdate: () => {
-            if (this.players[playerId]) {
-              if (playerSprite.isDead) {
-                playerSprite.anims.play("dead", true);
-                playerSprite.setFlipX(prevX < x); // 방향 설정
-              } else {
-                playerSprite.anims.play(`move${playerSprite.avatar}`, true);
-                playerSprite.setFlipX(prevX < x); // 방향 설정
-              }
-            }
-          },
-          onComplete: () => {
-            if (this.players[playerId]) {
-              if (!playerSprite.isDead) {
-                clearTimeout(playerSprite.idleTimeout);
-                playerSprite.idleTimeout = setTimeout(() => {
-                  if (this.players[playerId]) {
-                    playerSprite.anims.play(`idle${playerSprite.avatar}`, true);
-                  }
-                }, 100);
-              }
-            }
-          },
-        });
-      }
-    });
-
-    SocketManager.onPlayerAttacked((ids) => {
-      ids.forEach((id) => {
-        if (this.players[id]) {
-          this.players[id].stunPlayer();
-        }
-      });
-    });
-
-    SocketManager.onAttackPlayer((id) => {
-      if (this.players[id]) {
-        this.players[id].createClawAttack();
-      }
-    });
-
-    SocketManager.onPlayerDisconnected((id) => {
-      if (this.players[id]) {
-        this.players[id].destroy();
-        delete this.players[id];
-      }
-      if (this.activePlayers[id]) {
-        this.activePlayers[id].destroy();
-        delete this.activePlayers[id];
-      }
-      if (this.deadPlayers[id]) {
-        this.deadPlayers[id].destroy();
-        delete this.deadPlayers[id];
-      }
-      if (this.waitingPlayers[id]) {
-        this.waitingPlayers[id].destroy();
-        delete this.waitingPlayers[id];
-      }
-      this.updatePlayerCountText();
-    });
-
-    SocketManager.onPlayingGame((isPlaying) => {
-      if (isPlaying == 1) {
-        this.bgmManager.startPlayingBGM();
-        this.gameStatusText.showStart();
-        Object.values(this.players).forEach((player) => {
-          player.setPlayStatus();
-          this.activePlayers[player.id] = player;
-          delete this.waitingPlayers[player.id];
-        });
-        this.mapShrinker.start();
-      } else {
-        this.bgmManager.startWaitingBGM();
-        this.gameStatusText.showEnd();
-        Object.values(this.players).forEach((player) => {
-          player.setReadyStatus();
-          this.waitingPlayers[player.id] = player;
-          delete this.activePlayers[player.id];
-        });
-        this.cameraManager.smoothFollow(this.player);
-        this.mapShrinker.reset();
-      }
-    });
-
-    SocketManager.onBombUsers((players) => {
-      players.forEach((id) => {
-        if (this.players[id]) {
-          this.players[id].setBombUser();
-        }
-      });
-    });
-
-    SocketManager.onDeadUsers((players) => {
-      players.forEach((id) => {
-        if (this.players[id]) {
-          this.players[id].setDeadStatus();
-          this.deadPlayers[id] = this.players[id];
-          delete this.activePlayers[id];
-        }
-      });
-    });
-
-    SocketManager.onChangeBombUser((players) => {
-      const current = players[0];
-      const previous = players[1];
-      if (this.players[current]) {
-        this.players[current].receiveBomb();
-      }
-      if (this.players[previous]) {
-        this.players[previous].removeBomb();
-      }
-    });
-
-    SocketManager.onWinnerPlayer((data) => {
-      this.gameStatusText.showResult();
-      this.player.stopMove();
-      if (this.players[data.gameWinner]) {
-        const winPlayer = this.players[data.gameWinner];
-        winPlayer.setCrown();
-        this.cameraManager.smoothFollow(winPlayer);
-        this.resultText.showWinner(winPlayer.name);
-      }
-
-      this.time.delayedCall(
-        5000,
-        () => {
-          if (this.players[data.PunchingBag.playerId]) {
-            const bagPlayer = this.players[data.PunchingBag.playerId];
-            bagPlayer.setPunching_bag();
-            this.cameraManager.smoothFollow(bagPlayer);
-            this.resultText.showPunchingBag(bagPlayer.name);
+          if (this.bgmManager) {
+            this.bgmManager.playWaitingRandomBGM();
           }
-        },
-        [],
-        this.scene
-      );
-
-      this.time.delayedCall(
-        11000,
-        () => {
-          if (this.players[data.BombMaster.playerId]) {
-            const bombMasterPlayer = this.players[data.BombMaster.playerId];
-            bombMasterPlayer.setBombMaster();
-            this.cameraManager.smoothFollow(bombMasterPlayer);
-            this.resultText.showBombMaster(bombMasterPlayer.name);
+          this.gameStatusText.showEnd();
+          if (this.resultText) {
+            this.resultText.del();
           }
-        },
-        [],
-        this.scene
-      );
-    });
 
-    SocketManager.onBombGameReady((count) => {
-      if (this.gameStatusText) {
-        if (count === -1) {
+          Object.values(this.players).forEach((player) => {
+            if (this.player === player) {
+              this.player.isWinner = false;
+              this.player.isAttacking = false;
+              this.player.isStunned = false;
+
+              const randomX = Phaser.Math.Between(960, 1600);
+              const randomY = Phaser.Math.Between(960, 1280);
+              this.player.hitBox.setPosition(randomX, randomY);
+              SocketManager.emitPlayerMovement({ x: randomX, y: randomY });
+
+              this.cameraManager.smoothFollow(this.player);
+            }
+            if (player) {
+              player.setReady();
+            }
+          });
+
+          this.rankText.clearText();
+          this.itemsGroup.clear(true, true);
+        }
+        this.updatePlayerCountText();
+      });
+
+      SocketManager.onPlayInfo((survivorCount) => {
+        if (this.player && this.player.player && this.player.player.isPlay) {
+          this.updatePlayInfo(survivorCount);
+        }
+      });
+
+      SocketManager.onBombUsers((players) => {
+        players.forEach((id) => {
+          if (this.players[id]) {
+            this.players[id].setBombUser();
+          }
+        });
+      });
+
+      SocketManager.onDeadUsers((players) => {
+        players.forEach((id) => {
+          if (this.players[id]) {
+            this.players[id].setDead();
+          }
+          if (this.players[id] === this.player) {
+            this.player.isAttacking = false;
+            this.isStunned = false;
+            this.gameStatusText.showSurvivor();
+            const randomX = Phaser.Math.Between(0, 1920);
+            const randomY = Phaser.Math.Between(0, 288);
+            this.player.hitBox.setPosition(randomX, randomY);
+            SocketManager.emitPlayerMovement({ x: randomX, y: randomY });
+          }
+        });
+      });
+
+      SocketManager.onChangeBombUser((players) => {
+        const current = players[0];
+        const previous = players[1];
+        if (this.players[current]) {
+          this.players[current].receiveBomb();
+        }
+        if (this.players[previous]) {
+          this.players[previous].removeBomb();
+        }
+      });
+
+      SocketManager.onWinnerPlayer(async (data) => {
+        this.gameStatusText.showResult();
+        this.mapShrinkerManager.reset();
+        this.player.stopMove();
+
+        if (this.players[data.gameWinner]) {
+          this.players[data.gameWinner].setWinner();
+        }
+        if (this.players[data.PunchingBag]) {
+          this.players[data.PunchingBag].setWinner();
+        }
+        if (this.players[data.BombMaster]) {
+          this.players[data.BombMaster].setWinner();
+        }
+
+        let position = null;
+
+        // Check if this player is the game winner (highest priority)
+        if (this.player === this.players[data.gameWinner]) {
+          position = { x: 1680, y: 1752 };
+        }
+
+        // Check if this player is PunchingBag (second priority)
+        if (this.player === this.players[data.PunchingBag]) {
+          if (!position) {
+            position = { x: 1280, y: 1752 };
+          }
+        }
+
+        // Check if this player is BombMaster (third priority)
+        if (this.player === this.players[data.BombMaster]) {
+          if (!position) {
+            position = { x: 2080, y: 1752 };
+          }
+        }
+
+        // Set position if it's determined
+        if (position) {
+          this.player.setPosition(position.x, position.y);
+          SocketManager.emitPlayerMovement({ x: position.x, y: position.y });
+        }
+
+        try {
+          // Sequentially follow each player role if they exist
+          if (data.gameWinner && this.players[data.gameWinner]) {
+            await this.cameraManager.smoothFollowWinner(
+              this.players[data.gameWinner]
+            );
+          }
+          if (data.gameWinner && this.players[data.gameWinner]) {
+            await this.players[data.gameWinner].choice(
+              this.resultText.showWinner
+            );
+          }
+
+          if (data.PunchingBag && this.players[data.PunchingBag]) {
+            await this.cameraManager.smoothFollowWinner(
+              this.players[data.PunchingBag]
+            );
+          }
+          if (data.PunchingBag && this.players[data.PunchingBag]) {
+            await this.players[data.PunchingBag].choice(
+              this.resultText.showPunchKing
+            );
+          }
+          if (data.BombMaster && this.players[data.BombMaster]) {
+            await this.cameraManager.smoothFollowWinner(
+              this.players[data.BombMaster]
+            );
+          }
+          if (data.BombMaster && this.players[data.BombMaster]) {
+            await this.players[data.BombMaster].choice(
+              this.resultText.showBombMaster
+            );
+          }
+        } catch (error) {
+          console.error("Error during smooth follow sequence:", error);
+        }
+      });
+
+      SocketManager.onBombGameReady((count) => {
+        if (this.gameStatusText) {
+          if (count === -1) {
+            this.gameStatusText.showWait();
+          } else {
+            this.gameStatusText.showReadyCount(count);
+          }
+        }
+      });
+
+      // 게임 접속 시 현재 상태 확인
+      SocketManager.onGameStatus((status) => {
+        if (this.bgmManager) {
+          this.bgmManager.playWaitingRandomBGM();
+        }
+        if (status === 1) {
+          this.gameStatusText.showProceeding();
+        } else {
           this.gameStatusText.showWait();
-        } else {
-          this.gameStatusText.showReadyCount(count);
         }
-      }
-    });
+      });
 
-    // 게임 접속 시 현재 상태 확인
-    SocketManager.onGameStatus((status) => {
-      if (status === 1) {
-        this.gameStatusText.showProceeding();
-      } else {
-        this.gameStatusText.showWait();
-      }
-    });
-    this.bgmManager.startWaitingBGM();
+      SocketManager.onChatMessage(({ playerId, message }) => {
+        if (this.players[playerId]) {
+          this.players[playerId].showChatMessage(message);
+          this.player.addMessage(
+            this.players[playerId].player.nickname,
+            message
+          );
+        }
+      });
 
-    SocketManager.onChatMessage(({ playerId, message }) => {
-      if (this.players[playerId]) {
-        this.players[playerId].chatBalloon.showChatMessage(message);
-      }
-    });
-  }
+      SocketManager.onNewItems((items) => {
+        items.forEach(({ x, y }) => {
+          const newItem = Item.createItem(this, x, y, "item");
+          this.itemsGroup.add(newItem); // Add new item to the group
+        });
+      });
 
-  setBackground() {
-    // 타일맵 설정
-    const map = this.make.tilemap({ key: "map" });
-    const tileset = map.addTilesetImage("first_tileset", "first_tileset");
-    const chest_2 = map.addTilesetImage("chest_2", "chest_2");
-    const house_1 = map.addTilesetImage("house_1", "house_1");
-    const logs = map.addTilesetImage("logs", "logs");
-    const stump_2 = map.addTilesetImage("stump_2", "stump_2");
-    const Tileset_1 = map.addTilesetImage("Tileset_1", "Tileset_1");
-    const tree_1 = map.addTilesetImage("tree_1", "tree_1");
-    const tree_2 = map.addTilesetImage("tree_2", "tree_2");
-    const stone_1 = map.addTilesetImage("stone_1", "stone_1");
-    const stone_3 = map.addTilesetImage("stone_3", "stone_3");
+      SocketManager.onItemPickedUp((data) => {
+        const { playerId, item, x, y } = data;
+        this.itemsGroup.getChildren().forEach((existingItem) => {
+          if (existingItem.x === x && existingItem.y === y) {
+            existingItem.destroy();
+            this.itemsGroup.remove(existingItem, true, true);
+          }
+        });
 
-    // 레이어 생성 (Tiled에서 설정한 레이어 이름 사용)
-    // map.createLayer("Tile Layer 1", tileset, 0, 0);
-    // this.blocklayer = map.createLayer("block", tileset, 0, 0);
-    // this.blocklayer.setCollisionByProperty({ collides: true });
-    this.backGround = map.createLayer("BackGround", Tileset_1, 0, 0);
-    this.backGround.setCollisionByProperty({ collides: true });
-    this.house = map.createLayer("House", house_1, 0, 0);
-    this.house.setCollisionByProperty({ collides: true });
-    this.object = map.createLayer(
-      "Object",
-      [Tileset_1, chest_2, logs, stump_2, tree_1, tree_2, stone_1, stone_3],
-      0,
-      0
-    );
-    this.object.setCollisionByProperty({ collides: true });
+        if (this.players[playerId]) {
+          this.itemEffect.applyEffect(this.players[playerId], item);
+        }
+      });
 
-    this.mapShrink = map.createLayer("MapShrink", Tileset_1, 0, 0);
-    this.mapShrink.setCollisionByProperty({ collides: true });
+      SocketManager.onCurrentBombRanker((data) => {
+        if (this.players[data.playerId] && this.players[data.playerId].player) {
+          this.rankText.showBombRank(
+            this.players[data.playerId].player.nickname,
+            data.count
+          );
+        }
+      });
 
-    // 충돌 디버그 그래픽 추가
-    // this.debugGraphics = this.add.graphics();
-    // this.backGround.renderDebug(this.debugGraphics, {
-    //   tileColor: null, // 충돌하지 않는 타일은 표시하지 않음
-    //   collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
-    //   faceColor: new Phaser.Display.Color(0, 255, 0, 128), // 충돌하는 면은 반투명 녹색으로 표시
-    // });
-    // this.house.renderDebug(this.debugGraphics, {
-    //   tileColor: null, // 충돌하지 않는 타일은 표시하지 않음
-    //   collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
-    //   faceColor: new Phaser.Display.Color(0, 255, 0, 128), // 충돌하는 면은 반투명 녹색으로 표시
-    // });
-    // this.object.renderDebug(this.debugGraphics, {
-    //   tileColor: null, // 충돌하지 않는 타일은 표시하지 않음
-    //   collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
-    //   faceColor: new Phaser.Display.Color(0, 255, 0, 128), // 충돌하는 면은 반투명 녹색으로 표시
-    // });
-    // this.mapShrink.renderDebug(this.debugGraphics, {
-    //   tileColor: null, // 충돌하지 않는 타일은 표시하지 않음
-    //   collidingTileColor: new Phaser.Display.Color(255, 0, 0, 128), // 충돌 타일은 반투명 빨간색으로 표시
-    //   faceColor: new Phaser.Display.Color(0, 255, 0, 128), // 충돌하는 면은 반투명 녹색으로 표시
-    // });
-
-    // Set world bounds
-    this.physics.world.setBounds(0, 0, 3840, 2560);
+      SocketManager.onCurrentHitRanker((data) => {
+        if (this.players[data.playerId] && this.players[data.playerId].player) {
+          this.rankText.showHitRank(
+            this.players[data.playerId].player.nickname,
+            data.count
+          );
+        }
+      });
+    } catch (error) {
+      console.error("Error during socket connection:", error);
+    }
   }
 
   updatePlayerCountText() {
-    const playerCount = Object.keys(this.players).length;
-    this.playerCountText.update(playerCount);
+    if (this.player && this.player.player && !this.player.player.isPlay) {
+      const playerCount = Object.keys(this.players).length;
+      this.infoText.update(playerCount);
+    }
+  }
+
+  updatePlayInfo(survivorCount) {
+    if (this.player && this.player.player && this.player.player.isPlay) {
+      this.infoText.updatePlayInfo(survivorCount);
+    }
+  }
+
+  switchTarget() {
+    const alivePlayers = Object.values(this.players).filter(
+      (player) =>
+        !player.player.isDead && player.player.isPlay && player !== this.player
+    );
+
+    if (alivePlayers.length === 0) return;
+
+    this.currentTargetIndex =
+      (this.currentTargetIndex + 1) % alivePlayers.length;
+
+    const newTarget = alivePlayers[this.currentTargetIndex];
+
+    if (newTarget) {
+      this.cameraManager.switchTarget(newTarget);
+    }
+  }
+
+  switchToPlayer() {
+    if (this.player) {
+      this.cameraManager.switchTarget(this.player);
+      this.currentTargetIndex = -1;
+    }
   }
 
   update() {

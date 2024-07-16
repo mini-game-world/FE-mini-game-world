@@ -1,20 +1,34 @@
 import Phaser from "phaser";
 
+import faviconIco from "../assets/favicon.png";
 import backgroundImg from "../assets/background.png";
-import arrowImg from "../assets/arrow.png";
-import crownImg from "../assets/crown.png";
-import punching_bagImg from "../assets/punching_bag.png";
-import bomb_masterImg from "../assets/bomb_master.png";
 
-import playerDeadSprite from "../assets/playerDead.png";
-import clawSprite from "../assets/claw_white.png";
-import bombSprite from "../assets/bomb.png";
-import explosionSprite from "../assets/explosion.png";
-import starSprite from "../assets/star.png";
+import bombKingImg from "../assets/result/bombKing.png";
+import boxingImg from "../assets/result/boxing.png";
+import crownImg from "../assets/result/crown.png";
+
+import bombSprite from "../assets/bomb/bomb.png";
+import explosionSprite from "../assets/bomb/explosion.png";
+
+import arrowImg from "../assets/players/arrow.png";
+import bangImg from "../assets/players/bang.png";
+import BodyExplosionSprite from "../assets/players/bodyExplosion.png";
+import clawSprite from "../assets/players/claw_white.png";
+import starSprite from "../assets/players/star.png";
+
+import speedUpImg from "../assets/icon/speedUp.png";
+import speedDownImg from "../assets/icon/speedDown.png";
+import badSightImg from "../assets/icon/badSight.png";
+import reverseImg from "../assets/icon/reverse.png";
+
+// Import Item
+import itemImg from "../assets/item/item.png";
+import questionImg from "../assets/item/question.png";
 
 // Import map
+import map from "../assets/maps/village.tmj";
+
 import first_tileset from "../assets/tiles/first_tileset.png";
-import map from "../assets/maps/village3.tmj";
 import chest_2 from "../assets/tiles/chest_2.png";
 import house_1 from "../assets/tiles/house_1.png";
 import logs from "../assets/tiles/logs.png";
@@ -24,142 +38,151 @@ import tree_1 from "../assets/tiles/tree_1.png";
 import tree_2 from "../assets/tiles/tree_2.png";
 import stone_1 from "../assets/tiles/stone_1.png";
 import stone_3 from "../assets/tiles/stone_3.png";
+import fence_1 from "../assets/tiles/fence_1.png";
+import fence_3 from "../assets/tiles/fence_3.png";
 
 // Import Sound
 import scratchSound from "../assets/sounds/scratch.ogg";
 import timerSound from "../assets/sounds/timer.ogg";
 import explosionSound from "../assets/sounds/explosion.ogg";
 import winnerSound from "../assets/sounds/winner.ogg";
-import playingBGM1 from "../assets/bgm/playingBGM1.mp3";
-import playingBGM2 from "../assets/bgm/playingBGM2.mp3";
-import waitingBGM1 from "../assets/bgm/waitingBGM1.mp3";
-import waitingBGM2 from "../assets/bgm/waitingBGM2.mp3";
+import buttonClickSound from "../assets/sounds/ButtonClick.ogg";
+import acquireSound from "../assets/sounds/acquire.ogg";
+
+// Import bgm
+import mainBGM from "../assets/sounds/bgm/mainBGM.ogg";
+import playingBGM1 from "../assets/sounds/bgm/playingBGM1.ogg";
+import playingBGM2 from "../assets/sounds/bgm/playingBGM2.ogg";
+import waitingBGM1 from "../assets/sounds/bgm/waitingBGM1.ogg";
+import waitingBGM2 from "../assets/sounds/bgm/waitingBGM2.ogg";
 
 // Import player assets from player0 to player30
-import player0 from "../assets/players/player0.png";
-import player_move0 from "../assets/players/player_move0.png";
-import player_attack0 from "../assets/players/player_attack0.png";
-import player_stun0 from "../assets/players/player_stun0.png";
-import player1 from "../assets/players/player1.png";
-import player_move1 from "../assets/players/player_move1.png";
-import player_attack1 from "../assets/players/player_attack1.png";
-import player_stun1 from "../assets/players/player_stun1.png";
-import player2 from "../assets/players/player2.png";
-import player_move2 from "../assets/players/player_move2.png";
-import player_attack2 from "../assets/players/player_attack2.png";
-import player_stun2 from "../assets/players/player_stun2.png";
-import player3 from "../assets/players/player3.png";
-import player_move3 from "../assets/players/player_move3.png";
-import player_attack3 from "../assets/players/player_attack3.png";
-import player_stun3 from "../assets/players/player_stun3.png";
-import player4 from "../assets/players/player4.png";
-import player_move4 from "../assets/players/player_move4.png";
-import player_attack4 from "../assets/players/player_attack4.png";
-import player_stun4 from "../assets/players/player_stun4.png";
-import player5 from "../assets/players/player5.png";
-import player_move5 from "../assets/players/player_move5.png";
-import player_attack5 from "../assets/players/player_attack5.png";
-import player_stun5 from "../assets/players/player_stun5.png";
-import player6 from "../assets/players/player6.png";
-import player_move6 from "../assets/players/player_move6.png";
-import player_attack6 from "../assets/players/player_attack6.png";
-import player_stun6 from "../assets/players/player_stun6.png";
-import player7 from "../assets/players/player7.png";
-import player_move7 from "../assets/players/player_move7.png";
-import player_attack7 from "../assets/players/player_attack7.png";
-import player_stun7 from "../assets/players/player_stun7.png";
-import player8 from "../assets/players/player8.png";
-import player_move8 from "../assets/players/player_move8.png";
-import player_attack8 from "../assets/players/player_attack8.png";
-import player_stun8 from "../assets/players/player_stun8.png";
-import player9 from "../assets/players/player9.png";
-import player_move9 from "../assets/players/player_move9.png";
-import player_attack9 from "../assets/players/player_attack9.png";
-import player_stun9 from "../assets/players/player_stun9.png";
-import player10 from "../assets/players/player10.png";
-import player_move10 from "../assets/players/player_move10.png";
-import player_attack10 from "../assets/players/player_attack10.png";
-import player_stun10 from "../assets/players/player_stun10.png";
-import player11 from "../assets/players/player11.png";
-import player_move11 from "../assets/players/player_move11.png";
-import player_attack11 from "../assets/players/player_attack11.png";
-import player_stun11 from "../assets/players/player_stun11.png";
-import player12 from "../assets/players/player12.png";
-import player_move12 from "../assets/players/player_move12.png";
-import player_attack12 from "../assets/players/player_attack12.png";
-import player_stun12 from "../assets/players/player_stun12.png";
-import player13 from "../assets/players/player13.png";
-import player_move13 from "../assets/players/player_move13.png";
-import player_attack13 from "../assets/players/player_attack13.png";
-import player_stun13 from "../assets/players/player_stun13.png";
-import player14 from "../assets/players/player14.png";
-import player_move14 from "../assets/players/player_move14.png";
-import player_attack14 from "../assets/players/player_attack14.png";
-import player_stun14 from "../assets/players/player_stun14.png";
-import player15 from "../assets/players/player15.png";
-import player_move15 from "../assets/players/player_move15.png";
-import player_attack15 from "../assets/players/player_attack15.png";
-import player_stun15 from "../assets/players/player_stun15.png";
-import player16 from "../assets/players/player16.png";
-import player_move16 from "../assets/players/player_move16.png";
-import player_attack16 from "../assets/players/player_attack16.png";
-import player_stun16 from "../assets/players/player_stun16.png";
-import player17 from "../assets/players/player17.png";
-import player_move17 from "../assets/players/player_move17.png";
-import player_attack17 from "../assets/players/player_attack17.png";
-import player_stun17 from "../assets/players/player_stun17.png";
-import player18 from "../assets/players/player18.png";
-import player_move18 from "../assets/players/player_move18.png";
-import player_attack18 from "../assets/players/player_attack18.png";
-import player_stun18 from "../assets/players/player_stun18.png";
-import player19 from "../assets/players/player19.png";
-import player_move19 from "../assets/players/player_move19.png";
-import player_attack19 from "../assets/players/player_attack19.png";
-import player_stun19 from "../assets/players/player_stun19.png";
-import player20 from "../assets/players/player20.png";
-import player_move20 from "../assets/players/player_move20.png";
-import player_attack20 from "../assets/players/player_attack20.png";
-import player_stun20 from "../assets/players/player_stun20.png";
-import player21 from "../assets/players/player21.png";
-import player_move21 from "../assets/players/player_move21.png";
-import player_attack21 from "../assets/players/player_attack21.png";
-import player_stun21 from "../assets/players/player_stun21.png";
-import player22 from "../assets/players/player22.png";
-import player_move22 from "../assets/players/player_move22.png";
-import player_attack22 from "../assets/players/player_attack22.png";
-import player_stun22 from "../assets/players/player_stun22.png";
-import player23 from "../assets/players/player23.png";
-import player_move23 from "../assets/players/player_move23.png";
-import player_attack23 from "../assets/players/player_attack23.png";
-import player_stun23 from "../assets/players/player_stun23.png";
-import player24 from "../assets/players/player24.png";
-import player_move24 from "../assets/players/player_move24.png";
-import player_attack24 from "../assets/players/player_attack24.png";
-import player_stun24 from "../assets/players/player_stun24.png";
-import player25 from "../assets/players/player25.png";
-import player_move25 from "../assets/players/player_move25.png";
-import player_attack25 from "../assets/players/player_attack25.png";
-import player_stun25 from "../assets/players/player_stun25.png";
-import player26 from "../assets/players/player26.png";
-import player_move26 from "../assets/players/player_move26.png";
-import player_attack26 from "../assets/players/player_attack26.png";
-import player_stun26 from "../assets/players/player_stun26.png";
-import player27 from "../assets/players/player27.png";
-import player_move27 from "../assets/players/player_move27.png";
-import player_attack27 from "../assets/players/player_attack27.png";
-import player_stun27 from "../assets/players/player_stun27.png";
-import player28 from "../assets/players/player28.png";
-import player_move28 from "../assets/players/player_move28.png";
-import player_attack28 from "../assets/players/player_attack28.png";
-import player_stun28 from "../assets/players/player_stun28.png";
-import player29 from "../assets/players/player29.png";
-import player_move29 from "../assets/players/player_move29.png";
-import player_attack29 from "../assets/players/player_attack29.png";
-import player_stun29 from "../assets/players/player_stun29.png";
-import player30 from "../assets/players/player30.png";
-import player_move30 from "../assets/players/player_move30.png";
-import player_attack30 from "../assets/players/player_attack30.png";
-import player_stun30 from "../assets/players/player_stun30.png";
+import playerDeadSprite from "../assets/players/sprite/playerDead.png";
+
+import player0 from "../assets/players/sprite/player0.png";
+import player_move0 from "../assets/players/sprite/player_move0.png";
+import player_attack0 from "../assets/players/sprite/player_attack0.png";
+import player_stun0 from "../assets/players/sprite/player_stun0.png";
+import player1 from "../assets/players/sprite/player1.png";
+import player_move1 from "../assets/players/sprite/player_move1.png";
+import player_attack1 from "../assets/players/sprite/player_attack1.png";
+import player_stun1 from "../assets/players/sprite/player_stun1.png";
+import player2 from "../assets/players/sprite/player2.png";
+import player_move2 from "../assets/players/sprite/player_move2.png";
+import player_attack2 from "../assets/players/sprite/player_attack2.png";
+import player_stun2 from "../assets/players/sprite/player_stun2.png";
+import player3 from "../assets/players/sprite/player3.png";
+import player_move3 from "../assets/players/sprite/player_move3.png";
+import player_attack3 from "../assets/players/sprite/player_attack3.png";
+import player_stun3 from "../assets/players/sprite/player_stun3.png";
+import player4 from "../assets/players/sprite/player4.png";
+import player_move4 from "../assets/players/sprite/player_move4.png";
+import player_attack4 from "../assets/players/sprite/player_attack4.png";
+import player_stun4 from "../assets/players/sprite/player_stun4.png";
+import player5 from "../assets/players/sprite/player5.png";
+import player_move5 from "../assets/players/sprite/player_move5.png";
+import player_attack5 from "../assets/players/sprite/player_attack5.png";
+import player_stun5 from "../assets/players/sprite/player_stun5.png";
+import player6 from "../assets/players/sprite/player6.png";
+import player_move6 from "../assets/players/sprite/player_move6.png";
+import player_attack6 from "../assets/players/sprite/player_attack6.png";
+import player_stun6 from "../assets/players/sprite/player_stun6.png";
+import player7 from "../assets/players/sprite/player7.png";
+import player_move7 from "../assets/players/sprite/player_move7.png";
+import player_attack7 from "../assets/players/sprite/player_attack7.png";
+import player_stun7 from "../assets/players/sprite/player_stun7.png";
+import player8 from "../assets/players/sprite/player8.png";
+import player_move8 from "../assets/players/sprite/player_move8.png";
+import player_attack8 from "../assets/players/sprite/player_attack8.png";
+import player_stun8 from "../assets/players/sprite/player_stun8.png";
+import player9 from "../assets/players/sprite/player9.png";
+import player_move9 from "../assets/players/sprite/player_move9.png";
+import player_attack9 from "../assets/players/sprite/player_attack9.png";
+import player_stun9 from "../assets/players/sprite/player_stun9.png";
+import player10 from "../assets/players/sprite/player10.png";
+import player_move10 from "../assets/players/sprite/player_move10.png";
+import player_attack10 from "../assets/players/sprite/player_attack10.png";
+import player_stun10 from "../assets/players/sprite/player_stun10.png";
+import player11 from "../assets/players/sprite/player11.png";
+import player_move11 from "../assets/players/sprite/player_move11.png";
+import player_attack11 from "../assets/players/sprite/player_attack11.png";
+import player_stun11 from "../assets/players/sprite/player_stun11.png";
+import player12 from "../assets/players/sprite/player12.png";
+import player_move12 from "../assets/players/sprite/player_move12.png";
+import player_attack12 from "../assets/players/sprite/player_attack12.png";
+import player_stun12 from "../assets/players/sprite/player_stun12.png";
+import player13 from "../assets/players/sprite/player13.png";
+import player_move13 from "../assets/players/sprite/player_move13.png";
+import player_attack13 from "../assets/players/sprite/player_attack13.png";
+import player_stun13 from "../assets/players/sprite/player_stun13.png";
+import player14 from "../assets/players/sprite/player14.png";
+import player_move14 from "../assets/players/sprite/player_move14.png";
+import player_attack14 from "../assets/players/sprite/player_attack14.png";
+import player_stun14 from "../assets/players/sprite/player_stun14.png";
+import player15 from "../assets/players/sprite/player15.png";
+import player_move15 from "../assets/players/sprite/player_move15.png";
+import player_attack15 from "../assets/players/sprite/player_attack15.png";
+import player_stun15 from "../assets/players/sprite/player_stun15.png";
+import player16 from "../assets/players/sprite/player16.png";
+import player_move16 from "../assets/players/sprite/player_move16.png";
+import player_attack16 from "../assets/players/sprite/player_attack16.png";
+import player_stun16 from "../assets/players/sprite/player_stun16.png";
+import player17 from "../assets/players/sprite/player17.png";
+import player_move17 from "../assets/players/sprite/player_move17.png";
+import player_attack17 from "../assets/players/sprite/player_attack17.png";
+import player_stun17 from "../assets/players/sprite/player_stun17.png";
+import player18 from "../assets/players/sprite/player18.png";
+import player_move18 from "../assets/players/sprite/player_move18.png";
+import player_attack18 from "../assets/players/sprite/player_attack18.png";
+import player_stun18 from "../assets/players/sprite/player_stun18.png";
+import player19 from "../assets/players/sprite/player19.png";
+import player_move19 from "../assets/players/sprite/player_move19.png";
+import player_attack19 from "../assets/players/sprite/player_attack19.png";
+import player_stun19 from "../assets/players/sprite/player_stun19.png";
+import player20 from "../assets/players/sprite/player20.png";
+import player_move20 from "../assets/players/sprite/player_move20.png";
+import player_attack20 from "../assets/players/sprite/player_attack20.png";
+import player_stun20 from "../assets/players/sprite/player_stun20.png";
+import player21 from "../assets/players/sprite/player21.png";
+import player_move21 from "../assets/players/sprite/player_move21.png";
+import player_attack21 from "../assets/players/sprite/player_attack21.png";
+import player_stun21 from "../assets/players/sprite/player_stun21.png";
+import player22 from "../assets/players/sprite/player22.png";
+import player_move22 from "../assets/players/sprite/player_move22.png";
+import player_attack22 from "../assets/players/sprite/player_attack22.png";
+import player_stun22 from "../assets/players/sprite/player_stun22.png";
+import player23 from "../assets/players/sprite/player23.png";
+import player_move23 from "../assets/players/sprite/player_move23.png";
+import player_attack23 from "../assets/players/sprite/player_attack23.png";
+import player_stun23 from "../assets/players/sprite/player_stun23.png";
+import player24 from "../assets/players/sprite/player24.png";
+import player_move24 from "../assets/players/sprite/player_move24.png";
+import player_attack24 from "../assets/players/sprite/player_attack24.png";
+import player_stun24 from "../assets/players/sprite/player_stun24.png";
+import player25 from "../assets/players/sprite/player25.png";
+import player_move25 from "../assets/players/sprite/player_move25.png";
+import player_attack25 from "../assets/players/sprite/player_attack25.png";
+import player_stun25 from "../assets/players/sprite/player_stun25.png";
+import player26 from "../assets/players/sprite/player26.png";
+import player_move26 from "../assets/players/sprite/player_move26.png";
+import player_attack26 from "../assets/players/sprite/player_attack26.png";
+import player_stun26 from "../assets/players/sprite/player_stun26.png";
+import player27 from "../assets/players/sprite/player27.png";
+import player_move27 from "../assets/players/sprite/player_move27.png";
+import player_attack27 from "../assets/players/sprite/player_attack27.png";
+import player_stun27 from "../assets/players/sprite/player_stun27.png";
+import player28 from "../assets/players/sprite/player28.png";
+import player_move28 from "../assets/players/sprite/player_move28.png";
+import player_attack28 from "../assets/players/sprite/player_attack28.png";
+import player_stun28 from "../assets/players/sprite/player_stun28.png";
+import player29 from "../assets/players/sprite/player29.png";
+import player_move29 from "../assets/players/sprite/player_move29.png";
+import player_attack29 from "../assets/players/sprite/player_attack29.png";
+import player_stun29 from "../assets/players/sprite/player_stun29.png";
+import player30 from "../assets/players/sprite/player30.png";
+import player_move30 from "../assets/players/sprite/player_move30.png";
+import player_attack30 from "../assets/players/sprite/player_attack30.png";
+import player_stun30 from "../assets/players/sprite/player_stun30.png";
 
 class BootScene extends Phaser.Scene {
   constructor() {
@@ -167,211 +190,301 @@ class BootScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image("background", backgroundImg);
-    this.load.image("arrow", arrowImg);
-    this.load.image("crown", crownImg);
-    this.load.image("punching_bag", punching_bagImg);
-    this.load.image("bomb_master", bomb_masterImg);
+    // 이미지 로드
+    const images = {
+      favicon: faviconIco,
+      background: backgroundImg,
+      arrow: arrowImg,
+      crown: crownImg,
+      boxing: boxingImg,
+      bombKing: bombKingImg,
+      item: itemImg,
+      speedUp: speedUpImg,
+      badSight: badSightImg,
+      speedDown: speedDownImg,
+      reverse: reverseImg,
+      question: questionImg,
+      bang: bangImg,
+      first_tileset: first_tileset,
+      chest_2: chest_2,
+      house_1: house_1,
+      logs: logs,
+      stump_2: stump_2,
+      Tileset_1: Tileset_1,
+      tree_1: tree_1,
+      tree_2: tree_2,
+      stone_1: stone_1,
+      stone_3: stone_3,
+      fence_1: fence_1,
+      fence_3: fence_3,
+    };
 
-    this.load.tilemapTiledJSON("map", map);
-    this.load.image("first_tileset", first_tileset);
-    this.load.image("chest_2", chest_2);
-    this.load.image("house_1", house_1);
-    this.load.image("logs", logs);
-    this.load.image("stump_2", stump_2);
-    this.load.image("Tileset_1", Tileset_1);
-    this.load.image("tree_1", tree_1);
-    this.load.image("tree_2", tree_2);
-    this.load.image("stone_3", stone_3);
-    this.load.image("stone_1", stone_1);
-
-    //audio
-    this.load.audio("scratch_sound", scratchSound);
-    this.load.audio("timer_sound", timerSound);
-    this.load.audio("explosion_sound", explosionSound);
-    this.load.audio("winner_sound", winnerSound);
-    this.load.audio("playingBGM1", playingBGM1);
-    this.load.audio("playingBGM2", playingBGM2);
-    this.load.audio("waitingBGM1", waitingBGM1);
-    this.load.audio("waitingBGM2", waitingBGM2);
-
-    this.load.spritesheet("playerDead", playerDeadSprite, {
-      frameWidth: 150,
-      frameHeight: 150,
-    });
-
-    this.load.spritesheet("claw_white", clawSprite, {
-      frameWidth: 32,
-      frameHeight: 32,
-    });
-
-    this.load.spritesheet("bomb", bombSprite, {
-      frameWidth: 303,
-      frameHeight: 142,
-    });
-
-    this.load.spritesheet("explosion", explosionSprite, {
-      frameWidth: 32,
-      frameHeight: 32,
-    });
-
-    this.load.spritesheet("star", starSprite, {
-      frameWidth: 150,
-      frameHeight: 150,
-    });
-
-    const players = [
-      player0,
-      player1,
-      player2,
-      player3,
-      player4,
-      player5,
-      player6,
-      player7,
-      player8,
-      player9,
-      player10,
-      player11,
-      player12,
-      player13,
-      player14,
-      player15,
-      player16,
-      player17,
-      player18,
-      player19,
-      player20,
-      player21,
-      player22,
-      player23,
-      player24,
-      player25,
-      player26,
-      player27,
-      player28,
-      player29,
-      player30,
-    ];
-    const playerMoves = [
-      player_move0,
-      player_move1,
-      player_move2,
-      player_move3,
-      player_move4,
-      player_move5,
-      player_move6,
-      player_move7,
-      player_move8,
-      player_move9,
-      player_move10,
-      player_move11,
-      player_move12,
-      player_move13,
-      player_move14,
-      player_move15,
-      player_move16,
-      player_move17,
-      player_move18,
-      player_move19,
-      player_move20,
-      player_move21,
-      player_move22,
-      player_move23,
-      player_move24,
-      player_move25,
-      player_move26,
-      player_move27,
-      player_move28,
-      player_move29,
-      player_move30,
-    ];
-    const playerAttacks = [
-      player_attack0,
-      player_attack1,
-      player_attack2,
-      player_attack3,
-      player_attack4,
-      player_attack5,
-      player_attack6,
-      player_attack7,
-      player_attack8,
-      player_attack9,
-      player_attack10,
-      player_attack11,
-      player_attack12,
-      player_attack13,
-      player_attack14,
-      player_attack15,
-      player_attack16,
-      player_attack17,
-      player_attack18,
-      player_attack19,
-      player_attack20,
-      player_attack21,
-      player_attack22,
-      player_attack23,
-      player_attack24,
-      player_attack25,
-      player_attack26,
-      player_attack27,
-      player_attack28,
-      player_attack29,
-      player_attack30,
-    ];
-    const playerStuns = [
-      player_stun0,
-      player_stun1,
-      player_stun2,
-      player_stun3,
-      player_stun4,
-      player_stun5,
-      player_stun6,
-      player_stun7,
-      player_stun8,
-      player_stun9,
-      player_stun10,
-      player_stun11,
-      player_stun12,
-      player_stun13,
-      player_stun14,
-      player_stun15,
-      player_stun16,
-      player_stun17,
-      player_stun18,
-      player_stun19,
-      player_stun20,
-      player_stun21,
-      player_stun22,
-      player_stun23,
-      player_stun24,
-      player_stun25,
-      player_stun26,
-      player_stun27,
-      player_stun28,
-      player_stun29,
-      player_stun30,
-    ];
-
-    // Load player sprites dynamically
-    for (let i = 0; i <= 30; i++) {
-      this.load.spritesheet(`player${i}`, players[i], {
-        frameWidth: 200,
-        frameHeight: 220,
-      });
-      this.load.spritesheet(`player_move${i}`, playerMoves[i], {
-        frameWidth: 200,
-        frameHeight: 220,
-      });
-      this.load.spritesheet(`player_attack${i}`, playerAttacks[i], {
-        frameWidth: 200,
-        frameHeight: 220,
-      });
-      this.load.spritesheet(`player_stun${i}`, playerStuns[i], {
-        frameWidth: 200,
-        frameHeight: 220,
-      });
+    for (const [key, value] of Object.entries(images)) {
+      this.load.image(key, value);
     }
+
+    // 타일맵 로드
+    this.load.tilemapTiledJSON("map", map);
+
+    // 오디오 로드
+    const audios = {
+      scratch_sound: scratchSound,
+      timer_sound: timerSound,
+      explosion_sound: explosionSound,
+      winner_sound: winnerSound,
+      click_sound: buttonClickSound,
+      acquire_sound: acquireSound,
+      playingBGM1: playingBGM1,
+      playingBGM2: playingBGM2,
+      waitingBGM1: waitingBGM1,
+      waitingBGM2: waitingBGM2,
+      mainBGM: mainBGM,
+    };
+
+    for (const [key, value] of Object.entries(audios)) {
+      this.load.audio(key, value);
+    }
+
+    // 스프라이트 시트 로드
+    const spriteSheets = [
+      {
+        key: "playerDead",
+        path: playerDeadSprite,
+        frameWidth: 150,
+        frameHeight: 150,
+      },
+      { key: "claw_white", path: clawSprite, frameWidth: 32, frameHeight: 32 },
+      { key: "bomb", path: bombSprite, frameWidth: 303, frameHeight: 142 },
+      {
+        key: "explosion",
+        path: explosionSprite,
+        frameWidth: 32,
+        frameHeight: 32,
+      },
+      {
+        key: "BodyExplosion",
+        path: BodyExplosionSprite,
+        frameWidth: 204,
+        frameHeight: 204,
+      },
+      { key: "star", path: starSprite, frameWidth: 150, frameHeight: 150 },
+    ];
+
+    spriteSheets.forEach((sheet) => {
+      this.load.spritesheet(sheet.key, sheet.path, {
+        frameWidth: sheet.frameWidth,
+        frameHeight: sheet.frameHeight,
+      });
+    });
+
+    // 플레이어 스프라이트 동적 로드
+    const players = [
+      {
+        base: player0,
+        move: player_move0,
+        attack: player_attack0,
+        stun: player_stun0,
+      },
+      {
+        base: player1,
+        move: player_move1,
+        attack: player_attack1,
+        stun: player_stun1,
+      },
+      {
+        base: player2,
+        move: player_move2,
+        attack: player_attack2,
+        stun: player_stun2,
+      },
+      {
+        base: player3,
+        move: player_move3,
+        attack: player_attack3,
+        stun: player_stun3,
+      },
+      {
+        base: player4,
+        move: player_move4,
+        attack: player_attack4,
+        stun: player_stun4,
+      },
+      {
+        base: player5,
+        move: player_move5,
+        attack: player_attack5,
+        stun: player_stun5,
+      },
+      {
+        base: player6,
+        move: player_move6,
+        attack: player_attack6,
+        stun: player_stun6,
+      },
+      {
+        base: player7,
+        move: player_move7,
+        attack: player_attack7,
+        stun: player_stun7,
+      },
+      {
+        base: player8,
+        move: player_move8,
+        attack: player_attack8,
+        stun: player_stun8,
+      },
+      {
+        base: player9,
+        move: player_move9,
+        attack: player_attack9,
+        stun: player_stun9,
+      },
+      {
+        base: player10,
+        move: player_move10,
+        attack: player_attack10,
+        stun: player_stun10,
+      },
+      {
+        base: player11,
+        move: player_move11,
+        attack: player_attack11,
+        stun: player_stun11,
+      },
+      {
+        base: player12,
+        move: player_move12,
+        attack: player_attack12,
+        stun: player_stun12,
+      },
+      {
+        base: player13,
+        move: player_move13,
+        attack: player_attack13,
+        stun: player_stun13,
+      },
+      {
+        base: player14,
+        move: player_move14,
+        attack: player_attack14,
+        stun: player_stun14,
+      },
+      {
+        base: player15,
+        move: player_move15,
+        attack: player_attack15,
+        stun: player_stun15,
+      },
+      {
+        base: player16,
+        move: player_move16,
+        attack: player_attack16,
+        stun: player_stun16,
+      },
+      {
+        base: player17,
+        move: player_move17,
+        attack: player_attack17,
+        stun: player_stun17,
+      },
+      {
+        base: player18,
+        move: player_move18,
+        attack: player_attack18,
+        stun: player_stun18,
+      },
+      {
+        base: player19,
+        move: player_move19,
+        attack: player_attack19,
+        stun: player_stun19,
+      },
+      {
+        base: player20,
+        move: player_move20,
+        attack: player_attack20,
+        stun: player_stun20,
+      },
+      {
+        base: player21,
+        move: player_move21,
+        attack: player_attack21,
+        stun: player_stun21,
+      },
+      {
+        base: player22,
+        move: player_move22,
+        attack: player_attack22,
+        stun: player_stun22,
+      },
+      {
+        base: player23,
+        move: player_move23,
+        attack: player_attack23,
+        stun: player_stun23,
+      },
+      {
+        base: player24,
+        move: player_move24,
+        attack: player_attack24,
+        stun: player_stun24,
+      },
+      {
+        base: player25,
+        move: player_move25,
+        attack: player_attack25,
+        stun: player_stun25,
+      },
+      {
+        base: player26,
+        move: player_move26,
+        attack: player_attack26,
+        stun: player_stun26,
+      },
+      {
+        base: player27,
+        move: player_move27,
+        attack: player_attack27,
+        stun: player_stun27,
+      },
+      {
+        base: player28,
+        move: player_move28,
+        attack: player_attack28,
+        stun: player_stun28,
+      },
+      {
+        base: player29,
+        move: player_move29,
+        attack: player_attack29,
+        stun: player_stun29,
+      },
+      {
+        base: player30,
+        move: player_move30,
+        attack: player_attack30,
+        stun: player_stun30,
+      },
+    ];
+
+    players.forEach((player, i) => {
+      this.load.spritesheet(`player${i}`, player.base, {
+        frameWidth: 200,
+        frameHeight: 220,
+      });
+      this.load.spritesheet(`player_move${i}`, player.move, {
+        frameWidth: 200,
+        frameHeight: 220,
+      });
+      this.load.spritesheet(`player_attack${i}`, player.attack, {
+        frameWidth: 200,
+        frameHeight: 220,
+      });
+      this.load.spritesheet(`player_stun${i}`, player.stun, {
+        frameWidth: 200,
+        frameHeight: 220,
+      });
+    });
   }
 
   create() {
@@ -380,10 +493,18 @@ class BootScene extends Phaser.Scene {
       frames: this.anims.generateFrameNumbers("claw_white"),
       frameRate: 20,
       repeat: 0,
-      hideOnComplete: true,
     });
 
-    this.scene.start("GameScene");
+    this.anims.create({
+      key: "bomb",
+      frames: this.anims.generateFrameNumbers("bomb"),
+      frameRate: 5,
+      repeat: -1,
+    });
+
+    this.textures.removeKey("unusedImage");
+
+    this.scene.start("MainScene");
   }
 }
 
