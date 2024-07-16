@@ -47,13 +47,13 @@ jobs:
       - name: Delete existing files from S3
         run: aws s3 rm s3://mini-game-world-web --recursive --include "*"
 
+      - name: Upload all files to S3 except WebP
+        run: |
+          find ./dist -type f ! -name '*.webp' -exec aws s3 cp {} s3://mini-game-world-web/{} \;
+
       - name: Upload WebP files with correct MIME type
         run: |
           find ./dist -name '*.webp' -exec bash -c 'aws s3 cp "$1" s3://mini-game-world-web/"${1#./dist/}" --content-type image/webp' _ {} \;
-
-      - name: Sync remaining files to S3
-        run: |
-          find ./dist -name '*.webp' -prune -o -type f -exec bash -c 'aws s3 cp "$1" s3://mini-game-world-web/"${1#./dist/}"' _ {} \;
 
       - name: Cloudfront 캐시 무효화
         run: aws cloudfront create-invalidation --distribution-id E1WQE1CPEFVIRJ --paths "/*"
