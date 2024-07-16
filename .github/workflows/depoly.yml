@@ -48,7 +48,8 @@ jobs:
         run: aws s3 rm s3://mini-game-world-web --recursive --include "*"
 
       - name: Upload new files to S3
-        run: aws s3 sync ./dist s3://mini-game-world-web/ --delete
+        run: |
+          find ./dist -type f -exec bash -c 'mime_type=$(file --mime-type -b "$1"); aws s3 cp "$1" s3://mini-game-world-web/"${1#./dist/}" --content-type "$mime_type"' _ {} \;
 
       - name: Cloudfront 캐시 무효화
         run: aws cloudfront create-invalidation --distribution-id E1WQE1CPEFVIRJ --paths "/*"
