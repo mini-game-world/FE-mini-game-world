@@ -36,6 +36,10 @@ jobs:
 
       - name: Upload all files to S3
         run: aws s3 sync ./dist s3://mini-game-world-web/ --delete
+  
+      - name: Correct MIME type for WebP files
+        run: |
+          find ./dist -name '*.webp' -exec bash -c 'aws s3 cp "s3://mini-game-world-web/${1#./dist/}" "s3://mini-game-world-web/${1#./dist/}" --metadata-directive REPLACE --content-type image/webp' _ {} \;
 
       - name: Cloudfront 캐시 무효화
         run: aws cloudfront create-invalidation --distribution-id E1WQE1CPEFVIRJ --paths "/*"
