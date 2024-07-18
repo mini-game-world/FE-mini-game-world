@@ -28,18 +28,18 @@ import questionImg from "../assets/item/question.webp";
 // Import map
 import map from "../assets/maps/village.tmj";
 
-import first_tileset from "../assets/tiles/first_tileset.webp";
-import chest_2 from "../assets/tiles/chest_2.webp";
-import house_1 from "../assets/tiles/house_1.webp";
-import logs from "../assets/tiles/logs.webp";
-import stump_2 from "../assets/tiles/stump_2.webp";
-import Tileset_1 from "../assets/tiles/Tileset_1.webp";
-import tree_1 from "../assets/tiles/tree_1.webp";
-import tree_2 from "../assets/tiles/tree_2.webp";
-import stone_1 from "../assets/tiles/stone_1.webp";
-import stone_3 from "../assets/tiles/stone_3.webp";
-import fence_1 from "../assets/tiles/fence_1.webp";
-import fence_3 from "../assets/tiles/fence_3.webp";
+import first_tileset from "../assets/tiles/first_tileset.png";
+import chest_2 from "../assets/tiles/chest_2.png";
+import house_1 from "../assets/tiles/house_1.png";
+import logs from "../assets/tiles/logs.png";
+import stump_2 from "../assets/tiles/stump_2.png";
+import Tileset_1 from "../assets/tiles/Tileset_1.png";
+import tree_1 from "../assets/tiles/tree_1.png";
+import tree_2 from "../assets/tiles/tree_2.png";
+import stone_1 from "../assets/tiles/stone_1.png";
+import stone_3 from "../assets/tiles/stone_3.png";
+import fence_1 from "../assets/tiles/fence_1.png";
+import fence_3 from "../assets/tiles/fence_3.png";
 
 // Import Sound
 import scratchSound from "../assets/sounds/scratch.ogg";
